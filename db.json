@@ -1,0 +1,137 @@
+{
+    "animes": [
+      {
+        "id": 1,
+        "title": "Attack on Titan",
+        "type": "Series",
+        "genre": ["Action", "Drama", "Fantasy", "Supernatural"],
+        "episodes": 75,
+        "rating": 8.9,
+        "synopsis": "In a world where humanity resides within enormous walled cities due to the threat of Titans, giant humanoid creatures, Eren Yeager joins the Survey Corps to fight back.",
+        "photo_cover": "https://example.com/attack_on_titan_cover.jpg",
+        "trailer_link": "https://www.youtube.com/watch?v=MGRm4IzK1SQ",
+        "release_date": "2013-04-07"
+      },
+      {
+        "id": 2,
+        "title": "Spirited Away",
+        "type": "Movie",
+        "genre": ["Adventure", "Fantasy"],
+        "episodes": 1,
+        "rating": 8.5,
+        "synopsis": "Chihiro, a 10-year-old girl, becomes trapped in a mysterious and magical world while her parents are transformed into pigs. She must find a way to free herself and her parents and return to the human world.",
+        "photo_cover": "https://example.com/spirited_away_cover.jpg",
+        "trailer_link": "https://www.youtube.com/watch?v=ByXuk9QqQkk",
+        "release_date": "2001-07-20"
+      },
+      {
+        "id": 3,
+        "title": "My Hero Academia",
+        "type": "Series",
+        "genre": ["Action", "Adventure", "Fantasy", "Shounen"],
+        "episodes": 113,
+        "rating": 8.2,
+        "synopsis": "In a world where nearly everyone has superpowers, Izuku Midoriya, a boy born without any, still dreams of becoming the world's greatest hero.",
+        "photo_cover": "https://example.com/my_hero_academia_cover.jpg",
+        "trailer_link": "https://www.youtube.com/watch?v=Q2WcDaIzQa4",
+        "release_date": "2016-04-03"
+      },
+      {
+        "id": 4,
+        "title": "Naruto",
+        "type": "Series",
+        "genre": ["Action", "Adventure", "Martial Arts", "Shounen"],
+        "episodes": 220,
+        "rating": 8.3,
+        "synopsis": "Naruto Uzumaki, a young ninja with a sealed demon fox within him, strives to become the strongest ninja and earn the title of Hokage.",
+        "photo_cover": "https://example.com/naruto_cover.jpg",
+        "trailer_link": "https://www.youtube.com/watch?v=bdDB_vHs7FA",
+        "release_date": "2002-10-03"
+      },
+      {
+        "id": 5,
+        "title": "Your Name",
+        "type": "Movie",
+        "genre": ["Drama", "Romance", "Supernatural"],
+        "episodes": 1,
+        "rating": 8.7,
+        "synopsis": "Two teenagers, Taki and Mitsuha, mysteriously begin switching bodies and must figure out how to communicate and navigate their lives as their connection grows deeper.",
+        "photo_cover": "https://example.com/your_name_cover.jpg",
+        "trailer_link": "https://www.youtube.com/watch?v=xU47nhruN-Q",
+        "release_date": "2016-08-26"
+      }
+    ],
+    "reviews": [
+    {
+      "id": 1,
+      "anime_id": 1,
+      "reviewer": "John Doe",
+      "comment": "A masterpiece of storytelling and action. The twists and turns kept me on the edge of my seat!",
+      "rating": 9
+    },
+    {
+      "id": 2,
+      "anime_id": 1,
+      "reviewer": "Jane Smith",
+      "comment": "Amazing animation and plot. A bit too intense at times, but worth watching.",
+      "rating": 8
+    },
+    {
+      "id": 3,
+      "anime_id": 2,
+      "reviewer": "Alice Wonderland",
+      "comment": "A beautiful and emotional journey. The art and music are enchanting.",
+      "rating": 10
+    },
+    {
+      "id": 4,
+      "anime_id": 2,
+      "reviewer": "Bob Johnson",
+      "comment": "A classic that stands the test of time. Every scene is a work of art.",
+      "rating": 9
+    },
+    {
+      "id": 5,
+      "anime_id": 3,
+      "reviewer": "Chris Evans",
+      "comment": "A great mix of action and character development. The story keeps getting better with each season.",
+      "rating": 8
+    },
+    {
+      "id": 6,
+      "anime_id": 3,
+      "reviewer": "Sarah Connor",
+      "comment": "Some arcs are a bit slow, but overall a solid anime with strong themes of heroism.",
+      "rating": 7
+    },
+    {
+      "id": 7,
+      "anime_id": 4,
+      "reviewer": "Sasuke Uchiha",
+      "comment": "An iconic series with memorable characters and battles. The filler episodes can be skipped, but the main story is epic.",
+      "rating": 8
+    },
+    {
+      "id": 8,
+      "anime_id": 4,
+      "reviewer": "Hinata Hyuga",
+      "comment": "A long but worthwhile journey. Naruto's growth is inspiring.",
+      "rating": 9
+    },
+    {
+      "id": 9,
+      "anime_id": 5,
+      "reviewer": "Makoto Shinkai",
+      "comment": "A beautifully animated and emotionally powerful film. The story is both heartwarming and heartbreaking.",
+      "rating": 9
+    },
+    {
+      "id": 10,
+      "anime_id": 5,
+      "reviewer": "Taki Tachibana",
+      "comment": "A touching tale that explores the connection between time, love, and destiny. Truly a masterpiece.",
+      "rating": 10
+    }
+  ]
+  }
+  

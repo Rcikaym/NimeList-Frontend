@@ -7,8 +7,14 @@ import React from "react";
 import { DownOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+// import { UserOutlined } from "@ant-design/icons";
 import { Avatar } from "antd";
+import {
+  TwitterOutlined,
+  GithubOutlined,
+  FacebookOutlined,
+  DiscordFilled,
+} from "@ant-design/icons";
 // import type { Metadata } from "next";
 // import DropdownMenu from "/components"; // Adjust the path based on your project structure
 
@@ -94,7 +100,7 @@ export default function RootLayout({
                 <ul className="flex items-center ">
                   <li className="flex items-center ml-5 px-4 text-white text-xl font-medium cursor-pointer">
                     <Dropdown
-                      overlayStyle={{ color: "#00554B" }}
+                      overlayClassName="custom-dropdown-menu"
                       menu={{ items }}
                       trigger={["click"]}
                     >
@@ -172,11 +178,149 @@ export default function RootLayout({
 
         <main className="min-h-screen bg-dark-100">{children}</main>
 
-        <footer className="w-full bg-gray-900">
-          <div className="flex flex-col items-center justify-center px-4 py-8 md:py-16 lg:py-24 max-w-screen-2xl mx-auto">
-            <p className="text-white text-lg text-center">
-              Footer Content Here
-            </p>
+        <footer className="w-full bg-[#0B0B0B]">
+          <div className="mx-auto w-full max-w-screen-xl">
+            <div className="grid grid-cols-2 gap-8 px-4 py-6 lg:py-8 md:grid-cols-5">
+              <div>
+                <Image
+                  src="/images/logo.png"
+                  alt="Nimelist_logo"
+                  width={40}
+                  height={40}
+                  className="flex ml-10 mb-5 sm:justify-center md:mt-0 filter brightness-0 invert"
+                  priority
+                />
+                <div className="flex mt-4 sm:justify-center md:mt-0 space-x-5 rtl:space-x-reverse">
+                  <a
+                    href="#"
+                    className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <FacebookOutlined width={20} height={20} />
+                    <span className="sr-only">Facebook page</span>
+                  </a>
+                  <a
+                    href="#"
+                    className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <DiscordFilled />
+                    <span className="sr-only">Discord community</span>
+                  </a>
+                  <a
+                    href="#"
+                    className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <TwitterOutlined />
+                    <span className="sr-only">Twitter page</span>
+                  </a>
+                  <a
+                    href="#"
+                    className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <GithubOutlined />
+                    <span className="sr-only">GitHub account</span>
+                  </a>
+                </div>
+              </div>
+              <div>
+                <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+                  Company
+                </h2>
+                <ul className="text-gray-500 dark:text-gray-400 font-medium">
+                  <li className="mb-4">
+                    <a href="#" className=" hover:underline">
+                      About
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Careers
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Brand Center
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Blog
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+                  Connect with us
+                </h2>
+                <ul className="text-gray-500 dark:text-gray-400 font-medium">
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Discord Server
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Twitter
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Facebook
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Contact Us
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+                  Legal
+                </h2>
+                <ul className="text-gray-500 dark:text-gray-400 font-medium">
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Privacy Policy
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Licensing
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Terms &amp; Conditions
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+                  Account
+                </h2>
+                <ul className="text-gray-500 dark:text-gray-400 font-medium">
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Log in
+                    </a>
+                  </li>
+                  <li className="mb-4">
+                    <a href="#" className="hover:underline">
+                      Create Account
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="px-4 py-6 bg-transparent dark:bg-transparent md:flex md:items-center md:justify-center">
+              <span className="text-sm text-gray-500 dark:text-gray-150 sm:text-center">
+                © 2024 <a href="https://localhost.3000/">NimeList™</a>. All
+                Rights Reserved.
+              </span>
+            </div>
           </div>
         </footer>
       </body>
