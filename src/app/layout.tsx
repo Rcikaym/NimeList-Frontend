@@ -7,7 +7,6 @@ import React from "react";
 import { DownOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
-// import { UserOutlined } from "@ant-design/icons";
 import { Avatar } from "antd";
 import {
   TwitterOutlined,
@@ -15,6 +14,7 @@ import {
   FacebookOutlined,
   DiscordFilled,
 } from "@ant-design/icons";
+import Link from "next/link";
 // import type { Metadata } from "next";
 // import DropdownMenu from "/components"; // Adjust the path based on your project structure
 
@@ -29,43 +29,43 @@ const url =
 
 const items: MenuProps["items"] = [
   {
-    label: <a href="#">Action</a>,
+    label: <Link href="#">Action</Link>,
     key: "0",
   },
   {
-    label: <a href="#">Adventure</a>,
+    label: <Link href="#">Adventure</Link>,
     key: "1",
   },
   {
-    label: <a href="#">Avant Garde</a>,
+    label: <Link href="#">Avant Garde</Link>,
     key: "2",
   },
   {
-    label: <a href="#">Comedy</a>,
+    label: <Link href="#">Comedy</Link>,
     key: "3",
   },
   {
-    label: <a href="#">Drama</a>,
+    label: <Link href="#">Drama</Link>,
     key: "4",
   },
   {
-    label: <a href="#">Isekai</a>,
+    label: <Link href="#">Isekai</Link>,
     key: "5",
   },
   {
-    label: <a href="#">Josei</a>,
+    label: <Link href="#">Josei</Link>,
     key: "6",
   },
   {
-    label: <a href="#">Magic</a>,
+    label: <Link href="#">Magic</Link>,
     key: "7",
   },
   {
-    label: <a href="#">Martial Arts</a>,
+    label: <Link href="#">Martial Arts</Link>,
     key: "8",
   },
   {
-    label: <a href="#">Mecha</a>,
+    label: <Link href="#">Mecha</Link>,
     key: "9",
   },
 ];
@@ -86,7 +86,7 @@ export default function RootLayout({
           <div className="flex h-full mx-auto">
             <nav className="flex items-center h-full w-full">
               <div className="flex ml-5 h-full w-full">
-                <a
+                <Link
                   href="/"
                   className="flex items-center justify-center w-12 h-7 mt-6 ml-10 cursor-pointer"
                 >
@@ -96,7 +96,7 @@ export default function RootLayout({
                     width={48}
                     height={28}
                   />
-                </a>
+                </Link>
                 <ul className="flex items-center ">
                   <li className="flex items-center ml-5 px-4 text-white text-xl font-medium cursor-pointer">
                     <Dropdown
@@ -117,7 +117,7 @@ export default function RootLayout({
               <div className="flex flex-row-reverse items-center w-full space-x-11">
                 <ul className="flex items-center space-x-20">
                   <li>
-                    <a href="/membership" className="m-auto block">
+                    <Link href="/membership" className="m-auto block">
                       <Image
                         src="/images/crown.svg"
                         alt="membership"
@@ -126,10 +126,10 @@ export default function RootLayout({
                         priority
                         className="block cursor-pointer m-auto"
                       />
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="/favorites">
+                    <Link href="/favorites">
                       <Image
                         src="/images/bookmark.svg"
                         alt="bookmark"
@@ -138,10 +138,10 @@ export default function RootLayout({
                         priority
                         className="cursor-pointer"
                       />
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="/search">
+                    <Link href="/search">
                       <Image
                         src="/images/magnifying.svg"
                         alt="search"
@@ -150,7 +150,7 @@ export default function RootLayout({
                         priority
                         className="cursor-pointer"
                       />
-                    </a>
+                    </Link>
                   </li>
                   <li>
                     <div className="flex mr-10 ">
@@ -191,60 +191,60 @@ export default function RootLayout({
                   priority
                 />
                 <div className="flex mt-4 sm:justify-center md:mt-0 space-x-5 rtl:space-x-reverse">
-                  <a
+                  <Link
                     href="#"
                     className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
                   >
                     <FacebookOutlined width={20} height={20} />
                     <span className="sr-only">Facebook page</span>
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="#"
                     className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
                   >
                     <DiscordFilled />
                     <span className="sr-only">Discord community</span>
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="#"
                     className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
                   >
                     <TwitterOutlined />
                     <span className="sr-only">Twitter page</span>
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="#"
                     className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
                   >
                     <GithubOutlined />
                     <span className="sr-only">GitHub account</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div>
                 <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
-                  Company
+                  Navigation
                 </h2>
                 <ul className="text-gray-500 dark:text-gray-400 font-medium">
                   <li className="mb-4">
-                    <a href="#" className=" hover:underline">
-                      About
-                    </a>
+                    <Link href="#" className=" hover:underline">
+                      Browse Popular
+                    </Link>
                   </li>
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
-                      Careers
-                    </a>
+                    <Link href="#" className="hover:underline">
+                      New Release
+                    </Link>
                   </li>
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
+                      Search
+                    </Link>
+                  </li>
+                  <li className="mb-4">
+                    <Link href="#" className="hover:underline">
                       Brand Center
-                    </a>
-                  </li>
-                  <li className="mb-4">
-                    <a href="#" className="hover:underline">
-                      Blog
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -254,24 +254,24 @@ export default function RootLayout({
                 </h2>
                 <ul className="text-gray-500 dark:text-gray-400 font-medium">
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Discord Server
-                    </a>
+                    </Link>
                   </li>
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Twitter
-                    </a>
+                    </Link>
                   </li>
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Facebook
-                    </a>
+                    </Link>
                   </li>
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Contact Us
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -281,19 +281,19 @@ export default function RootLayout({
                 </h2>
                 <ul className="text-gray-500 dark:text-gray-400 font-medium">
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Privacy Policy
-                    </a>
+                    </Link>
                   </li>
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Licensing
-                    </a>
+                    </Link>
                   </li>
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Terms &amp; Conditions
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -303,21 +303,21 @@ export default function RootLayout({
                 </h2>
                 <ul className="text-gray-500 dark:text-gray-400 font-medium">
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Log in
-                    </a>
+                    </Link>
                   </li>
                   <li className="mb-4">
-                    <a href="#" className="hover:underline">
+                    <Link href="#" className="hover:underline">
                       Create Account
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
             </div>
             <div className="px-4 py-6 bg-transparent dark:bg-transparent md:flex md:items-center md:justify-center">
               <span className="text-sm text-gray-500 dark:text-gray-150 sm:text-center">
-                © 2024 <a href="https://localhost.3000/">NimeList™</a>. All
+                © 2024 <Link href="https://localhost.3000/">NimeList™</Link>. All
                 Rights Reserved.
               </span>
             </div>
