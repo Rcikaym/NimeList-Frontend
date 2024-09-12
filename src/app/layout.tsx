@@ -15,7 +15,6 @@ export default function RootLayout({
         <link rel="icon" href="/images/favicon.ico" />
       </head>
       <body>
-        <Script src="/api/env" strategy={"beforeInteractive"}></Script>
         <Providers>{children}</Providers>
       </body>
     </html>

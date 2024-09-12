@@ -3,7 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { Button, message, Modal, Space, Table } from "antd";
 import type { TableColumnsType } from "antd";
-import { AiFillStar, AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from "react-icons/ai";
+import {
+  AiFillStar,
+  AiOutlineDelete,
+  AiOutlinePicRight,
+  AiOutlinePlus,
+} from "react-icons/ai";
 import axios from "axios";
 import {
   AppstoreFilled,
@@ -14,14 +19,15 @@ import {
 import Link from "next/link";
 
 interface DataType {
-  anime_id: string;
-  anime_title: string;
-  avg_rating: number;
-  anime_created_at: string;
-  anime_updated_at: string;
+  id: string;
+  title: string;
+  user: string;
+  anime: string;
+  created_at: string;
+  updated_at: string;
 }
 
-const AnimeList: React.FC = () => {
+const UserList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const { confirm } = Modal;
@@ -31,7 +37,7 @@ const AnimeList: React.FC = () => {
     const fetchAnime = async () => {
       try {
         const response = await axios.get<DataType[]>(
-          "http://localhost:4321/anime/get"
+          "http://localhost:4321/topic/get-all"
         );
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -47,12 +53,12 @@ const AnimeList: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:4321/anime/delete/${id}`); // Melakukan DELETE ke server
+      await axios.delete(`http://localhost:4321/topic/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(
-        "http://localhost:4321/anime/get"
+        "http://localhost:4321/topic/get-all"
       );
       setData(response.data); // Memperbarui data genre
     } catch (error) {
@@ -84,33 +90,26 @@ const AnimeList: React.FC = () => {
   const columns: TableColumnsType<DataType> = [
     {
       title: "Title",
-      dataIndex: "anime_title",
-      sorter: (a: DataType, b: DataType) =>
-        a.anime_title.localeCompare(b.anime_title),
+      dataIndex: "title",
+      sorter: (a: DataType, b: DataType) => a.title.localeCompare(b.title),
       sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Rating",
-      dataIndex: "avg_rating",
-      render: (avg_rating: number) => {
-        return (
-          <>
-            <span className="gap-1 flex items-center">
-              {avg_rating}
-              <AiFillStar style={{ color: "#fadb14" }} />
-            </span>
-          </>
-        );
-      },
+      title: "Created By",
+      dataIndex: "user",
+    },
+    {
+      title: "Tag Anime",
+      dataIndex: "anime",
     },
     {
       title: "Created At",
-      dataIndex: "anime_created_at",
+      dataIndex: "created_at",
       render: (text: string) => formatDateTime(text),
     },
     {
       title: "Updated At",
-      dataIndex: "anime_updated_at",
+      dataIndex: "updated_at",
       render: (text: string) => formatDateTime(text),
     },
     {
@@ -121,23 +120,14 @@ const AnimeList: React.FC = () => {
           <Button
             type="text"
             className="bg-emerald-700 text-white"
-            href={`anime/${record.anime_id}`}
+            href={`topic/${record.id}`}
           >
             <EyeOutlined style={{ fontSize: 20 }} />
           </Button>
           <Button
             type="text"
             className="bg-emerald-700 text-white"
-            href={`anime/edit/${record.anime_id}`}
-          >
-            <AiOutlineEdit style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
-            onClick={() =>
-              showDeleteConfirm(record.anime_id, record.anime_title)
-            }
+            onClick={() => showDeleteConfirm(record.id, record.title)}
           >
             <AiOutlineDelete style={{ fontSize: 20 }} />
           </Button>
@@ -163,14 +153,14 @@ const AnimeList: React.FC = () => {
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
-            <VideoCameraOutlined style={{ fontSize: 20 }} />
+            <AiOutlinePicRight style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
-              Anime Information
+              Topic Information
             </h2>
             <h2 className="text-black text-sm">
-              Displays anime short information and anime details
+              Displays topic short information and topic details
             </h2>
           </div>
         </div>
@@ -181,11 +171,11 @@ const AnimeList: React.FC = () => {
             </div>
           </Link>
           <span className="text-black"> / </span>
-          <h2 className="text-black text-lg mt-2"> Manage Anime </h2>
+          <h2 className="text-black text-lg mt-2"> Manage Topic </h2>
           <span className="text-black"> / </span>
-          <Link href="/dashboard/anime">
+          <Link href="/dashboard/topic">
             <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
-              Anime
+              Topic
             </h2>
           </Link>
         </div>
@@ -193,10 +183,10 @@ const AnimeList: React.FC = () => {
       <div className="mb-3">
         <Button
           type="text"
-          href="/dashboard/anime/add"
+          href="/dashboard/topic/add"
           className="bg-emerald-700 text-white"
         >
-          <AiOutlinePlus /> Add Anime
+          <AiOutlinePlus /> Add Topic
         </Button>
       </div>
       <Table
@@ -210,4 +200,4 @@ const AnimeList: React.FC = () => {
   );
 };
 
-export default AnimeList;
+export default UserList;

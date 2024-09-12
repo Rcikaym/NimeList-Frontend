@@ -51,69 +51,72 @@ const UserList: React.FC = () => {
   }, []);
 
   // Kolom table
-  const columns: TableColumnsType<DataType> =useMemo(() => [
-    {
-      title: "Username",
-      dataIndex: "username",
-      sorter: (a: DataType, b: DataType) =>
-        a.username.localeCompare(b.username),
-      sortDirections: ["ascend", "descend"],
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-    },
-    {
-      title: "Premium Status",
-      dataIndex: "status_premium",
-      render: (status_premium: string) =>
-        status_premium === "active" ? (
-          <>
-            <div className="flex rounded-md bg-emerald-700 px-3 py-1 justify-center w-fit">
-              <span className="text-white">Active</span>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex rounded-md bg-red-600 px-3 py-1 justify-center w-fit">
-              <span className="text-white">Inactive</span>
-            </div>
-          </>
+  const columns: TableColumnsType<DataType> = useMemo(
+    () => [
+      {
+        title: "Username",
+        dataIndex: "username",
+        sorter: (a: DataType, b: DataType) =>
+          a.username.localeCompare(b.username),
+        sortDirections: ["ascend", "descend"],
+      },
+      {
+        title: "Email",
+        dataIndex: "email",
+      },
+      {
+        title: "Premium Status",
+        dataIndex: "status_premium",
+        render: (status_premium: string) =>
+          status_premium === "active" ? (
+            <>
+              <div className="flex rounded-md bg-emerald-700 px-3 py-1 justify-center w-fit">
+                <span className="text-white">Active</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex rounded-md bg-red-600 px-3 py-1 justify-center w-fit">
+                <span className="text-white">Inactive</span>
+              </div>
+            </>
+          ),
+      },
+      {
+        title: "Badge",
+        dataIndex: "badge",
+        render: (badge: string) =>
+          badge
+            .split(" ") // Memisahkan string berdasarkan spasi menjadi array
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Mengubah huruf pertama setiap kata menjadi huruf besar
+            .join(" "), // Menggabungkan kembali array menjadi string
+      },
+      {
+        title: "Start Premium",
+        dataIndex: "start_premium",
+        render: (start_premium: string | null) =>
+          start_premium ? start_premium : "0000-00-00 00:00:00",
+      },
+      {
+        title: "End Premium",
+        dataIndex: "end_premium",
+        render: (end_premium: string | null) =>
+          end_premium ? end_premium : "0000-00-00 00:00:00",
+      },
+      {
+        title: "Action",
+        dataIndex: "action",
+        render: (text: string, record: DataType) => (
+          <Space size="middle">
+            <Button type="text" className="bg-emerald-700 text-white">
+              <EyeOutlined style={{ fontSize: 20 }} />
+            </Button>
+          </Space>
         ),
-    },
-    {
-      title: "Badge",
-      dataIndex: "badge",
-      render: (badge: string) =>
-        badge
-          .split(" ") // Memisahkan string berdasarkan spasi menjadi array
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Mengubah huruf pertama setiap kata menjadi huruf besar
-          .join(" "), // Menggabungkan kembali array menjadi string
-    },
-    {
-      title: "Start Premium",
-      dataIndex: "start_premium",
-      render: (start_premium: string | null) =>
-        start_premium ? start_premium : "0000-00-00 00:00:00",
-    },
-    {
-      title: "End Premium",
-      dataIndex: "end_premium",
-      render: (end_premium: string | null) =>
-        end_premium ? end_premium : "0000-00-00 00:00:00",
-    },
-    {
-      title: "Action",
-      dataIndex: "action",
-      render: (text: string, record: DataType) => (
-        <Space size="middle">
-          <Button type="text" className="bg-emerald-700 text-white">
-            <EyeOutlined style={{ fontSize: 20 }} />
-          </Button>
-        </Space>
-      ),
-    },
-  ], []);
+      },
+    ],
+    []
+  );
 
   return (
     <>
@@ -139,7 +142,7 @@ const UserList: React.FC = () => {
           </Link>
           <span className="text-black"> / </span>
           <Link href="/dashboard/users">
-            <h2 className="text-black mt-2 text-lg font-regular hover:text-emerald-700">
+            <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
               Users
             </h2>
           </Link>

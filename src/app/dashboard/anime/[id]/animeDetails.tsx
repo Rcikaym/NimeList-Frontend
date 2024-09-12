@@ -3,7 +3,7 @@
 import { LeftCircleOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import { Button, Image, Modal } from "antd";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AiFillStar,
   AiFillTags,
@@ -33,6 +33,7 @@ interface AnimeType {
     photos: PhotosType[];
     photo_cover: string;
     type: string;
+    episodes: number;
     genres: GenreType[];
     created_at: string;
     updated_at: string;
@@ -40,10 +41,26 @@ interface AnimeType {
   averageRating: number;
 }
 
-import { useParams } from "react-router-dom";
+// Komponen DisplaySynopsis
+const DisplaySynopsis = ({ synopsis }: { synopsis: string }) => {
+  // Pisahkan teks berdasarkan newline dan masukkan <br /> di setiap titik
+  const formattedSynopsis = synopsis
+    .split(/(?:\r\n|\r|\n)/g)
+    .map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
 
-const AnimeDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Mengambil id dari URL
+  return (
+    <div className="text-gray-600 tracking-wide leading-relaxed">
+      {formattedSynopsis}
+    </div>
+  );
+};
+
+export default function AnimeDetails({ id }: { id: string }) {
   const [anime, setAnime] = useState<AnimeType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +97,7 @@ const AnimeDetails: React.FC = () => {
     type,
     genres,
     trailer_link,
+    episodes,
     photos,
     created_at,
     updated_at,
@@ -99,7 +117,7 @@ const AnimeDetails: React.FC = () => {
 
   return (
     <>
-      <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-emerald-700">
+      <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50]">
         Anime Details
       </div>
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -109,12 +127,13 @@ const AnimeDetails: React.FC = () => {
             {photo_cover && (
               <div>
                 <Image
-                  alt={title}
+                  alt={anime.anime.title}
                   className="w-full h-auto object-cover rounded-md shadow-md hover:shadow-xl transition-shadow"
                   src={`http://localhost:4321/${photo_cover.replace(
                     /\\/g,
                     "/"
                   )}`}
+                  loading="lazy"
                 />
               </div>
             )}
@@ -122,43 +141,50 @@ const AnimeDetails: React.FC = () => {
 
           {/* Right column for details */}
           <div className="md:w-2/3 p-6">
-            <h1 className="text-3xl font-bold mb-2 text-gray-800">{title}</h1>
+            <h1 className="text-3xl font-bold mb-2 text-gray-800">
+              {anime.anime.title}
+            </h1>
 
             <div className="flex mt-2">
               <AiOutlineCalendar className="mr-1 text-emerald-700" size={20} />
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <h2 className="text-gray-800">Release Date:</h2>
                 <span className="text-gray-800">{release_date}</span>
               </div>
             </div>
 
             <div className="flex gap-2 mt-2">
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <div className="flex">
                   <AiOutlinePlayCircle
                     className="mr-1 text-emerald-700"
                     size={20}
                   />
-                  <h2 className="text-gray-800">Type: </h2>
+                  <h2 className="text-gray-800">Episodes: </h2>
                 </div>
+                <span className="text-gray-800">{episodes}</span>
+              </div>
+              <div className="flex gap-1">
+                <h2 className="text-gray-800">Type: </h2>
                 <span className="text-gray-800">{type}</span>
               </div>
-              <div className="flex gap-2">
-                <div className="flex">
-                  <AiFillStar
-                    className="mr-1"
-                    style={{ color: "#fadb14" }}
-                    size={20}
-                  />
-                  <h2 className="text-gray-800">Rating:</h2>
-                </div>
-                <span className="text-gray-800">{anime.averageRating}</span>
+            </div>
+
+            <div className="flex gap-1 mt-2">
+              <div className="flex">
+                <AiOutlineStar
+                  className="mr-1 text-emerald-700"
+                  // style={{ color: "#fadb14" }}
+                  size={20}
+                />
+                <h2 className="text-gray-800">Rating:</h2>
               </div>
+              <span className="text-gray-800">{anime.averageRating}</span>
             </div>
 
             {trailer_link && (
               <>
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-1 mt-2">
                   <h2 className="text-gray-800 flex items-center">
                     <AiOutlinePaperClip
                       className="mr-1 text-emerald-700"
@@ -211,7 +237,7 @@ const AnimeDetails: React.FC = () => {
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
             Synopsis
           </h2>
-          <p className="text-gray-600">{synopsis}</p>
+          <DisplaySynopsis synopsis={synopsis} />
         </div>
 
         {/* Photo gallery */}
@@ -219,7 +245,7 @@ const AnimeDetails: React.FC = () => {
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
             Photo Gallery
           </h2>
-          <div className="flex gap-4 grid-cols-4">
+          <div className="flex gap-4 grid-cols-5">
             {photos?.map((photo, index) => (
               <>
                 <div key={index}>
@@ -230,8 +256,9 @@ const AnimeDetails: React.FC = () => {
                     )}`}
                     alt={`${title} - Photo ${index + 1}`}
                     className="rounded-lg shadow-md hover:shadow-xl transition-shadow"
-                    height={180}
-                    width={280}
+                    height={160}
+                    width={260}
+                    loading="lazy"
                   />
                 </div>
               </>
@@ -247,6 +274,4 @@ const AnimeDetails: React.FC = () => {
       </div>
     </>
   );
-};
-
-export default AnimeDetails;
+}
