@@ -12,9 +12,5 @@ export const Providers = ({ children }: any) => {
   //   document.documentElement.style.opacity = 1
   // }, []);
 
-  return (
-     <NextUIProvider >
-     {children}
-   </NextUIProvider>
-  );
+  return <NextUIProvider>{children}</NextUIProvider>;
 };

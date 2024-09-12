@@ -33,48 +33,51 @@ export default function Dashboard() {
   const [animeTop, setAnimeTop] = useState([]);
   const [loading, setLoading] = useState<boolean>();
 
-  const columnsAnimeTop = useMemo(() => [
-    {
-      title: "No.",
-      dataIndex: "no",
-      render: (text: string, record: any, index: number) => {
-        return (
-          <>
-            <span>{index + 1}.</span>
-          </>
-        );
+  const columnsAnimeTop = useMemo(
+    () => [
+      {
+        title: "No.",
+        dataIndex: "no",
+        render: (text: string, record: any, index: number) => {
+          return (
+            <>
+              <span>{index + 1}.</span>
+            </>
+          );
+        },
       },
-    },
-    {
-      title: "Title",
-      dataIndex: "title",
-    },
-    {
-      title: "Total Review",
-      dataIndex: "totalReview",
-      render: (totalReview: number) => {
-        return (
-          <>
-            <span>{totalReview} Reviews</span>
-          </>
-        );
+      {
+        title: "Title",
+        dataIndex: "title",
       },
-    },
-    {
-      title: "Rating",
-      dataIndex: "rating",
-      render: (rating: number) => {
-        return (
-          <>
-            <span className="gap-1 flex items-center">
-              {rating}
-              <AiFillStar style={{ color: "#fadb14" }} />
-            </span>
-          </>
-        );
+      {
+        title: "Total Review",
+        dataIndex: "totalReview",
+        render: (totalReview: number) => {
+          return (
+            <>
+              <span>{totalReview} Reviews</span>
+            </>
+          );
+        },
       },
-    },
-  ], []);
+      {
+        title: "Rating",
+        dataIndex: "rating",
+        render: (rating: number) => {
+          return (
+            <>
+              <span className="gap-1 flex items-center">
+                {rating}
+                <AiFillStar style={{ color: "#fadb14" }} />
+              </span>
+            </>
+          );
+        },
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -220,12 +223,12 @@ export default function Dashboard() {
               <AiOutlineBarChart style={{ fontSize: 30 }} />
             </div>
             <div>
-              <h3 className="text-black font-regular text-lg font-semibold flex items-center">
+              <h3 className="text-black font-regular text-lg font-semibold">
                 Income Report
               </h3>
-              <h3 className="text-gray-600 font-regular text-md">
+              <span className="text-gray-600 font-regular">
                 Here are this year's earnings data
-              </h3>
+              </span>
             </div>
           </div>
           <div className="p-3 h-[100px]">

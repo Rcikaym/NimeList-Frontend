@@ -1,6 +1,6 @@
 // File: app/dashboard/anime/detail/[id]/page.tsx
 
-import AnimeDetails from "./animeDetails";
+import AnimeEdit from "./formEdit";
 import { Metadata, ResolvingMetadata } from "next";
 
 type Props = {
@@ -24,5 +24,5 @@ export async function generateMetadata(
 }
 
 export default function Page({ params }: { params: { id: string } }) {
-  return <AnimeDetails id={params.id} />;
+  return <AnimeEdit id={params.id} />;
 }

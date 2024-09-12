@@ -7,6 +7,7 @@ import {
   Input,
   InputNumber,
   Modal,
+  Rate,
   Select,
   Space,
   Table,
@@ -406,16 +407,11 @@ const UserList: React.FC = () => {
 
           {/* Input rating */}
           <Form.Item
-            label="Rating"
             name="rating"
+            label="Rate"
             rules={[{ required: true, message: "Please input rating" }]}
           >
-            <InputNumber
-              min={1}
-              max={10}
-              placeholder="Input rating"
-              style={{ width: "100%" }}
-            />
+            <Rate />
           </Form.Item>
         </Form>
       </Modal>

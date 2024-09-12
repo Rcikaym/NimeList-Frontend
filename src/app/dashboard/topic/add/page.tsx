@@ -5,7 +5,6 @@ import {
   Button,
   Form,
   Input,
-  InputNumber,
   message,
   Modal,
   Select,
@@ -22,7 +21,6 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 import { Option } from "antd/es/mentions";
-import Router from "next/router";
 
 interface DataAnime {
   title: string;
@@ -33,7 +31,6 @@ interface DataAnime {
   photos_anime: [];
   photo_cover: [];
   type: string;
-  episodes: number;
 }
 
 interface DataGenre {
@@ -45,8 +42,6 @@ const UserList: React.FC = () => {
   const [form] = Form.useForm(); // Form handler dari Ant Design
   const [genres, setGenres] = useState<DataGenre[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [type, setType] = useState<string | null>(null);
-  const [episodes, setEpisodes] = useState<number | null>(null);
   const { confirm } = Modal;
 
   useEffect(() => {
@@ -66,13 +61,6 @@ const UserList: React.FC = () => {
 
     fetchGenre(); // Panggil fungsi fetchUsers saat komponen dimuat
   }, []);
-
-  // Fungsi untuk mengubah default value dari episode jika tipe movie dipilih
-  const onValuesChange = (changedValues: any, allValues: any) => {
-    if (changedValues.type === "movie") {
-      form.setFieldsValue({ episodes: 1 });
-    }
-  };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
   const showPostConfirm = () => {
@@ -110,7 +98,6 @@ const UserList: React.FC = () => {
     formData.append("synopsis", values.synopsis);
     formData.append("type", values.type);
     formData.append("trailer_link", values.trailer_link);
-    formData.append("episodes", values.episodes.toString());
 
     // Kirim genres dalam bentuk array
     if (Array.isArray(values.genres)) {
@@ -150,7 +137,6 @@ const UserList: React.FC = () => {
       message.success("Anime added successfully!");
       setLoading(false);
       form.resetFields(); // Reset form setelah submit
-      Router.push("/dashboard/anime");
     } catch (error) {
       // Tampilkan pesan error jika request gagal
       message.error("Failed to add anime");
@@ -171,15 +157,10 @@ const UserList: React.FC = () => {
 
   return (
     <>
-      <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg">
-        Form Add Anime
+      <div className="mb-2 bg-emerald-700 p-2 rounded-md">
+        <h1 className="font-semibold text-lg">Form Add Topic</h1>
       </div>
-      <Form
-        layout="vertical"
-        form={form}
-        onFinish={handleSubmit}
-        onValuesChange={onValuesChange}
-      >
+      <Form layout="vertical" form={form} onFinish={handleSubmit}>
         <div className="rounded-sm shadow-md p-4">
           {/* Input title */}
           <Form.Item
@@ -214,7 +195,7 @@ const UserList: React.FC = () => {
             label="Synopsis"
             rules={[{ required: true, message: "Please input synopsis" }]}
           >
-            <Input.TextArea showCount maxLength={9999} />
+            <Input.TextArea showCount maxLength={1000} />
           </Form.Item>
 
           {/* Select genre */}
@@ -250,44 +231,28 @@ const UserList: React.FC = () => {
             <Select
               placeholder="Select type"
               allowClear
-              onChange={(value) => setType(value)} // Set nilai type saat berubah
+              showSearch // Aktifkan pencarian
               filterOption={(input, option) =>
                 (option?.children as unknown as string)
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
             >
-              <Option value="movie">movie</Option>
+              <Option value="movies">movies</Option>
               <Option value="series">series</Option>
             </Select>
-          </Form.Item>
-
-          {/* Input total episode */}
-          <Form.Item
-            name="episodes"
-            label="Episode"
-            rules={[{ required: true, message: "Please input episode" }]}
-          >
-            <InputNumber
-              min={1}
-              value={episodes} // Gunakan state episode sebagai nilai
-              onChange={(value) => setEpisodes(value)} // Update nilai episode jika series
-              disabled={type === "movie"} // Disable input jika type adalah movie
-              placeholder="Input total episode"
-              style={{ width: "100%" }}
-            />
           </Form.Item>
 
           {/* Upload Image Cover */}
           <Form.Item
             name="photo_cover"
             rules={[{ required: true, message: "Please input image cover" }]}
-            label="Upload cover image"
+            label="Upload photo cover"
             valuePropName="fileList"
             getValueFromEvent={normFile}
           >
             <Upload listType="picture" maxCount={1}>
-              <Button icon={<UploadOutlined />}>Upload cover</Button>
+              <Button icon={<UploadOutlined />}>Click to upload</Button>
             </Upload>
           </Form.Item>
 
@@ -299,11 +264,11 @@ const UserList: React.FC = () => {
             getValueFromEvent={normFile}
           >
             <Upload listType="picture" maxCount={4}>
-              <Button icon={<UploadOutlined />}>Upload photo</Button>
+              <Button icon={<UploadOutlined />}>Click to upload</Button>
             </Upload>
           </Form.Item>
         </div>
-        <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
+        <div className="mt-2 bg-emerald-700 p-2 gap-2 rounded-md justify-end flex">
           <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
             Back
           </Button>
