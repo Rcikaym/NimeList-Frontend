@@ -2,11 +2,13 @@
 "use client"; // Enable client-side functionality
 
 import Link from "next/link";
-import { Skeleton, Image } from "antd";
+import { Skeleton } from "antd";
 import { useState, useEffect } from "react";
 import { StarFilled } from "@ant-design/icons";
+import { Image } from "@nextui-org/react";
 import ClientPagination from "../components/ClientPagination";
 import { useSearchParams } from "next/navigation"; // Next.js hook to manage query params
+
 
 type Anime = {
   id: number;
@@ -63,13 +65,15 @@ export default function Home() {
             key={anime.id}
             className="w-full max-w-[208px] h-auto shadow mb-6"
           >
+            <Link href={`/anime/${anime.id}/${anime.title.replace(/\s+/g, '-').toLowerCase()}`}>
             <Image
               className="select-none justify-center w-full h-[247px] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
               src="/images/the-wind-rise.jpg"
               alt={anime.title}
               width={208}
               height={247}
-            />
+              />
+              </Link>
             <div className="mt-3 mb-3 mr-3">
             <Link href={`/anime/${anime.id}/${anime.title.replace(/\s+/g, '-').toLowerCase()}`}>
                 <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white ">
