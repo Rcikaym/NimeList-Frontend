@@ -23,8 +23,9 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
+  Accordion,
+  AccordionItem,
 } from "@nextui-org/react";
-// import { Avatar } from "antd";
 import {
   TwitterOutlined,
   GithubOutlined,
@@ -129,9 +130,13 @@ const items = [
 
 const menuItems = [
   {
+    key: "0",
+    label: <p className="opacity-75 font-bold text-2xl:">Menu</p>,
+  },
+  {
     key: "1",
     label: (
-      <Link className="text-white" href="/membership">
+      <Link className="text-white hover:underline" href="/membership">
         Membership
       </Link>
     ),
@@ -139,7 +144,7 @@ const menuItems = [
   {
     key: "2",
     label: (
-      <Link className="text-white" href="/favorites">
+      <Link className="text-white hover:underline" href="/favorites">
         Your Favorites
       </Link>
     ),
@@ -147,7 +152,7 @@ const menuItems = [
   {
     key: "3",
     label: (
-      <Link className="text-white" href="/search">
+      <Link className="text-white hover:underline" href="/search">
         Search Anime
       </Link>
     ),
@@ -328,11 +333,57 @@ export default function RootLayout({
               </Dropdown>
             </div>
           </NavbarContent>
-          <NavbarMenu className={`${isMenuOpen ? 'bg-black' : ''}`}>
-              {menuItems.map((item) => (
-                <NavbarMenuItem key={item.key}>{item.label}</NavbarMenuItem>
-              ))}
-            </NavbarMenu>
+          <NavbarMenu className={`${isMenuOpen ? "bg-black" : ""}`}>
+            {menuItems.map((item) => (
+              <NavbarMenuItem key={item.key}>{item.label}</NavbarMenuItem>
+            ))}
+            <Accordion
+              motionProps={{
+                variants: {
+                  enter: {
+                    y: 0,
+                    opacity: 1,
+                    height: "auto",
+                    transition: {
+                      height: {
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                        duration: 1,
+                      },
+                      opacity: {
+                        easings: "ease",
+                        duration: 1,
+                      },
+                    },
+                  },
+                  exit: {
+                    y: -10,
+                    opacity: 0,
+                    height: 0,
+                    transition: {
+                      height: {
+                        easings: "ease",
+                        duration: 0.25,
+                      },
+                      opacity: {
+                        easings: "ease",
+                        duration: 0.3,
+                      },
+                    },
+                  },
+                },
+              }}
+            >
+              <AccordionItem className="text-white opacity-100" title="Genre">
+                {items.map((item) => (
+                  <p key={item.key} className="opacity-75">
+                    {item.label}
+                  </p>
+                ))}
+              </AccordionItem>
+            </Accordion>
+          </NavbarMenu>
         </Navbar>
         {/* </div> */}
         {/* </header> */}

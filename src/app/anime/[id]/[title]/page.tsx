@@ -1,7 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { Image } from "antd";
+import { Button } from "@nextui-org/react";
+import { BiPlus, BiSolidStar, BiStar } from "react-icons/bi";
+import { Spacer } from "@nextui-org/react";
+import { Rate } from "antd";
+import { Chip } from "@nextui-org/chip";
+import { ScrollShadow } from "@nextui-org/react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@nextui-org/react";
 
 type Anime = {
   id: number;
@@ -35,52 +49,184 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
   const { id, title } = params;
   const [anime, setAnime] = useState<Anime | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
-    if (id) {
-      // Fetch anime details using the ID
-      fetch(`http://localhost:3001/animes/${id}`)
-        .then((response) => response.json())
-        .then((data) => setAnime(data))
-        .catch((error) => console.error("Error fetching anime:", error));
+    const fetchData = async () => {
+      try {
+        if (id) {
+          // Fetch anime details using the ID
+          const animeResponse = await fetch(
+            `http://localhost:3001/animes/${id}`
+          );
+          if (!animeResponse.ok) {
+            throw new Error("Error fetching anime");
+          }
+          const animeData = await animeResponse.json();
+          setAnime(animeData);
 
-      // Fetch reviews for the anime
-      fetch(`http://localhost:3001/reviews?anime_id=${id}`)
-        .then((response) => response.json())
-        .then((data) => setReviews(data))
-        .catch((error) => console.error("Error fetching reviews:", error));
-    }
+          // Fetch reviews for the anime
+          const reviewsResponse = await fetch(
+            `http://localhost:3001/reviews?anime_id=${id}`
+          );
+          if (!reviewsResponse.ok) {
+            throw new Error("Error fetching reviews");
+          }
+          const reviewsData = await reviewsResponse.json();
+          setReviews(reviewsData);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
   }, [id]);
 
   if (!anime) {
     return (
-      <div className="text-center mx-auto my-auto container">Loading...</div>
+      <div className="w-full h-full text-center mx-auto my-auto container">
+        Loading...
+      </div>
     );
   }
 
   return (
     <>
-      <div className="container mx-auto">
-        <h1 className="text-2xl ">{anime.title}</h1>
-        <p>{anime.synopsis}</p>
-        <div className="mt-6">
-          <Image
-            //   src={anime.photo_cover}
-            src="/images/the-wind-rise.jpg"
-            className="object-fit"
-            width={300}
-            height={450}
-            alt={anime.title}
-          />
-          {/* <a
-            href={anime.trailer_link}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Watch Trailer
-          </a> */}
+      <div className="container mx-auto mt-6">
+        <div className="w-full">
+          <h1 className="text-3xl font-jakarta font-bold">{anime.title}</h1>
+          <p className="text-gray-500 font-semibold">
+            {anime.type} • {anime.release_date}
+          </p>
         </div>
+        <div className="flex">
+          {/* <div className="flex flex-col"> */}
+          <div className="pt-3 w-full max-w-xs h-auto">
+            <Image
+              //   src={anime.photo_cover}
+              src="/images/the-wind-rise.jpg"
+              width={300} // 2:3 aspect ratio (300x450)
+              height={450}
+              className="object-cover w-full"
+              alt={anime.title}
+            />
+            <Button
+              size="lg"
+              radius="sm"
+              startContent={<BiPlus />}
+              // color="success"
+              className="w-[300px] mt-3 text-white bg-[#014A42]"
+            >
+              Add To Favorite
+            </Button>
+          </div>
+          <Spacer x={5} />
+          <div className="h-full">
+            <iframe
+              className="w-[900px] h-[471px] pt-3 select-none"
+              src="https://www.youtube.com/embed/PhHoCnRg1Yw?si=ST2GFJQJj99I53JR"
+              title="The Wind Rises Trailer"
+              allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+            <div className="flex flex-row mt-6">
+              {/* Genre Tags */}
+              <div className="flex space-x-2 mb-4">
+                {anime.genre.map((genre) => (
+                  <Chip
+                    key={genre}
+                    classNames={{
+                      base: "bg-[#008576b7] text-white font-medium",
+                    }}
+                    variant="flat"
+                    size="md"
+                  >
+                    {genre}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+            <ScrollShadow className="w-[900px] h-[150px]" hideScrollBar>
+              <p className="text-[#f5f5f5] opacity-55 hover:opacity-100 font-medium scroll-smooth">
+                {anime.synopsis}
+              </p>
+            </ScrollShadow>
+          </div>
+          <Spacer x={5} />
+          <div className="pt-3 font-jakarta">
+            <div className="mb-1 w-[208px] h-[208px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
+              <div className="w-full h-full bg-black rounded-r-md flex items-center justify-center">
+                <div className="text-center p-4 text-white">
+                  <div className="flex items-center justify-center">
+                    <BiSolidStar className="w-[30px] h-[30px] text-[#ffd500] mr-2" />
+                    <span className="text-4xl font-bold">{anime.rating}</span>
+                    <span className="text-xl font-bold opacity-70">/10</span>
+                  </div>
+                  <p className="text-gray-400 text-sm mt-2">AVG. RATING</p>
+                </div>
+              </div>
+            </div>
 
+            <div className="mt-1 w-[208px] h-[208px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
+              <div className="w-full h-full bg-black rounded-r-md flex items-center justify-center">
+                <div className="flex flex-col justify-center text-center items-center p-4 text-white">
+                  <p className="text-xl font-semibold">YOUR RATING</p>
+                  <BiStar className="w-[69px] h-[69px] text-[#05E5CB]" />
+                  <Button
+                    onPress={onOpen}
+                    className="bg-transparent text-xl font-semibold text-[#05E5CB]"
+                  >
+                    {/* {reviews.rating ? reviews.rating : "Not rated"} */} RATE
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Modal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          placement="center"
+          backdrop="opaque"
+          classNames={{
+            base: "bg-[#014A42] items-center",
+          }}
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader></ModalHeader>
+                <ModalBody>
+                  <Rate
+                    allowClear={false}
+                    allowHalf
+                    defaultValue={10}
+                    count={10}
+                    // className="size-28"
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Button
+                    className="text-foreground-100"
+                    variant="light"
+                    onPress={onClose}
+                    size="sm"
+                  >
+                    Not Now
+                  </Button>
+                  <Button
+                    className="text-foreground-100 bg-[#03302b]"
+                    size="sm"
+                    onPress={onClose}
+                  >
+                    Submit
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
         <div className="reviews mt-6">
           <h2 className="text-xl">Reviews</h2>
           {reviews.length === 0 ? (
