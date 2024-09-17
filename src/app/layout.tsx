@@ -1,7 +1,11 @@
 import "./globals.css";
 import "antd/dist/reset.css";
 import { Providers } from "./providers";
-import Script from "next/script";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "NimeList",
+};
 
 export default function RootLayout({
   children,
@@ -11,7 +15,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>NimeList</title>
         <link rel="icon" href="/images/favicon.ico" />
       </head>
       <body>

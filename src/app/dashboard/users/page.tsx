@@ -1,23 +1,16 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Space, Table } from "antd";
-import type { TableColumnsType, TableProps } from "antd";
-import {
-  AiFillCheckCircle,
-  AiOutlineCheck,
-  AiOutlineCheckCircle,
-  AiOutlineUser,
-} from "react-icons/ai";
+import { Button, Space } from "antd";
+import type { TableColumnsType } from "antd";
+import { AiOutlineUser } from "react-icons/ai";
 
 import axios from "axios";
-import {
-  AppstoreAddOutlined,
-  AppstoreFilled,
-  CheckCircleTwoTone,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { AppstoreFilled, EyeOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import PageTitle from "@/components/TitlePage";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import renderDateTime from "@/components/FormatDateTime";
 
 interface DataType {
   username: string;
@@ -59,6 +52,7 @@ const UserList: React.FC = () => {
         sorter: (a: DataType, b: DataType) =>
           a.username.localeCompare(b.username),
         sortDirections: ["ascend", "descend"],
+        ...getColumnSearchProps("username"),
       },
       {
         title: "Email",
@@ -95,13 +89,13 @@ const UserList: React.FC = () => {
         title: "Start Premium",
         dataIndex: "start_premium",
         render: (start_premium: string | null) =>
-          start_premium ? start_premium : "0000-00-00 00:00:00",
+          start_premium ? renderDateTime(start_premium) : "0000-00-00 00:00:00",
       },
       {
         title: "End Premium",
         dataIndex: "end_premium",
         render: (end_premium: string | null) =>
-          end_premium ? end_premium : "0000-00-00 00:00:00",
+          end_premium ? renderDateTime(end_premium) : "0000-00-00 00:00:00",
       },
       {
         title: "Action",
@@ -120,6 +114,7 @@ const UserList: React.FC = () => {
 
   return (
     <>
+      <PageTitle title="NimeList - UserList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
@@ -148,12 +143,11 @@ const UserList: React.FC = () => {
           </Link>
         </div>
       </div>
-      <Table
+      <CustomTable
+        loading={loading}
         columns={columns}
-        // rowKey={(record) => record.username}
-        bordered
         pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
-        dataSource={data} // Data dari state
+        data={data} // Data dari state
       />
     </>
   );

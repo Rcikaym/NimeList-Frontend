@@ -215,7 +215,7 @@ const UserList: React.FC = () => {
           <span className="text-black"> / </span>
           <Link href="/dashboard/anime/genre">
             <h2 className="text-black mt-2 text-lg font-regular hover:text-emerald-700">
-              Genre
+              Anime Genre
             </h2>
           </Link>
         </div>

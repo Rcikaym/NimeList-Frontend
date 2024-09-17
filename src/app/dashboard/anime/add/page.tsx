@@ -9,20 +9,16 @@ import {
   message,
   Modal,
   Select,
-  Space,
-  Table,
   Upload,
 } from "antd";
-import type { TableColumnsType, TableProps } from "antd";
 import axios from "axios";
 import {
   ExclamationCircleFilled,
   LeftCircleOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import Link from "next/link";
 import { Option } from "antd/es/mentions";
-import Router from "next/router";
+import { useRouter } from "next/navigation";
 
 interface DataAnime {
   title: string;
@@ -31,7 +27,7 @@ interface DataAnime {
   trailer_link: string;
   genres: [];
   photos_anime: [];
-  photo_cover: [];
+  photo_cover: string[];
   type: string;
   episodes: number;
 }
@@ -42,6 +38,7 @@ interface DataGenre {
 }
 
 const UserList: React.FC = () => {
+  const router = useRouter();
   const [form] = Form.useForm(); // Form handler dari Ant Design
   const [genres, setGenres] = useState<DataGenre[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -59,7 +56,7 @@ const UserList: React.FC = () => {
         setGenres(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching genre:", error);
         setLoading(true); // Tetap menonaktifkan loading jika terjadi error
       }
     };
@@ -120,14 +117,14 @@ const UserList: React.FC = () => {
     } // Kirim genres dalam bentuk JSON
 
     // Tambahkan file foto cover
-    if (values.photo_cover && values.photo_cover.length > 0) {
+    if (values.photo_cover) {
       values.photo_cover.forEach((file: any) => {
         formData.append("photo_cover", file.originFileObj);
       });
     }
 
     // Tambahkan file foto anime (bisa lebih dari 1)
-    if (values.photos_anime) {
+    if (values.photos_anime && values.photo_cover.length > 0) {
       values.photos_anime.forEach((file: any) => {
         formData.append("photos_anime", file.originFileObj);
       });
@@ -149,8 +146,7 @@ const UserList: React.FC = () => {
       // Tampilkan pesan sukses jika request berhasil
       message.success("Anime added successfully!");
       setLoading(false);
-      form.resetFields(); // Reset form setelah submit
-      Router.push("/dashboard/anime");
+      router.push("/dashboard/anime");
     } catch (error) {
       // Tampilkan pesan error jika request gagal
       message.error("Failed to add anime");
@@ -162,11 +158,12 @@ const UserList: React.FC = () => {
     addAnime(values); // Panggil fungsi addAnime dengan nilai form
   };
 
+  // Fungsi normFile untuk memastikan fileList berupa array
   const normFile = (e: any) => {
     if (Array.isArray(e)) {
       return e;
     }
-    return e?.fileList;
+    return e?.fileList ? e.fileList : [];
   };
 
   return (
@@ -214,12 +211,12 @@ const UserList: React.FC = () => {
             label="Synopsis"
             rules={[{ required: true, message: "Please input synopsis" }]}
           >
-            <Input.TextArea showCount maxLength={9999} />
+            <Input.TextArea showCount maxLength={9999} autoSize />
           </Form.Item>
 
           {/* Select genre */}
           <Form.Item
-            label="Genre (Select More Than One if Need)"
+            label="Genre (Select More Than One)"
             name="genres"
             rules={[
               { required: true, message: "Please select genre minimal 1" },
@@ -282,24 +279,22 @@ const UserList: React.FC = () => {
           <Form.Item
             name="photo_cover"
             rules={[{ required: true, message: "Please input image cover" }]}
-            label="Upload cover image"
-            valuePropName="fileList"
+            label="Upload Cover Image"
             getValueFromEvent={normFile}
           >
             <Upload listType="picture" maxCount={1}>
-              <Button icon={<UploadOutlined />}>Upload cover</Button>
+              <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
           </Form.Item>
 
           {/* Upload Image */}
           <Form.Item
             name="photos_anime"
-            label="Upload photo anime"
-            valuePropName="fileList"
+            label="Upload Photo Anime"
             getValueFromEvent={normFile}
           >
             <Upload listType="picture" maxCount={4}>
-              <Button icon={<UploadOutlined />}>Upload photo</Button>
+              <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
           </Form.Item>
         </div>
