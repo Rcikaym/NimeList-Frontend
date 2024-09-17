@@ -1,6 +1,3 @@
-"use client";
-// File: src/layout/Layout.tsx
-
 import React from "react";
 import Sidebar from "./sidebar";
 

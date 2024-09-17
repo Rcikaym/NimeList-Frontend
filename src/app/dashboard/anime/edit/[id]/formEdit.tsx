@@ -59,12 +59,11 @@ interface AnimeType {
   };
 }
 
-// Fungsi normFile untuk memastikan fileList berupa array
 const normFile = (e: any) => {
   if (Array.isArray(e)) {
     return e;
   }
-  return e?.fileList ? e.fileList : [];
+  return e && e.fileList;
 };
 
 export default function AnimeEdit({ id }: { id: string }) {
@@ -175,14 +174,12 @@ export default function AnimeEdit({ id }: { id: string }) {
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
   const showPostConfirm = async () => {
-    const response = await axios.get(`http://localhost:4321/anime/get/${id}`);
-    const animeData = response.data.anime;
     form
       .validateFields() // Validasi input form terlebih dahulu
       .then((values: DataAnime) => {
         confirm({
           centered: true,
-          title: "Do you want to update an " + animeData.title + " ?",
+          title: "Do you want to update an " + anime?.anime.title + " ?",
           icon: <ExclamationCircleFilled />,
           onOk() {
             setLoading(true); // Set status loading pada tombol OK
@@ -219,8 +216,6 @@ export default function AnimeEdit({ id }: { id: string }) {
 
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
-      // Update form values
-      form.setFieldsValue({ [fieldName]: fileList });
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
     }
@@ -346,8 +341,7 @@ export default function AnimeEdit({ id }: { id: string }) {
           {/* Upload Cover */}
           <Form.Item
             name="photo_cover"
-            label="Upload Cover Image"
-            valuePropName="fileList"
+            label="Update Cover Image"
             getValueFromEvent={normFile}
           >
             <Upload
@@ -356,7 +350,7 @@ export default function AnimeEdit({ id }: { id: string }) {
               maxCount={1}
               onChange={(info) => handleUpload(info, "photo_cover")}
             >
-              <Button icon={<UploadOutlined />}>Upload Cover</Button>
+              <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
           </Form.Item>
         </div>

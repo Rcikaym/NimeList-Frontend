@@ -5,37 +5,35 @@ import {
   Button,
   Form,
   Input,
-  InputNumber,
   Modal,
   Rate,
   Select,
   Space,
-  Table,
+  Typography,
   message,
 } from "antd";
-import type { TableColumnsType, TableProps } from "antd";
+import type { TableColumnsType } from "antd";
 import {
-  AiFillCheckCircle,
-  AiFillDelete,
   AiFillStar,
-  AiOutlineCheck,
-  AiOutlineCheckCircle,
   AiOutlineDelete,
+  AiOutlineEye,
   AiOutlinePlus,
   AiOutlineSmile,
-  AiOutlineUser,
 } from "react-icons/ai";
 import axios from "axios";
 import {
-  AppstoreAddOutlined,
   AppstoreFilled,
-  CheckCircleTwoTone,
+  CalendarOutlined,
   ExclamationCircleFilled,
-  EyeOutlined,
-  VideoCameraOutlined,
+  LoadingOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { Option } from "antd/es/mentions";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import renderDateTime from "@/components/FormatDateTime";
+
+const { Title, Text } = Typography;
 
 interface DataType {
   id: string;
@@ -58,10 +56,12 @@ interface DataUser {
 
 const UserList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
+  const [detailReview, setDetailReview] = useState<any>(null);
   const [dataAnime, setDataAnime] = useState<DataAnime[]>([]); // Data diisi dengan api
   const [dataUser, setDataUser] = useState<DataUser[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [modalGenre, setModalReview] = useState<boolean>(false); // Untuk status modal genre
+  const [modalDetail, setModalDetail] = useState<boolean>(false); // Untuk status modal detail
   const [form] = Form.useForm();
   const { confirm } = Modal;
 
@@ -134,10 +134,10 @@ const UserList: React.FC = () => {
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showDeleteConfirm = (id: string, name: string) => {
+  const showDeleteConfirm = (id: string) => {
     confirm({
       centered: true,
-      title: "Do you want to delete " + name + " genre?",
+      title: "Do you want to delete this review?",
       icon: <ExclamationCircleFilled />,
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
@@ -153,9 +153,17 @@ const UserList: React.FC = () => {
     });
   };
 
+  const showModalDetail = (id: string) => {
+    setModalDetail(true);
+    const data = axios.get(`http://localhost:4321/review/get/${id}`);
+    data.then((res) => {
+      setDetailReview(res.data);
+    });
+  };
+
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
-    const fetchGenre = async () => {
+    const fetchReview = async () => {
       setLoading(true);
       try {
         const response = await axios.get<DataType[]>(
@@ -164,7 +172,7 @@ const UserList: React.FC = () => {
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching review:", error);
         setLoading(true); // Tetap menonaktifkan loading jika terjadi error
       }
     };
@@ -193,7 +201,7 @@ const UserList: React.FC = () => {
 
     fetchUsers();
     fetchAnime();
-    fetchGenre(); // Panggil fungsi fetchUsers saat komponen dimuat
+    fetchReview(); // Panggil fungsi fetchUsers saat komponen dimuat
   }, []);
 
   // Fetch anime yang sudah direview oleh user yang dipilih
@@ -227,10 +235,12 @@ const UserList: React.FC = () => {
         sorter: (a: DataType, b: DataType) =>
           a.username.localeCompare(b.username),
         sortDirections: ["ascend", "descend"],
+        ...getColumnSearchProps("username"),
       },
       {
         title: "Title",
         dataIndex: "title_anime",
+        ...getColumnSearchProps("title_anime"),
       },
       {
         title: "Rating",
@@ -249,12 +259,12 @@ const UserList: React.FC = () => {
       {
         title: "Created At",
         dataIndex: "created_at",
-        render: (text: string) => formatDateTime(text),
+        render: (text: string) => renderDateTime(text),
       },
       {
         title: "Updated At",
         dataIndex: "updated_at",
-        render: (text: string) => formatDateTime(text),
+        render: (text: string) => renderDateTime(text),
       },
       {
         title: "Action",
@@ -264,7 +274,14 @@ const UserList: React.FC = () => {
             <Button
               type="text"
               className="bg-emerald-700 text-white"
-              onClick={() => showDeleteConfirm(record.id, record.username)}
+              onClick={() => showModalDetail(record.id)}
+            >
+              <AiOutlineEye style={{ fontSize: 20 }} />
+            </Button>
+            <Button
+              type="text"
+              className="bg-emerald-700 text-white"
+              onClick={() => showDeleteConfirm(record.id)}
             >
               <AiOutlineDelete style={{ fontSize: 20 }} />
             </Button>
@@ -274,18 +291,6 @@ const UserList: React.FC = () => {
     ],
     []
   );
-
-  const formatDateTime = (isoDate: string): string => {
-    const date = new Date(isoDate);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // +1 karena bulan dimulai dari 0
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
 
   return (
     <>
@@ -312,7 +317,7 @@ const UserList: React.FC = () => {
           <span className="text-black"> / </span>
           <Link href="/dashboard/anime/review">
             <h2 className="text-black mt-2 text-lg font-regular hover:text-emerald-700">
-              Review
+              Anime Review
             </h2>
           </Link>
         </div>
@@ -326,18 +331,53 @@ const UserList: React.FC = () => {
           <AiOutlinePlus /> Add Review
         </Button>
       </div>
-      <Table
-        columns={columns}
-        // rowKey={(record) => record.username}
-        bordered
+      <CustomTable
         loading={loading}
+        columns={columns}
         pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
-        dataSource={data} // Data dari state
+        data={data} // Data dari state
       />
+
+      {/* Modal view review */}
+      <Modal
+        title={
+          <Title level={4}>
+            {detailReview
+              ? `Detail Review ${detailReview.title_anime}`
+              : "Detail Review"}
+          </Title>
+        }
+        centered
+        open={modalDetail}
+        footer={null}
+        onOk={() => setModalDetail(false)}
+        onCancel={() => setModalDetail(false)}
+      >
+        {detailReview ? (
+          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+            <Space>
+              <UserOutlined />
+              <Text strong>{detailReview.username}</Text>
+              <Rate disabled defaultValue={detailReview.rating} />
+            </Space>
+
+            <Text>{detailReview.review}</Text>
+
+            <Space>
+              <CalendarOutlined />
+              <Text type="secondary">
+                {renderDateTime(detailReview.created_at)}
+              </Text>
+            </Space>
+          </Space>
+        ) : (
+          <LoadingOutlined size={35} />
+        )}
+      </Modal>
 
       {/* Modal add review */}
       <Modal
-        title="Modal add review"
+        title="Modal Add Review"
         centered
         onClose={() => setModalReview(false)}
         open={modalGenre}
@@ -402,7 +442,7 @@ const UserList: React.FC = () => {
             name="review"
             rules={[{ required: true, message: "Please input review" }]}
           >
-            <Input placeholder="Input review" />
+            <Input.TextArea showCount maxLength={9999} autoSize />
           </Form.Item>
 
           {/* Input rating */}

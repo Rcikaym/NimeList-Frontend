@@ -1,28 +1,14 @@
-// File: app/dashboard/anime/detail/[id]/page.tsx
-
+import PageTitle from "@/components/TitlePage";
 import AnimeDetails from "./animeDetails";
-import { Metadata, ResolvingMetadata } from "next";
 
-type Props = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const id = params.id;
-
-  // Fetch anime data (you might want to extract this to a shared function)
-  const response = await fetch(`http://localhost:4321/anime/get/${id}`);
+export default async function Page({ params }: { params: { id: string } }) {
+  const response = await fetch(`http://localhost:4321/anime/get/${params.id}`);
   const anime = await response.json();
 
-  return {
-    title: `${anime.anime.title} - Anime Details`,
-  };
-}
-
-export default function Page({ params }: { params: { id: string } }) {
-  return <AnimeDetails id={params.id} />;
+  return (
+    <>
+      <PageTitle title={`${anime.anime.title} - Anime Details`} />
+      <AnimeDetails id={params.id} />
+    </>
+  );
 }

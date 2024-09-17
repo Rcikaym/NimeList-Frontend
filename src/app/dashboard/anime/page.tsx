@@ -1,9 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, message, Modal, Space, Table } from "antd";
+import { Button, message, Modal, Space } from "antd";
 import type { TableColumnsType } from "antd";
-import { AiFillStar, AiOutlineDelete, AiOutlineEdit, AiOutlinePlus } from "react-icons/ai";
+import {
+  AiFillStar,
+  AiOutlineDelete,
+  AiOutlineEdit,
+  AiOutlinePlus,
+} from "react-icons/ai";
 import axios from "axios";
 import {
   AppstoreFilled,
@@ -12,6 +17,9 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import PageTitle from "@/components/TitlePage";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import renderDateTime from "@/components/FormatDateTime";
 
 interface DataType {
   anime_id: string;
@@ -85,9 +93,11 @@ const AnimeList: React.FC = () => {
     {
       title: "Title",
       dataIndex: "anime_title",
+      // ...getColumnSearchProps("anime_title"),
       sorter: (a: DataType, b: DataType) =>
         a.anime_title.localeCompare(b.anime_title),
       sortDirections: ["ascend", "descend"],
+      ...getColumnSearchProps("anime_title"),
     },
     {
       title: "Rating",
@@ -106,12 +116,12 @@ const AnimeList: React.FC = () => {
     {
       title: "Created At",
       dataIndex: "anime_created_at",
-      render: (text: string) => formatDateTime(text),
+      render: (text: string) => renderDateTime(text),
     },
     {
       title: "Updated At",
       dataIndex: "anime_updated_at",
-      render: (text: string) => formatDateTime(text),
+      render: (text: string) => renderDateTime(text),
     },
     {
       title: "Action",
@@ -146,20 +156,9 @@ const AnimeList: React.FC = () => {
     },
   ];
 
-  const formatDateTime = (isoDate: string): string => {
-    const date = new Date(isoDate);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // +1 karena bulan dimulai dari 0
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
-
   return (
     <>
+      <PageTitle title="NimeList - AnimeList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
@@ -190,21 +189,22 @@ const AnimeList: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="mb-3">
-        <Button
-          type="text"
-          href="/dashboard/anime/add"
-          className="bg-emerald-700 text-white"
-        >
-          <AiOutlinePlus /> Add Anime
-        </Button>
+      <div className="flex justify-between">
+        <div className="mb-3">
+          <Button
+            type="text"
+            href="/dashboard/anime/add"
+            className="bg-emerald-700 text-white"
+          >
+            <AiOutlinePlus /> Add Anime
+          </Button>
+        </div>
       </div>
-      <Table
+      <CustomTable
+        loading={loading}
         columns={columns}
-        // rowKey={(record) => record.username}
-        bordered
+        data={data} // Data yang sudah difilter
         pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
-        dataSource={data} // Data dari state
       />
     </>
   );

@@ -4,28 +4,20 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AiFillStar,
-  AiFillTrophy,
   AiOutlineBarChart,
-  AiOutlineCalendar,
   AiOutlineCrown,
   AiOutlineDollar,
-  AiOutlineLineChart,
-  AiOutlineOrderedList,
   AiOutlinePicRight,
   AiOutlineShoppingCart,
   AiOutlineTrophy,
-  AiOutlineUser,
 } from "react-icons/ai";
 // import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Table } from "antd";
 import { BiBarChart } from "react-icons/bi";
-import {
-  AppstoreFilled,
-  LoadingOutlined,
-  SyncOutlined,
-} from "@ant-design/icons";
+import { AppstoreFilled, LoadingOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import axios from "axios";
+import PageTitle from "@/components/TitlePage";
 
 export default function Dashboard() {
   const [totalTopics, setTotalTopics] = useState<number | null>(null);
@@ -92,11 +84,10 @@ export default function Dashboard() {
         setTotalTopics(topicsResponse.data.totalTopic);
         setTotalMembers(membersResponse.data.totalUserPremium);
         setAnimeTop(animeTopResponse.data);
+        setLoading(false);
       } catch (error) {
         setTotalTopics(null);
         setTotalMembers(null);
-      } finally {
-        setLoading(false);
       }
     };
     fetchData();
@@ -104,6 +95,7 @@ export default function Dashboard() {
 
   return (
     <>
+      <PageTitle title="NimeList - Dashboard" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">

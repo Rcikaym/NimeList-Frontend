@@ -44,9 +44,9 @@ const Sidebar = () => {
       icon: <VideoCameraOutlined />,
       subItems: [
         { href: "/dashboard/anime", label: "Anime" },
-        { href: "/dashboard/anime/photo", label: "Photo Anime" },
-        { href: "/dashboard/anime/genre", label: "Genre Anime" },
-        { href: "/dashboard/anime/review", label: "Review Anime" },
+        { href: "/dashboard/anime/photo", label: "Anime Photo" },
+        { href: "/dashboard/anime/genre", label: "Anime Genre" },
+        { href: "/dashboard/anime/review", label: "Anime Review" },
       ],
       toggleMenu: toggleAnimeMenu,
       isMenuOpen: animeMenuOpen,
