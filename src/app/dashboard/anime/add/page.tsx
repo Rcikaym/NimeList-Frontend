@@ -30,6 +30,7 @@ interface DataAnime {
   photo_cover: string[];
   type: string;
   episodes: number;
+  watch_link: string;
 }
 
 interface DataGenre {
@@ -106,6 +107,7 @@ const UserList: React.FC = () => {
     formData.append("release_date", values.release_date);
     formData.append("synopsis", values.synopsis);
     formData.append("type", values.type);
+    formData.append("watch_link", values.watch_link);
     formData.append("trailer_link", values.trailer_link);
     formData.append("episodes", values.episodes.toString());
 
@@ -203,6 +205,15 @@ const UserList: React.FC = () => {
             rules={[{ required: true, message: "Please input trailer link" }]}
           >
             <Input placeholder="Input trailer link" />
+          </Form.Item>
+
+          {/* Input watch link */}
+          <Form.Item
+            label="Watch Link"
+            name="watch_link"
+            rules={[{ required: true, message: "Please input watch link" }]}
+          >
+            <Input placeholder="Input watch link" />
           </Form.Item>
 
           {/* Input synopsis */}

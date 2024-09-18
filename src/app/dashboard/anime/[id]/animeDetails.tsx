@@ -15,22 +15,11 @@ import {
 // Types moved to a separate file to reduce bundle size
 import { AnimeType, PhotosType } from "./types";
 import renderDateTime from "@/components/FormatDateTime";
+import DisplayLongText from "@/components/DisplayLongText";
 
 // Memoized components
 const MemoizedImage = memo(Image);
 const MemoizedButton = memo(Button);
-
-// Extracted to separate components for better performance
-const DisplaySynopsis = memo(({ synopsis }: { synopsis: string }) => (
-  <div className="text-gray-600 tracking-wide leading-relaxed">
-    {synopsis.split(/(?:\r\n|\r|\n)/g).map((line, index) => (
-      <React.Fragment key={index}>
-        {line}
-        <br />
-      </React.Fragment>
-    ))}
-  </div>
-));
 
 const AnimeMetadata = memo(
   ({
@@ -205,7 +194,7 @@ export default function AnimeDetails({ id }: { id: string }) {
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
             Synopsis
           </h2>
-          <DisplaySynopsis synopsis={synopsis} />
+          <DisplayLongText text={synopsis} />
         </div>
 
         {/* Photo gallery */}

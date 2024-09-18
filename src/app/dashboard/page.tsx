@@ -1,6 +1,5 @@
 "use client";
 
-// pages/index.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AiFillStar,
@@ -11,7 +10,6 @@ import {
   AiOutlineShoppingCart,
   AiOutlineTrophy,
 } from "react-icons/ai";
-// import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Table } from "antd";
 import { BiBarChart } from "react-icons/bi";
 import { AppstoreFilled, LoadingOutlined } from "@ant-design/icons";
