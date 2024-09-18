@@ -1,4 +1,4 @@
-// import "../app/";
+import "./globals.css";
 import "antd/dist/reset.css";
 import { Providers } from "./providers";
 import { Metadata } from "next";
