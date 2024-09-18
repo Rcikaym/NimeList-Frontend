@@ -1,6 +1,5 @@
 "use client";
 
-import "./globals.css";
 import React, { useEffect } from "react";
 import { NextUIProvider } from "@nextui-org/react";
 
@@ -13,9 +12,5 @@ export const Providers = ({ children }: any) => {
   //   document.documentElement.style.opacity = 1
   // }, []);
 
-  return (
-     <NextUIProvider >
-     {children}
-   </NextUIProvider>
-  );
+  return <NextUIProvider>{children}</NextUIProvider>;
 };
