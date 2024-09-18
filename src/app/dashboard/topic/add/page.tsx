@@ -1,57 +1,51 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Form,
-  Input,
-  message,
-  Modal,
-  Select,
-  Space,
-  Table,
-  Upload,
-} from "antd";
-import type { TableColumnsType, TableProps } from "antd";
+import { Button, Form, Input, message, Modal, Select, Upload } from "antd";
 import axios from "axios";
 import {
   ExclamationCircleFilled,
   LeftCircleOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import Link from "next/link";
 import { Option } from "antd/es/mentions";
+import { useRouter } from "next/navigation";
+import PageTitle from "@/components/TitlePage";
+
+interface DataType {
+  title: string;
+  body: string;
+  id_anime: string;
+  id_user: string;
+  photos: string[];
+}
 
 interface DataAnime {
-  title: string;
-  synopsis: string;
-  release_date: string;
-  trailer_link: string;
-  genres: [];
-  photos_anime: [];
-  photo_cover: [];
-  type: string;
-}
-
-interface DataGenre {
   id: string;
-  name: string;
+  title: string;
 }
 
-const UserList: React.FC = () => {
+interface DataUser {
+  id: string;
+  username: string;
+}
+
+const CreateTopic: React.FC = () => {
+  const router = useRouter();
   const [form] = Form.useForm(); // Form handler dari Ant Design
-  const [genres, setGenres] = useState<DataGenre[]>([]);
+  const [animes, setAnimes] = useState<DataAnime[]>([]);
+  const [users, setUsers] = useState<DataUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { confirm } = Modal;
 
   useEffect(() => {
-    const fetchGenre = async () => {
+    const fetchAnime = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<DataGenre[]>(
-          "http://localhost:4321/anime/get-all-genre"
+        const response = await axios.get<DataAnime[]>(
+          "http://localhost:4321/topic/get-all-anime"
         );
-        setGenres(response.data); // Mengisi data dengan hasil dari API
+        setAnimes(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -59,14 +53,29 @@ const UserList: React.FC = () => {
       }
     };
 
-    fetchGenre(); // Panggil fungsi fetchUsers saat komponen dimuat
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get<DataUser[]>(
+          "http://localhost:4321/topic/get-all-user"
+        );
+        setUsers(response.data); // Mengisi data dengan hasil dari API
+        setLoading(false); // Menonaktifkan status loading setelah data didapat
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setLoading(true); // Tetap menonaktifkan loading jika terjadi error
+      }
+    };
+
+    fetchUser(); // Panggil fungsi fetchUser saat komponen dimuat
+    fetchAnime(); // Panggil fungsi fetchAnime saat komponen dimuat
   }, []);
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
   const showPostConfirm = () => {
     form
       .validateFields() // Validasi input form terlebih dahulu
-      .then((values: DataAnime) => {
+      .then((values: DataType) => {
         confirm({
           centered: true,
           title: "Do you want to add an " + values.title + " ?",
@@ -89,34 +98,19 @@ const UserList: React.FC = () => {
       });
   };
 
-  const addAnime = async (values: DataAnime) => {
+  const addAnime = async (values: DataType) => {
     const formData = new FormData();
 
     // Tambahkan data dari form ke FormData untuk dikirim ke backend
     formData.append("title", values.title);
-    formData.append("release_date", values.release_date);
-    formData.append("synopsis", values.synopsis);
-    formData.append("type", values.type);
-    formData.append("trailer_link", values.trailer_link);
-
-    // Kirim genres dalam bentuk array
-    if (Array.isArray(values.genres)) {
-      values.genres.forEach((genre: string) => {
-        formData.append("genres", genre); // Pastikan genres dikirim sebagai array
-      });
-    } // Kirim genres dalam bentuk JSON
-
-    // Tambahkan file foto cover
-    if (values.photo_cover && values.photo_cover.length > 0) {
-      values.photo_cover.forEach((file: any) => {
-        formData.append("photo_cover", file.originFileObj);
-      });
-    }
+    formData.append("body", values.body);
+    formData.append("id_anime", values.id_anime);
+    formData.append("id_user", values.id_user);
 
     // Tambahkan file foto anime (bisa lebih dari 1)
-    if (values.photos_anime) {
-      values.photos_anime.forEach((file: any) => {
-        formData.append("photos_anime", file.originFileObj);
+    if (values.photos) {
+      values.photos.forEach((file: any) => {
+        formData.append("photos", file.originFileObj);
       });
     }
 
@@ -124,7 +118,7 @@ const UserList: React.FC = () => {
     try {
       // Kirim data menggunakan axios
       const response = await axios.post(
-        "http://localhost:4321/anime/post",
+        "http://localhost:4321/topic/post",
         formData,
         {
           headers: {
@@ -134,12 +128,12 @@ const UserList: React.FC = () => {
       );
 
       // Tampilkan pesan sukses jika request berhasil
-      message.success("Anime added successfully!");
+      message.success("Topic added successfully!");
       setLoading(false);
-      form.resetFields(); // Reset form setelah submit
+      router.push("/dashboard/topic");
     } catch (error) {
       // Tampilkan pesan error jika request gagal
-      message.error("Failed to add anime");
+      message.error("Failed to add topic");
     }
   };
 
@@ -157,8 +151,9 @@ const UserList: React.FC = () => {
 
   return (
     <>
-      <div className="mb-2 bg-emerald-700 p-2 rounded-md">
-        <h1 className="font-semibold text-lg">Form Add Topic</h1>
+      <PageTitle title="Add Topic" />
+      <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg">
+        Form Add Topic
       </div>
       <Form layout="vertical" form={form} onFinish={handleSubmit}>
         <div className="rounded-sm shadow-md p-4">
@@ -171,95 +166,61 @@ const UserList: React.FC = () => {
             <Input placeholder="Input title" />
           </Form.Item>
 
-          {/* Input release date */}
-          <Form.Item
-            label="Release Date (yyyy-mm-dd)"
-            name="release_date"
-            rules={[{ required: true, message: "Please input date" }]}
-          >
-            <Input placeholder="Input date" />
-          </Form.Item>
-
-          {/* Input tariler link */}
-          <Form.Item
-            label="Trailer Link"
-            name="trailer_link"
-            rules={[{ required: true, message: "Please input trailer link" }]}
-          >
-            <Input placeholder="Input trailer link" />
-          </Form.Item>
-
           {/* Input synopsis */}
           <Form.Item
-            name="synopsis"
-            label="Synopsis"
-            rules={[{ required: true, message: "Please input synopsis" }]}
+            name="body"
+            label="Body"
+            rules={[{ required: true, message: "Please input body" }]}
           >
-            <Input.TextArea showCount maxLength={1000} />
+            <Input.TextArea showCount autoSize maxLength={9999} />
           </Form.Item>
 
-          {/* Select genre */}
+          {/* Select anime */}
           <Form.Item
-            label="Genre (Select More Than One if Need)"
-            name="genres"
-            rules={[
-              { required: true, message: "Please select genre minimal 1" },
-            ]}
+            label="Anime"
+            name="id_anime"
+            rules={[{ required: true, message: "Please select anime" }]}
           >
             <Select
-              placeholder="Select genres"
+              placeholder="Select anime"
               allowClear
-              mode="multiple"
               filterOption={(input, option) =>
                 (option?.children as unknown as string)
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
             >
-              {genres.map((genre) => (
-                <Option value={genre.id}>{genre.name}</Option>
+              {animes.map((anime) => (
+                <Option value={anime.id}>{anime.title}</Option>
               ))}
             </Select>
           </Form.Item>
 
-          {/* Select type */}
+          {/* Select user */}
           <Form.Item
-            label="Type"
-            name="type"
-            rules={[{ required: true, message: "Please select type" }]}
+            label="Created By"
+            name="id_user"
+            rules={[{ required: true, message: "Please select user" }]}
           >
             <Select
-              placeholder="Select type"
+              placeholder="Select user"
               allowClear
-              showSearch // Aktifkan pencarian
               filterOption={(input, option) =>
                 (option?.children as unknown as string)
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
             >
-              <Option value="movies">movies</Option>
-              <Option value="series">series</Option>
+              {users.map((user) => (
+                <Option value={user.id}>{user.username}</Option>
+              ))}
             </Select>
-          </Form.Item>
-
-          {/* Upload Image Cover */}
-          <Form.Item
-            name="photo_cover"
-            rules={[{ required: true, message: "Please input image cover" }]}
-            label="Upload photo cover"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-          >
-            <Upload listType="picture" maxCount={1}>
-              <Button icon={<UploadOutlined />}>Click to upload</Button>
-            </Upload>
           </Form.Item>
 
           {/* Upload Image */}
           <Form.Item
-            name="photos_anime"
-            label="Upload photo anime"
+            name="photos"
+            label="Upload photo topic"
             valuePropName="fileList"
             getValueFromEvent={normFile}
           >
@@ -268,8 +229,8 @@ const UserList: React.FC = () => {
             </Upload>
           </Form.Item>
         </div>
-        <div className="mt-2 bg-emerald-700 p-2 gap-2 rounded-md justify-end flex">
-          <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
+        <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
+          <Button icon={<LeftCircleOutlined />} href="/dashboard/topic">
             Back
           </Button>
           <Button type="primary" onClick={showPostConfirm} loading={loading}>
@@ -281,4 +242,4 @@ const UserList: React.FC = () => {
   );
 };
 
-export default UserList;
+export default CreateTopic;

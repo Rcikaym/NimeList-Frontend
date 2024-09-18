@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, message, Modal, Space, Table } from "antd";
+import { Button, message, Modal, Space } from "antd";
 import type { TableColumnsType } from "antd";
 import {
-  AiFillStar,
   AiOutlineDelete,
   AiOutlinePicRight,
   AiOutlinePlus,
@@ -14,9 +13,11 @@ import {
   AppstoreFilled,
   ExclamationCircleFilled,
   EyeOutlined,
-  VideoCameraOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import PageTitle from "@/components/TitlePage";
+import renderDateTime from "@/components/FormatDateTime";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 
 interface DataType {
   id: string;
@@ -93,6 +94,7 @@ const UserList: React.FC = () => {
       dataIndex: "title",
       sorter: (a: DataType, b: DataType) => a.title.localeCompare(b.title),
       sortDirections: ["ascend", "descend"],
+      ...getColumnSearchProps("title"),
     },
     {
       title: "Created By",
@@ -105,12 +107,12 @@ const UserList: React.FC = () => {
     {
       title: "Created At",
       dataIndex: "created_at",
-      render: (text: string) => formatDateTime(text),
+      render: (text: string) => renderDateTime(text),
     },
     {
       title: "Updated At",
       dataIndex: "updated_at",
-      render: (text: string) => formatDateTime(text),
+      render: (text: string) => renderDateTime(text),
     },
     {
       title: "Action",
@@ -136,20 +138,9 @@ const UserList: React.FC = () => {
     },
   ];
 
-  const formatDateTime = (isoDate: string): string => {
-    const date = new Date(isoDate);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // +1 karena bulan dimulai dari 0
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
-
   return (
     <>
+      <PageTitle title="NimeList - TopicList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
@@ -189,12 +180,10 @@ const UserList: React.FC = () => {
           <AiOutlinePlus /> Add Topic
         </Button>
       </div>
-      <Table
+      <CustomTable
         columns={columns}
-        // rowKey={(record) => record.username}
-        bordered
         pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
-        dataSource={data} // Data dari state
+        data={data} // Data dari state
       />
     </>
   );

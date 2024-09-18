@@ -32,6 +32,7 @@ import Link from "next/link";
 import { Option } from "antd/es/mentions";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
+import DisplayLongText from "@/components/DisplayLongText";
 
 const { Title, Text } = Typography;
 
@@ -72,7 +73,7 @@ const UserList: React.FC = () => {
   const handlePostReview = async (values: DataType) => {
     try {
       await axios.post("http://localhost:4321/review/post", values); // Melakukan POST ke server
-      message.success("Genre added successfully!");
+      message.success("Review added successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(
@@ -81,7 +82,7 @@ const UserList: React.FC = () => {
       setData(response.data); // Memperbarui data genre
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
-      message.error("Failed to add genre");
+      message.error("Failed to add review");
     }
   };
 
@@ -97,7 +98,7 @@ const UserList: React.FC = () => {
       );
       setData(response.data); // Memperbarui data genre
     } catch (error) {
-      message.error("Failed to delete genre");
+      message.error("Failed to delete review");
     }
   };
 
@@ -184,7 +185,7 @@ const UserList: React.FC = () => {
         );
         setDataAnime(response.data); // Mengisi data dengan anime dari API
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching animes:", error);
       }
     };
 
@@ -355,13 +356,21 @@ const UserList: React.FC = () => {
       >
         {detailReview ? (
           <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-            <Space>
-              <UserOutlined />
-              <Text strong>{detailReview.username}</Text>
-              <Rate disabled defaultValue={detailReview.rating} />
+            <Space direction="vertical">
+              <Space>
+                <UserOutlined />
+                <Text strong>{detailReview.username}</Text>
+              </Space>
+              <Rate
+                count={10}
+                disabled
+                allowHalf
+                defaultValue={0}
+                value={parseFloat(detailReview.rating)}
+              />
             </Space>
 
-            <Text>{detailReview.review}</Text>
+            <DisplayLongText text={detailReview.review} />
 
             <Space>
               <CalendarOutlined />
@@ -451,7 +460,7 @@ const UserList: React.FC = () => {
             label="Rate"
             rules={[{ required: true, message: "Please input rating" }]}
           >
-            <Rate />
+            <Rate count={10} allowHalf />
           </Form.Item>
         </Form>
       </Modal>
