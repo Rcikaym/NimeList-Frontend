@@ -1,9 +1,10 @@
 "use client";
 
+// import "/globals.css";
 import { useEffect, useState } from "react";
 import { Image } from "antd";
 import { Button } from "@nextui-org/react";
-import { BiPlus, BiSolidStar, BiStar } from "react-icons/bi";
+import { BiPlus, BiSolidStar, BiStar, BiMessageAdd } from "react-icons/bi";
 import { Spacer } from "@nextui-org/react";
 import { Rate } from "antd";
 import { Chip } from "@nextui-org/chip";
@@ -94,13 +95,13 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
   return (
     <>
       <div className="container mx-auto mt-6">
-        <div className="w-full">
-          <h1 className="text-3xl font-jakarta font-bold">{anime.title}</h1>
-          <p className="text-gray-500 font-semibold">
+        <div className="w-full h-[88px] gap-1">
+          <h1 className="text-5xl font-jakarta font-bold m-0">{anime.title}</h1>
+          <p className="text-gray-500 font-semibold mb-0 mt-2">
             {anime.type} • {anime.release_date}
           </p>
         </div>
-        <div className="flex">
+        <div className="flex mb-5">
           {/* <div className="flex flex-col"> */}
           <div className="pt-3 w-full max-w-xs h-auto">
             <Image
@@ -130,7 +131,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
               allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             />
-            <div className="flex flex-row mt-6">
+            <div className="flex flex-row mt-3">
               {/* Genre Tags */}
               <div className="flex space-x-2 mb-4">
                 {anime.genre.map((genre) => (
@@ -147,16 +148,16 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                 ))}
               </div>
             </div>
-            <ScrollShadow className="w-[900px] h-[150px]" hideScrollBar>
-              <p className="text-[#f5f5f5] opacity-55 hover:opacity-100 font-medium scroll-smooth">
+            <ScrollShadow className="w-[900px] max-h-[150px]" hideScrollBar>
+              <p className="text-[#f5f5f5] opacity-100 font-medium scroll-smooth">
                 {anime.synopsis}
               </p>
             </ScrollShadow>
           </div>
           <Spacer x={5} />
           <div className="pt-3 font-jakarta">
-            <div className="mb-1 w-[208px] h-[208px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
-              <div className="w-full h-full bg-black rounded-r-md flex items-center justify-center">
+            <div className="mb-1 w-[228px] h-[228px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
+              <div className="w-full h-full bg-[#151515] rounded-r-md flex items-center justify-center">
                 <div className="text-center p-4 text-white">
                   <div className="flex items-center justify-center">
                     <BiSolidStar className="w-[30px] h-[30px] text-[#ffd500] mr-2" />
@@ -168,8 +169,8 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
               </div>
             </div>
 
-            <div className="mt-1 w-[208px] h-[208px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
-              <div className="w-full h-full bg-black rounded-r-md flex items-center justify-center">
+            <div className="mt-1 w-[228px] h-[228px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
+              <div className="w-full h-full bg-[#151515] rounded-r-md flex items-center justify-center">
                 <div className="flex flex-col justify-center text-center items-center p-4 text-white">
                   <p className="text-xl font-semibold">YOUR RATING</p>
                   <BiStar className="w-[69px] h-[69px] text-[#05E5CB]" />
@@ -184,6 +185,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
             </div>
           </div>
         </div>
+
         <Modal
           isOpen={isOpen}
           onOpenChange={onOpenChange}
@@ -227,17 +229,30 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
             )}
           </ModalContent>
         </Modal>
+
         <div className="reviews mt-6">
-          <h2 className="text-xl">Reviews</h2>
+          <div className="flex justify-between">
+            <h2 className="text-xl underline font-bold text-[#05E5CB] select-none">
+              {reviews.length} REVIEWS
+            </h2>
+            <button>
+              <span className="flex items-center text-[#05E5CB]">
+                <BiMessageAdd className="w-[24px] h-[24px] mt-1 mr-1" />
+                Add Review
+              </span>
+            </button>
+          </div>
           {reviews.length === 0 ? (
             <p>No reviews yet.</p>
           ) : (
             <ul>
               {reviews.map((review) => (
-                <li key={review.id} className="border-b py-2">
-                  <p>
-                    <strong>{review.reviewer}:</strong> {review.comment}
-                  </p>
+                <li
+                  key={review.id}
+                  className="container border rounded-lg border-[#05e5cbc3] p-5 my-5"
+                >
+                  <h2 className="font-bold">{review.reviewer}</h2>
+                  <p>{review.comment}</p>
                   <p>Rating: {review.rating}/10</p>
                 </li>
               ))}
