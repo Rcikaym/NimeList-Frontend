@@ -77,7 +77,7 @@ export default function AnimeEdit({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
   const { confirm } = Modal;
 
-  // Fetch anime details
+  // Fetch anime edit data
   useEffect(() => {
     const fetchAnime = async () => {
       setLoading(true);
@@ -201,14 +201,14 @@ export default function AnimeEdit({ id }: { id: string }) {
           },
         });
       })
-      .catch((info) => {
+      .catch(() => {
         message.error("Please complete the form before submitting!");
       });
   };
 
   // Fungsi yang akan dipanggil saat submit form
-  const handleSubmit = (values: any) => {
-    updateAnime(values); // Panggil fungsi addAnime dengan nilai form
+  const handleSubmit = () => {
+    showPostConfirm(); // Panggil fungsi addAnime dengan nilai form
   };
 
   // Fungsi untuk mengubah default value dari episode jika tipe movie dipilih
@@ -385,7 +385,7 @@ export default function AnimeEdit({ id }: { id: string }) {
           <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
             Back
           </Button>
-          <Button type="primary" onClick={showPostConfirm}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             Submit
           </Button>
         </div>
