@@ -30,7 +30,7 @@ const AnimeMetadata = memo(
     averageRating: number;
   }) => (
     <>
-      <div className="flex mt-2">
+      <div className="flex mt-auto">
         <AiOutlineCalendar className="mr-1 text-emerald-700" size={20} />
         <div className="flex gap-1">
           <h2 className="text-gray-800">Release Date:</h2>
@@ -64,10 +64,10 @@ const AnimeMetadata = memo(
         <span className="text-gray-800">{averageRating}</span>
       </div>
 
-      {anime.trailer_link && (
+      {anime.trailer_link && anime.watch_link && (
         <>
           <div className="flex gap-1 mt-2">
-            <h2 className="text-gray-800 flex items-center">
+            <h2 className="text-gray-800 flex">
               <AiOutlinePaperClip className="mr-1 text-emerald-700" size={20} />
               Trailer Link:
             </h2>
@@ -80,10 +80,25 @@ const AnimeMetadata = memo(
               <span>{anime.trailer_link}</span>
             </a>
           </div>
+
+          <div className="flex gap-1 mt-2">
+            <h2 className="text-gray-800 flex">
+              <AiOutlinePaperClip className="mr-1 text-emerald-700" size={20} />
+              Watch Link:
+            </h2>
+            <a
+              href={anime.trailer_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 hover:text-blue-500"
+            >
+              <span>{anime.watch_link}</span>
+            </a>
+          </div>
         </>
       )}
 
-      <div className="flex gap-2 items-center mb-3">
+      <div className="flex gap-2 items-center mb-auto">
         <h2 className="text-gray-800 flex mt-2">
           <AiOutlineTags className="mr-1 text-emerald-700" size={20} />
           Genres:
@@ -158,35 +173,39 @@ export default function AnimeDetails({ id }: { id: string }) {
         Anime Details
       </div>
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="md:flex items-center">
+        <div className="md:flex items-center mt-3">
           {/* Left column for image */}
-          <div className="md:w-1/3 justify-center p-2 ml-3">
+          <div className="justify-center p-2 ml-3 flex gap-5">
             {photo_cover && (
               <MemoizedImage
                 alt={title}
                 className="w-full h-auto object-cover rounded-md shadow-md hover:shadow-xl transition-shadow"
                 src={`http://localhost:4321/${photo_cover.replace(/\\/g, "/")}`}
                 loading="lazy"
+                height={330}
+                width="full"
               />
             )}
+            <div className="grid justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+              </div>
+              <AnimeMetadata
+                anime={anime.anime}
+                averageRating={anime.averageRating}
+              />
+              <div className="grid gap-1">
+                <span className="text-sm text-gray-600">
+                  Created At: {renderDateTime(created_at)}
+                </span>
+                <span className="text-sm text-gray-600">
+                  Updated At: {renderDateTime(updated_at)}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Right column for details */}
-          <div className="md:w-2/3 p-6">
-            <h1 className="text-3xl font-bold mb-2 text-gray-800">{title}</h1>
-            <AnimeMetadata
-              anime={anime.anime}
-              averageRating={anime.averageRating}
-            />
-            <div className="grid gap-1">
-              <span className="text-sm text-gray-600">
-                Created At: {renderDateTime(created_at)}
-              </span>
-              <span className="text-sm text-gray-600">
-                Updated At: {renderDateTime(updated_at)}
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Synopsis */}

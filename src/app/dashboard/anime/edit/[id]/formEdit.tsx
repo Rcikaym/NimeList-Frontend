@@ -153,6 +153,13 @@ export default function AnimeEdit({ id }: { id: string }) {
       });
     }
 
+    // Tambahkan file foto anime (bisa lebih dari 1)
+    if (values.photos_anime && values.photos_anime.length > 0) {
+      values.photos_anime.forEach((file: any) => {
+        formData.append("photos_anime", file.originFileObj);
+      });
+    }
+
     setLoading(true);
     try {
       const response = await axios.put(
@@ -283,7 +290,7 @@ export default function AnimeEdit({ id }: { id: string }) {
             label="Synopsis"
             rules={[{ required: true, message: "Please input synopsis" }]}
           >
-            <Input.TextArea />
+            <Input.TextArea autoSize />
           </Form.Item>
 
           {/* Genres */}
@@ -353,6 +360,25 @@ export default function AnimeEdit({ id }: { id: string }) {
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
           </Form.Item>
+
+          {anime?.anime.photos.length === 0 && (
+            <>
+              <Form.Item
+                name="photos_anime"
+                label="Upload Photo Anime"
+                getValueFromEvent={normFile}
+              >
+                <Upload
+                  {...uploadProps}
+                  listType="picture"
+                  maxCount={4}
+                  onChange={(info) => handleUpload(info, "photos_anime")}
+                >
+                  <Button icon={<UploadOutlined />}>Upload</Button>
+                </Upload>
+              </Form.Item>
+            </>
+          )}
         </div>
 
         <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
