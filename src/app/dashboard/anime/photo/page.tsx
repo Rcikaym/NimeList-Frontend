@@ -16,6 +16,7 @@ import type { TableColumnsType, UploadProps } from "antd";
 import {
   AiOutlineDelete,
   AiOutlineEdit,
+  AiOutlineEye,
   AiOutlineFileImage,
 } from "react-icons/ai";
 import axios from "axios";
@@ -25,7 +26,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable } from "@/components/CustomTable";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 
 interface PhotosType {
@@ -54,12 +55,23 @@ const AnimeList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [editingPhoto, setEditingPhoto] = useState<string>(""); // Menyimpan anime yang sedang diedit
   const [modalPhoto, setModalPhoto] = useState<boolean>(false); // Untuk status modal edit photo
+  const [modalDetail, setModalDetail] = useState<boolean>(false); // Untuk status modal detail
+  const [detailPhoto, setDetailPhoto] = useState<any>(null);
   const { confirm } = Modal;
   const [form] = Form.useForm();
 
   const handleEditPhoto = (id: string) => {
     setEditingPhoto(id); // Simpan data anime yang sedang diedit
     setModalPhoto(true); // Buka modal
+  };
+
+  // Modal detail photo
+  const showModalDetail = (id: string) => {
+    setModalDetail(true);
+    const data = axios.get(`http://localhost:4321/photo-anime/get/${id}`);
+    data.then((res) => {
+      setDetailPhoto(res.data);
+    });
   };
 
   const handleUpdatePhoto = async (values: PhotosType) => {
@@ -216,18 +228,7 @@ const AnimeList: React.FC = () => {
       dataIndex: "anime",
       sorter: (a: DataType, b: DataType) => a.anime.localeCompare(b.anime),
       sortDirections: ["ascend", "descend"],
-    },
-    {
-      title: "Photo",
-      dataIndex: "file_path",
-      render: (text: string) => (
-        <Image
-          src={"http://localhost:4321/" + text.replace(/\\/g, "/")}
-          alt="photo"
-          width={170}
-          height={100}
-        />
-      ),
+      ...getColumnSearchProps("anime"),
     },
     {
       title: "Created At",
@@ -244,6 +245,13 @@ const AnimeList: React.FC = () => {
       dataIndex: "action",
       render: (text: string, record: DataType) => (
         <Space size="middle">
+          <Button
+            type="text"
+            className="bg-emerald-700 text-white"
+            onClick={() => showModalDetail(record.id)}
+          >
+            <AiOutlineEye style={{ fontSize: 20 }} />
+          </Button>
           <Button
             type="text"
             className="bg-emerald-700 text-white"
@@ -326,6 +334,29 @@ const AnimeList: React.FC = () => {
             </Upload>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Modal detail photo */}
+      <Modal
+        title={`Detail Photo ${detailPhoto?.anime}`}
+        centered
+        open={modalDetail}
+        onOk={() => setModalDetail(false)}
+        onCancel={() => setModalDetail(false)}
+        footer={false}
+      >
+        <div className="mt-3">
+          <Image
+            src={
+              "http://localhost:4321/" +
+              detailPhoto?.file_path.replace(/\\/g, "/")
+            }
+            alt="photo"
+            width={250}
+            height={150}
+          />
+          <h1 className="mt-2">File path: {detailPhoto?.file_path}</h1>
+        </div>
       </Modal>
     </>
   );

@@ -21,6 +21,7 @@ export interface AnimeType {
     genres: GenreType[];
     created_at: string;
     updated_at: string;
+    watch_link: string;
   };
   averageRating: number;
 }
