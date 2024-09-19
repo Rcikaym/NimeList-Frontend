@@ -156,8 +156,8 @@ const UserList: React.FC = () => {
   };
 
   // Fungsi yang akan dipanggil saat submit form
-  const handleSubmit = (values: any) => {
-    addAnime(values); // Panggil fungsi addAnime dengan nilai form
+  const handleSubmit = () => {
+    showPostConfirm(); // Panggil fungsi konfirmasi sebelum submit
   };
 
   // Fungsi normFile untuk memastikan fileList berupa array
@@ -313,7 +313,7 @@ const UserList: React.FC = () => {
           <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
             Back
           </Button>
-          <Button type="primary" onClick={showPostConfirm} loading={loading}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             Submit
           </Button>
         </div>
