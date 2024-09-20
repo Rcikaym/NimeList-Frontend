@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [totalTopics, setTotalTopics] = useState<number | null>(null);
   const [totalMembers, setTotalMembers] = useState<number | null>(null);
   const [animeTop, setAnimeTop] = useState([]);
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const [loading, setLoading] = useState<boolean>();
 
   const columnsAnimeTop = useMemo(
@@ -75,9 +76,9 @@ export default function Dashboard() {
       try {
         const [topicsResponse, membersResponse, animeTopResponse] =
           await Promise.all([
-            axios.get("http://localhost:4321/dashboard/total-topic"),
-            axios.get("http://localhost:4321/dashboard/total-premium"),
-            axios.get("http://localhost:4321/dashboard/anime-top"),
+            axios.get(`${api}/dashboard/total-topic`),
+            axios.get(`${api}/dashboard/total-premium`),
+            axios.get(`${api}/dashboard/anime-top`),
           ]);
         setTotalTopics(topicsResponse.data.totalTopic);
         setTotalMembers(membersResponse.data.totalUserPremium);

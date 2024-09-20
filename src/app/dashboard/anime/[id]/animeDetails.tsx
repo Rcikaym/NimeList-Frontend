@@ -20,14 +20,17 @@ import DisplayLongText from "@/components/DisplayLongText";
 // Memoized components
 const MemoizedImage = memo(Image);
 const MemoizedButton = memo(Button);
+const api = process.env.NEXT_PUBLIC_API_URL;
 
 const AnimeMetadata = memo(
   ({
     anime,
     averageRating,
+    totalFav,
   }: {
     anime: AnimeType["anime"];
     averageRating: number;
+    totalFav: number;
   }) => (
     <>
       <div className="flex mt-auto">
@@ -52,16 +55,18 @@ const AnimeMetadata = memo(
         </div>
       </div>
 
-      <div className="flex gap-1 mt-2">
+      <div className="flex mt-2 gap-2">
         <div className="flex">
-          <AiOutlineStar
-            className="mr-1 text-emerald-700"
-            // style={{ color: "#fadb14" }}
-            size={20}
-          />
-          <h2 className="text-gray-800">Rating:</h2>
+          <AiOutlineStar className="mr-1 text-emerald-700" size={20} />
+          <div className="flex gap-1">
+            <h2 className="text-gray-800">Rating:</h2>
+            <span className="text-gray-800">{averageRating}</span>
+          </div>
         </div>
-        <span className="text-gray-800">{averageRating}</span>
+        <div className="flex gap-1">
+          <h2 className="text-gray-800">Total Fav:</h2>
+          <span className="text-gray-800">{totalFav}</span>
+        </div>
       </div>
 
       {anime.trailer_link && anime.watch_link && (
@@ -124,7 +129,7 @@ const PhotoGallery = memo(
       {photos?.map((photo, index) => (
         <div key={index}>
           <MemoizedImage
-            src={`http://localhost:4321/${photo.file_path.replace(/\\/g, "/")}`}
+            src={`${api}/${photo.file_path.replace(/\\/g, "/")}`}
             alt={`${title} - Photo ${index + 1}`}
             className="rounded-lg shadow-md hover:shadow-xl transition-shadow"
             height={160}
@@ -145,7 +150,7 @@ export default function AnimeDetails({ id }: { id: string }) {
   const fetchAnime = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:4321/anime/get/${id}`);
+      const response = await axios.get(`${api}/anime/get/${id}`);
       setAnime(response.data);
       setError(null);
     } catch (error) {
@@ -180,7 +185,7 @@ export default function AnimeDetails({ id }: { id: string }) {
               <MemoizedImage
                 alt={title}
                 className="w-full h-auto object-cover rounded-md shadow-md hover:shadow-xl transition-shadow"
-                src={`http://localhost:4321/${photo_cover.replace(/\\/g, "/")}`}
+                src={`${api}/${photo_cover.replace(/\\/g, "/")}`}
                 loading="lazy"
                 height={330}
                 width="full"
@@ -192,6 +197,7 @@ export default function AnimeDetails({ id }: { id: string }) {
               </div>
               <AnimeMetadata
                 anime={anime.anime}
+                totalFav={anime.totalFav}
                 averageRating={anime.averageRating}
               />
               <div className="grid gap-1">
@@ -213,7 +219,9 @@ export default function AnimeDetails({ id }: { id: string }) {
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
             Synopsis
           </h2>
-          <DisplayLongText text={synopsis} />
+          <div className="text-gray-600">
+            <DisplayLongText text={synopsis} />
+          </div>
         </div>
 
         {/* Photo gallery */}

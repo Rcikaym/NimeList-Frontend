@@ -335,7 +335,6 @@ const UserList: React.FC = () => {
       <CustomTable
         loading={loading}
         columns={columns}
-        pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
         data={data} // Data dari state
       />
 
