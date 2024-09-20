@@ -37,13 +37,14 @@ const CreateTopic: React.FC = () => {
   const [users, setUsers] = useState<DataUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { confirm } = Modal;
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchAnime = async () => {
       setLoading(true);
       try {
         const response = await axios.get<DataAnime[]>(
-          "http://localhost:4321/topic/get-all-anime"
+          `${api}/topic/get-all-anim`
         );
         setAnimes(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -57,7 +58,7 @@ const CreateTopic: React.FC = () => {
       setLoading(true);
       try {
         const response = await axios.get<DataUser[]>(
-          "http://localhost:4321/topic/get-all-user"
+          `${api}/topic/get-all-user`
         );
         setUsers(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -117,15 +118,11 @@ const CreateTopic: React.FC = () => {
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
       // Kirim data menggunakan axios
-      const response = await axios.post(
-        "http://localhost:4321/topic/post",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Tentukan header untuk form data
-          },
-        }
-      );
+      const response = await axios.post(`${api}/topic/post`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Tentukan header untuk form data
+        },
+      });
 
       // Tampilkan pesan sukses jika request berhasil
       message.success("Topic added successfully!");

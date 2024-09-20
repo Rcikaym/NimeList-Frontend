@@ -32,13 +32,14 @@ const UserList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const { confirm } = Modal;
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
     const fetchAnime = async () => {
       try {
         const response = await axios.get<DataType[]>(
-          "http://localhost:4321/topic/get-all"
+          `${api}/topic/get-all`
         );
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -54,12 +55,12 @@ const UserList: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:4321/topic/delete/${id}`); // Melakukan DELETE ke server
+      await axios.delete(`${api}/topic/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(
-        "http://localhost:4321/topic/get-all"
+        `${api}/topic/get-all`
       );
       setData(response.data); // Memperbarui data genre
     } catch (error) {

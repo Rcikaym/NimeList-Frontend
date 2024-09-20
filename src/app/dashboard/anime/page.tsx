@@ -204,7 +204,7 @@ const AnimeList: React.FC = () => {
         loading={loading}
         columns={columns}
         data={data} // Data yang sudah difilter
-        pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
+        
       />
     </>
   );

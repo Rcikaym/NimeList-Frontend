@@ -24,13 +24,14 @@ interface DataType {
 const UserList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get<DataType[]>(
-          "http://localhost:4321/user/get-all"
+          `${api}/user/get-all`
         );
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat

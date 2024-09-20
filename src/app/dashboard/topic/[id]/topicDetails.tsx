@@ -20,6 +20,7 @@ import { TopicType } from "./types";
 // Memoized components
 const MemoizedImage = memo(Image);
 const MemoizedButton = memo(Button);
+const api = process.env.NEXT_PUBLIC_API_URL;
 
 const AnimeMetadata = memo(({ topic }: { topic: TopicType }) => (
   <>
@@ -78,7 +79,7 @@ const PhotoGallery = memo(
       {photos?.map((photo, index) => (
         <div key={index}>
           <MemoizedImage
-            src={`http://localhost:4321/${photo.file_path.replace(/\\/g, "/")}`}
+            src={`${api}/${photo.file_path.replace(/\\/g, "/")}`}
             alt={`${title} - Photo ${index + 1}`}
             className="rounded-lg shadow-md hover:shadow-xl transition-shadow"
             height={160}
@@ -99,7 +100,7 @@ export default function TopicDetails({ id }: { id: string }) {
   const fetchTopic = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:4321/topic/get/${id}`);
+      const response = await axios.get(`${api}/topic/get/${id}`);
       setTopic(response.data);
       setError(null);
     } catch (error) {
@@ -137,12 +138,14 @@ export default function TopicDetails({ id }: { id: string }) {
         {/* Body */}
         <div className="p-6">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">Body</h2>
-          <DisplayLongText text={body} />
+          <div className="text-gray-600">
+            <DisplayLongText text={body} />
+          </div>
         </div>
       </div>
 
       <div className="p-2 flex justify-end text-lg font-semibold mt-3 rounded-lg bg-[#005B50]">
-        <MemoizedButton icon={<LeftCircleOutlined />} href="/dashboard/anime">
+        <MemoizedButton icon={<LeftCircleOutlined />} href="/dashboard/topic">
           Back
         </MemoizedButton>
       </div>

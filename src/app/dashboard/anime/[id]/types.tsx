@@ -24,4 +24,5 @@ export interface AnimeType {
     watch_link: string;
   };
   averageRating: number;
+  totalFav: number;
 }
