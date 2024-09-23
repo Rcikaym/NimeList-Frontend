@@ -1,0 +1,45 @@
+.sidebarMenu {
+  height: 100%;
+  border-right: 0;
+  padding: 2px;
+  background-color: transparent;
+}
+
+/* Gaya untuk hover state */
+.menuItem:hover {
+  color: #ffff;
+  background-color: #005b50;
+}
+
+/* Gaya untuk active state */
+.menuItem:global(.ant-menu-item-selected) {
+  color: #ffff;
+  background-color: #005b50;
+}
+
+.submenu:global(.ant-menu-submenu-open) > :global(.ant-menu-submenu-title),
+.submenu:global(.ant-menu-submenu-selected) > :global(.ant-menu-submenu-title) {
+  color: #005b50;
+}
+
+/* Gaya untuk border bottom saat item aktif dalam mode horizontal */
+:global(.ant-menu-horizontal)
+  > .menuItem:global(.ant-menu-item-selected)::after {
+  border-bottom-color: #005b50;
+}
+
+/* Gaya untuk warna teks item yang dipilih dalam mode vertikal */
+:global(.ant-menu-vertical) .menuItem:global(.ant-menu-item-selected),
+:global(.ant-menu-vertical-left) .menuItem:global(.ant-menu-item-selected),
+:global(.ant-menu-vertical-right) .menuItem:global(.ant-menu-item-selected) {
+  color: #005b50;
+}
+
+/* Gaya untuk background item yang dipilih dalam mode vertikal */
+:global(.ant-menu-vertical) .menuItem:global(.ant-menu-item-selected)::after,
+:global(.ant-menu-vertical-left)
+  .menuItem:global(.ant-menu-item-selected)::after,
+:global(.ant-menu-vertical-right)
+  .menuItem:global(.ant-menu-item-selected)::after {
+  border-right: 3px solid #005b50;
+}

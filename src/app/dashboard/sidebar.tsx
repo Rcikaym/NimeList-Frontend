@@ -1,43 +1,41 @@
-"use client";
-
 import React from "react";
 import { Layout, Menu } from "antd";
-import Link from "next/link"; // Menggunakan Link dari Next.js
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import {
-  AiOutlineAlignCenter,
   AiOutlineAppstore,
   AiOutlineUser,
   AiOutlineVideoCamera,
+  AiOutlineAlignCenter,
 } from "react-icons/ai";
+import styles from "@/styles/sidebar.module.css";
 
-import { usePathname } from "next/navigation";
-
-const { Sider } = Layout;
 const { SubMenu } = Menu;
+const { Sider } = Layout;
 
-const Sidebar = () => {
-  const path = usePathname();
+const SidebarMenu = () => {
+  const pathname = usePathname();
 
   const getSelectedKeys = () => {
-    if (path === "/dashboard") return ["1"];
-    if (path === "/dashboard/users") return ["2"];
-    if (path?.startsWith("/dashboard/anime")) {
-      if (path === "/dashboard/anime") return ["3"];
-      if (path === "/dashboard/anime/photo") return ["4"];
-      if (path === "/dashboard/anime/genre") return ["5"];
-      if (path === "/dashboard/anime/review") return ["6"];
+    if (pathname === "/dashboard") return ["1"];
+    if (pathname === "/dashboard/users") return ["2"];
+    if (pathname?.startsWith("/dashboard/anime")) {
+      if (pathname === "/dashboard/anime") return ["3"];
+      if (pathname === "/dashboard/anime/photo") return ["4"];
+      if (pathname === "/dashboard/anime/genre") return ["5"];
+      if (pathname === "/dashboard/anime/review") return ["6"];
     }
-    if (path?.startsWith("/dashboard/topic")) {
-      if (path === "/dashboard/topic") return ["7"];
-      if (path === "/dashboard/topic/photo") return ["8"];
-      if (path === "/dashboard/topic/comment") return ["9"];
+    if (pathname?.startsWith("/dashboard/topic")) {
+      if (pathname === "/dashboard/topic") return ["7"];
+      if (pathname === "/dashboard/topic/photo") return ["8"];
+      if (pathname === "/dashboard/topic/comment") return ["9"];
     }
     return [];
   };
 
   const getOpenKeys = () => {
-    if (path?.startsWith("/dashboard/anime")) return ["sub1"];
-    if (path?.startsWith("/dashboard/topic")) return ["sub2"];
+    if (pathname?.startsWith("/dashboard/anime")) return ["sub1"];
+    if (pathname?.startsWith("/dashboard/topic")) return ["sub2"];
     return [];
   };
 
@@ -72,34 +70,38 @@ const Sidebar = () => {
         mode="inline"
         selectedKeys={getSelectedKeys()}
         defaultOpenKeys={getOpenKeys()}
-        style={{
-          height: "100%",
-          borderRight: 0,
-          padding: 2,
-          backgroundColor: "transparent",
-        }}
+        className={styles.sidebarMenu}
       >
-        <Menu.Item key="1" icon={<AiOutlineAppstore size={22} />}>
+        <Menu.Item
+          key="1"
+          icon={<AiOutlineAppstore size={22} />}
+          className={styles.menuItem}
+        >
           <Link href="/dashboard">Dashboard</Link>
         </Menu.Item>
-        <Menu.Item key="2" icon={<AiOutlineUser size={22} />}>
+        <Menu.Item
+          key="2"
+          icon={<AiOutlineUser size={22} />}
+          className={styles.menuItem}
+        >
           <Link href="/dashboard/users">User</Link>
         </Menu.Item>
         <SubMenu
           key="sub1"
           icon={<AiOutlineVideoCamera size={22} />}
           title="Manage Anime"
+          className={styles.submenu}
         >
-          <Menu.Item key="3">
+          <Menu.Item key="3" className={styles.menuItem}>
             <Link href="/dashboard/anime">Anime</Link>
           </Menu.Item>
-          <Menu.Item key="4">
+          <Menu.Item key="4" className={styles.menuItem}>
             <Link href="/dashboard/anime/photo">Anime Photo</Link>
           </Menu.Item>
-          <Menu.Item key="5">
+          <Menu.Item key="5" className={styles.menuItem}>
             <Link href="/dashboard/anime/genre">Anime Genre</Link>
           </Menu.Item>
-          <Menu.Item key="6">
+          <Menu.Item key="6" className={styles.menuItem}>
             <Link href="/dashboard/anime/review">Anime Review</Link>
           </Menu.Item>
         </SubMenu>
@@ -107,15 +109,16 @@ const Sidebar = () => {
           key="sub2"
           icon={<AiOutlineAlignCenter size={22} />}
           title="Manage Topic"
+          className={styles.submenu}
         >
-          <Menu.Item key="7" className="hover:text-blue-500">
+          <Menu.Item key="7" className={styles.menuItem}>
             <Link href="/dashboard/topic">Topic</Link>
           </Menu.Item>
-          <Menu.Item key="8">
+          <Menu.Item key="8" className={styles.menuItem}>
             <Link href="/dashboard/topic/photo">Topic Photo</Link>
           </Menu.Item>
-          <Menu.Item key="9">
-            <Link href="/dashboard/topic/photo">Comment Topic</Link>
+          <Menu.Item key="9" className={styles.menuItem}>
+            <Link href="/dashboard/topic/comment">Comment Topic</Link>
           </Menu.Item>
         </SubMenu>
       </Menu>
@@ -123,4 +126,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarMenu;
