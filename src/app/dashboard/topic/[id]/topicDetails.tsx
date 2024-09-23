@@ -6,9 +6,11 @@ import { Button, Image } from "antd";
 import axios from "axios";
 import {
   AiOutlineCalendar,
+  AiOutlineClockCircle,
   AiOutlineComment,
   AiOutlineLike,
   AiOutlineTag,
+  AiOutlineTool,
   AiOutlineUser,
 } from "react-icons/ai";
 
@@ -25,32 +27,32 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 const AnimeMetadata = memo(({ topic }: { topic: TopicType }) => (
   <>
     <div className="flex justify-between">
-      <div className="flex gap-2">
+      <div className="flex gap-4">
         <div className="flex">
           <AiOutlineUser className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1">
-            <h2 className="text-gray-800">:</h2>
+          <div className="flex gap-1 text-small">
+            <span className="text-gray-800">:</span>
             <span className="text-gray-800">{topic.user}</span>
           </div>
         </div>
         <div className="flex">
           <AiOutlineLike className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1">
+          <div className="flex gap-1 text-small">
             <h2 className="text-gray-800">:</h2>
             <span className="text-gray-800">{topic.totalLikes}</span>
           </div>
         </div>
         <div className="flex">
           <AiOutlineTag className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1">
+          <div className="flex gap-1 text-small">
             <h2 className="text-gray-800">:</h2>
             <span className="text-gray-800">{topic.anime}</span>
           </div>
         </div>
         <div className="flex">
           <AiOutlineComment className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1">
-            <h2 className="text-gray-800">:</h2>
+          <div className="flex gap-1 text-small">
+            <span className="text-gray-800">:</span>
             <span className="text-gray-800">{topic.totalComments}</span>
           </div>
         </div>
@@ -58,13 +60,13 @@ const AnimeMetadata = memo(({ topic }: { topic: TopicType }) => (
       <div className="flex gap-2">
         <div className="flex">
           <div className="flex gap-1 text-small text-gray-400">
-            <span>Created At:</span>
+            <AiOutlineClockCircle size={20} />
             <span>{renderDateTime(topic.created_at)}</span>
           </div>
         </div>
         <div className="flex">
           <div className="flex gap-1 text-small text-gray-400">
-            <span>Updated At:</span>
+            <AiOutlineTool size={20} />
             <span>{renderDateTime(topic.updated_at)}</span>
           </div>
         </div>
@@ -123,7 +125,7 @@ export default function TopicDetails({ id }: { id: string }) {
 
   return (
     <>
-      <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50]">
+      <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50] text-white">
         Topic Details
       </div>
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">

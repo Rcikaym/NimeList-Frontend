@@ -184,14 +184,14 @@ const UserList: React.FC = () => {
     <>
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
+          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineTags style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
               Genre Information
             </h2>
-            <h2 className="text-black text-sm">Display genre information</h2>
+            <span className="text-black text-sm">Display genre information</span>
           </div>
         </div>
         <div className="items-center flex gap-3">

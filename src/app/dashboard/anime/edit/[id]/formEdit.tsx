@@ -10,7 +10,6 @@ import {
   Modal,
   Select,
   Upload,
-  UploadFile,
   UploadProps,
 } from "antd";
 import axios from "axios";
@@ -21,29 +20,8 @@ import {
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
-
-// Interfaces
-interface DataAnime {
-  title: string;
-  synopsis: string;
-  release_date: string;
-  trailer_link: string;
-  genres: [];
-  photos_anime: [];
-  photo_cover: [];
-  type: string;
-  episodes: number;
-}
-
-interface GenreType {
-  id: string;
-  name: string;
-}
-
-interface PhotosType {
-  id: string;
-  file_path: string;
-}
+import { api } from "./page";
+import { DataAnime, GenreType, PhotosType } from "./types";
 
 export default function AnimeEdit({ id }: { id: string }) {
   const router = useRouter();
@@ -53,7 +31,6 @@ export default function AnimeEdit({ id }: { id: string }) {
   const [episodes, setEpisodes] = useState<number | null>(null);
   const [anime, setAnime] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const api = process.env.NEXT_PUBLIC_API_URL;
   const [fileList, setFileList] = useState([]);
   const [fileCover, setFileCover] = useState([]);
   const [error, setError] = useState<string | null>(null);
@@ -131,8 +108,8 @@ export default function AnimeEdit({ id }: { id: string }) {
     formData.append("trailer_link", values.trailer_link);
     formData.append("episodes", values.episodes.toString());
 
-    const existing_photos = [] as string[]
-    const new_photos = [] as string[]
+    const existing_photos = [] as string[];
+    const new_photos = [] as string[];
 
     if (Array.isArray(values.genres)) {
       values.genres.forEach((genre: string) => {
