@@ -27,7 +27,6 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-
 }
 
 @layer utilities {
@@ -39,4 +38,37 @@ body {
 .custom-dropdown-item:hover {
   background-color: #00554bc3; /* Hover background color */
   color: white; /* Optional: Hover text color */
+}
+
+/* Gaya untuk hover dan active state */
+.ant-menu-item:hover,
+.ant-menu-item-active,
+.ant-menu-submenu-title:hover,
+.ant-menu-item-selected,
+.ant-menu-submenu-selected > .ant-menu-submenu-title {
+  color: white !important;
+  background-color: #005b50 !important;
+}
+
+/* Gaya untuk submenu */
+
+
+/* Gaya untuk border bottom saat item aktif */
+.ant-menu-horizontal > .ant-menu-item-selected::after,
+.ant-menu-horizontal > .ant-menu-submenu-selected::after {
+  border-bottom-color: #005b50 !important;
+}
+
+/* Gaya untuk warna teks item yang dipilih dalam mode vertikal */
+.ant-menu-vertical .ant-menu-item-selected,
+.ant-menu-vertical-left .ant-menu-item-selected,
+.ant-menu-vertical-right .ant-menu-item-selected {
+  color: #005b50;
+}
+
+/* Gaya untuk background item yang dipilih dalam mode vertikal */
+.ant-menu-vertical .ant-menu-item::after,
+.ant-menu-vertical-left .ant-menu-item::after,
+.ant-menu-vertical-right .ant-menu-item::after {
+  border-right: 3px solid #005b50;
 }

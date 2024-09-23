@@ -6,10 +6,12 @@ import { Button, Image } from "antd";
 import axios from "axios";
 import {
   AiOutlineCalendar,
+  AiOutlineClockCircle,
   AiOutlinePaperClip,
   AiOutlinePlayCircle,
   AiOutlineStar,
   AiOutlineTags,
+  AiOutlineTool,
 } from "react-icons/ai";
 
 // Types moved to a separate file to reduce bundle size
@@ -201,12 +203,18 @@ export default function AnimeDetails({ id }: { id: string }) {
                 averageRating={anime.averageRating}
               />
               <div className="grid gap-1">
-                <span className="text-sm text-gray-600">
-                  Created At: {renderDateTime(created_at)}
-                </span>
-                <span className="text-sm text-gray-600">
-                  Updated At: {renderDateTime(updated_at)}
-                </span>
+                <div className="flex items-center text-gray-600 gap-2">
+                  <AiOutlineClockCircle />
+                  <span className="text-sm text-gray-600">
+                    {renderDateTime(created_at)}
+                  </span>
+                </div>
+                <div className="flex items-center text-gray-600 gap-2">
+                  <AiOutlineTool />
+                  <span className="text-sm text-gray-600">
+                    {renderDateTime(updated_at)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

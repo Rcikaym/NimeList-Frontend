@@ -15,10 +15,12 @@ import {
 import type { TableColumnsType } from "antd";
 import {
   AiFillStar,
+  AiOutlineClockCircle,
   AiOutlineDelete,
   AiOutlineEye,
   AiOutlinePlus,
   AiOutlineSmile,
+  AiOutlineTool,
 } from "react-icons/ai";
 import axios from "axios";
 import {
@@ -297,14 +299,14 @@ const UserList: React.FC = () => {
     <>
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
+          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineSmile style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
               Review Information
             </h2>
-            <h2 className="text-black text-sm">Display review information</h2>
+            <span className="text-black text-sm">Display review information</span>
           </div>
         </div>
         <div className="items-center flex gap-3">
@@ -371,11 +373,19 @@ const UserList: React.FC = () => {
 
             <DisplayLongText text={detailReview.review} />
 
-            <Space>
-              <CalendarOutlined />
-              <Text type="secondary">
-                {renderDateTime(detailReview.created_at)}
-              </Text>
+            <Space size="small" direction="horizontal">
+              <div className="flex gap-2 items-center">
+                <AiOutlineClockCircle size={15} />
+                <Text type="secondary">
+                  {renderDateTime(detailReview.created_at)}
+                </Text>
+              </div>
+              <div className="flex gap-2 items-center">
+                <AiOutlineTool size={15} />
+                <Text type="secondary">
+                  {renderDateTime(detailReview.updated_at)}
+                </Text>
+              </div>
             </Space>
           </Space>
         ) : (

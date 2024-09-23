@@ -144,16 +144,16 @@ const UserList: React.FC = () => {
       <PageTitle title="NimeList - TopicList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
+          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlinePicRight style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
               Topic Information
             </h2>
-            <h2 className="text-black text-sm">
+            <span className="text-black text-sm">
               Displays topic short information and topic details
-            </h2>
+            </span>
           </div>
         </div>
         <div className="items-center flex gap-3">
