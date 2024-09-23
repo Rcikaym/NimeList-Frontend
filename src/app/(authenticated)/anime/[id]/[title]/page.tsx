@@ -9,6 +9,7 @@ import { Spacer } from "@nextui-org/react";
 import { Rate } from "antd";
 import { Chip } from "@nextui-org/chip";
 import { ScrollShadow } from "@nextui-org/react";
+import DisplayLongText from "@/components/DisplayLongText";
 import {
   Modal,
   ModalContent,
@@ -17,19 +18,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
-
-type Anime = {
-  id: number;
-  title: string;
-  type: string;
-  rating: number;
-  synopsis: string;
-  trailer_link: string;
-  release_date: string;
-  photo_cover: string;
-  genre: string[];
-  episode: number;
-};
+import { AnimeType, PhotosType } from "./types";
 
 type Review = {
   id: number;
@@ -48,9 +37,10 @@ type AnimeDetailProps = {
 
 const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
   const { id, title } = params;
-  const [anime, setAnime] = useState<Anime | null>(null);
+  const [anime, setAnime] = useState<AnimeType | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,23 +48,24 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
         if (id) {
           // Fetch anime details using the ID
           const animeResponse = await fetch(
-            `http://localhost:3001/animes/${id}`
+            // `http://localhost:3001/animes/${id}`
+            `${api}/anime/get/${id}`
           );
           if (!animeResponse.ok) {
             throw new Error("Error fetching anime");
           }
-          const animeData = await animeResponse.json();
+          const animeData: AnimeType = await animeResponse.json();
           setAnime(animeData);
 
           // Fetch reviews for the anime
-          const reviewsResponse = await fetch(
-            `http://localhost:3001/reviews?anime_id=${id}`
-          );
-          if (!reviewsResponse.ok) {
-            throw new Error("Error fetching reviews");
-          }
-          const reviewsData = await reviewsResponse.json();
-          setReviews(reviewsData);
+          // const reviewsResponse = await fetch(
+          //   `http://localhost:3001/reviews?anime_id=${id}` // hanya untuk percobaan dikarenakan API untuk reviews belum ready, jangan lupa diganti
+          // );
+          // if (!reviewsResponse.ok) {
+          //   throw new Error("Error fetching reviews");
+          // }
+          // const reviewsData = await reviewsResponse.json();
+          // setReviews(reviewsData);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -96,9 +87,9 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
     <>
       <div className="container mx-auto mt-6">
         <div className="w-full h-[88px] gap-1">
-          <h1 className="text-5xl font-jakarta font-bold m-0">{anime.title}</h1>
-          <p className="text-gray-500 font-semibold mb-0 mt-2">
-            {anime.type} • {anime.release_date}
+          <h1 className="text-5xl font-bold m-0">{anime.anime.title}</h1>
+          <p className="text-gray-500 font-semibold mb-0 mt-3">
+            {anime.anime.type} • {anime.anime.release_date}
           </p>
         </div>
         <div className="flex mb-5">
@@ -106,11 +97,11 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
           <div className="pt-3 w-full max-w-xs h-auto">
             <Image
               //   src={anime.photo_cover}
-              src="/images/the-wind-rise.jpg"
+              src={`${api}/${anime.anime.photo_cover.replace(/\\/g, "/")}`}
               width={300} // 2:3 aspect ratio (300x450)
               height={450}
               className="object-cover w-full"
-              alt={anime.title}
+              alt={anime.anime.title}
             />
             <Button
               size="lg"
@@ -126,31 +117,31 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
           <div className="h-full">
             <iframe
               className="w-[900px] h-[471px] pt-3 select-none"
-              src="https://www.youtube.com/embed/PhHoCnRg1Yw?si=ST2GFJQJj99I53JR"
-              title="The Wind Rises Trailer"
+              src={anime.anime.trailer_link}
+              title={anime.anime.title}
               allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             />
             <div className="flex flex-row mt-3">
               {/* Genre Tags */}
               <div className="flex space-x-2 mb-4">
-                {anime.genre.map((genre) => (
+                {anime.anime.genres.map((genre) => (
                   <Chip
-                    key={genre}
+                    key={genre.id}
                     classNames={{
                       base: "bg-[#008576b7] text-white font-medium",
                     }}
                     variant="flat"
                     size="md"
                   >
-                    {genre}
+                    {genre.name}
                   </Chip>
                 ))}
               </div>
             </div>
             <ScrollShadow className="w-[900px] max-h-[150px]" hideScrollBar>
-              <p className="text-[#f5f5f5] opacity-100 font-medium scroll-smooth">
-                {anime.synopsis}
+              <p className="text-[#f5f5f5] opacity-100 font-medium scroll-smooth tracking-wider">
+                <DisplayLongText text={anime.anime.synopsis}/>
               </p>
             </ScrollShadow>
           </div>
@@ -161,7 +152,9 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                 <div className="text-center p-4 text-white">
                   <div className="flex items-center justify-center">
                     <BiSolidStar className="w-[30px] h-[30px] text-[#ffd500] mr-2" />
-                    <span className="text-4xl font-bold">{anime.rating}</span>
+                    <span className="text-4xl font-bold">
+                      {anime.averageRating}
+                    </span>
                     <span className="text-xl font-bold opacity-70">/10</span>
                   </div>
                   <p className="text-gray-400 text-sm mt-2">AVG. RATING</p>
