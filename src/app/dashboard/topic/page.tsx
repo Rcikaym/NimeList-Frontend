@@ -5,6 +5,7 @@ import { Button, message, Modal, Space } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   AiOutlineDelete,
+  AiOutlineEdit,
   AiOutlinePicRight,
   AiOutlinePlus,
 } from "react-icons/ai";
@@ -38,9 +39,7 @@ const UserList: React.FC = () => {
   useEffect(() => {
     const fetchAnime = async () => {
       try {
-        const response = await axios.get<DataType[]>(
-          `${api}/topic/get-all`
-        );
+        const response = await axios.get<DataType[]>(`${api}/topic/get-all`);
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
@@ -59,9 +58,7 @@ const UserList: React.FC = () => {
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        `${api}/topic/get-all`
-      );
+      const response = await axios.get<DataType[]>(`${api}/topic/get-all`);
       setData(response.data); // Memperbarui data genre
     } catch (error) {
       message.error("Failed to delete anime");
@@ -126,6 +123,13 @@ const UserList: React.FC = () => {
             href={`topic/${record.id}`}
           >
             <EyeOutlined style={{ fontSize: 20 }} />
+          </Button>
+          <Button
+            type="text"
+            className="bg-emerald-700 text-white"
+            href={`topic/edit/${record.id}`}
+          >
+            <AiOutlineEdit style={{ fontSize: 20 }} />
           </Button>
           <Button
             type="text"

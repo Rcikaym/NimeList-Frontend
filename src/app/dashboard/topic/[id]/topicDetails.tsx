@@ -16,8 +16,8 @@ import {
 
 // Types moved to a separate file to reduce bundle size
 import renderDateTime from "@/components/FormatDateTime";
-import DisplayLongText from "@/components/DisplayLongText";
 import { TopicType } from "./types";
+import DynamicContent from "@/components/htmlParses";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -141,7 +141,7 @@ export default function TopicDetails({ id }: { id: string }) {
         <div className="p-6">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">Body</h2>
           <div className="text-gray-600">
-            <DisplayLongText text={body} />
+            <DynamicContent content={body} />
           </div>
         </div>
       </div>

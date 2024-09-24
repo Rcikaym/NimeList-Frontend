@@ -11,6 +11,9 @@ import {
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
 import PageTitle from "@/components/TitlePage";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+import { compressImage } from "./compressImage";
 
 interface DataType {
   title: string;
@@ -30,12 +33,50 @@ interface DataUser {
   username: string;
 }
 
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
+    ["link", "image"],
+    ["clean"],
+  ],
+  clipboard: {
+    matchVisual: false,
+  },
+};
+
+const formats = [
+  "header",
+  "font",
+  "size",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "blockquote",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+  "image",
+];
+
 const CreateTopic: React.FC = () => {
   const router = useRouter();
   const [form] = Form.useForm(); // Form handler dari Ant Design
   const [animes, setAnimes] = useState<DataAnime[]>([]);
   const [users, setUsers] = useState<DataUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  let [content, setContent] = useState<string>("");
   const { confirm } = Modal;
   const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -44,12 +85,12 @@ const CreateTopic: React.FC = () => {
       setLoading(true);
       try {
         const response = await axios.get<DataAnime[]>(
-          `${api}/topic/get-all-anim`
+          `${api}/topic/get-all-anime`
         );
         setAnimes(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching animes:", error);
         setLoading(true); // Tetap menonaktifkan loading jika terjadi error
       }
     };
@@ -104,9 +145,27 @@ const CreateTopic: React.FC = () => {
 
     // Tambahkan data dari form ke FormData untuk dikirim ke backend
     formData.append("title", values.title);
-    formData.append("body", values.body);
     formData.append("id_anime", values.id_anime);
     formData.append("id_user", values.id_user);
+
+    // Ekstrak gambar dari content
+    const images: string[] = [];
+    const imageRegex = /<img[^>]+src="([^">]+)"/g; // Regex untuk mencari src dari tag <img>
+    let match: RegExpExecArray | null;
+
+    // Temukan semua gambar dalam body
+    while ((match = imageRegex.exec(content)) !== null) {
+      images.push(match[1]); // Simpan URL gambar
+    }
+
+    // Kompresi setiap gambar
+    for (const imgSrc of images) {
+      const compressedImage: string = await compressImage(imgSrc); // Kompresi gambar
+      content = content.replace(imgSrc, compressedImage); // Ganti src gambar dengan base64 yang sudah dikompresi
+    }
+
+    // Tambahkan body yang sudah dimodifikasi ke FormData
+    formData.append("body", content);
 
     // Tambahkan file foto anime (bisa lebih dari 1)
     if (values.photos) {
@@ -164,12 +223,14 @@ const CreateTopic: React.FC = () => {
           </Form.Item>
 
           {/* Input synopsis */}
-          <Form.Item
-            name="body"
-            label="Body"
-            rules={[{ required: true, message: "Please input body" }]}
-          >
-            <Input.TextArea showCount autoSize maxLength={9999} />
+          <Form.Item label="Body" name="body">
+            <ReactQuill
+              theme="snow"
+              value={content}
+              onChange={setContent}
+              modules={modules}
+              formats={formats}
+            />
           </Form.Item>
 
           {/* Select anime */}

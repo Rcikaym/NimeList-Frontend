@@ -19,9 +19,8 @@ export default function DashboardLayout({
         <Navbar />
         <Content
           style={{
-            margin: "24px 16px 0",
             padding: 24,
-            background: "#fff",
+            background: "#ffff",
           }}
         >
           {children}
