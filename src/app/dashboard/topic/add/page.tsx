@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import PageTitle from "@/components/TitlePage";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-import { compressImage } from "./compressImage";
+import { formats, modules } from "@/components/moduleAndFormatTextArea";
 
 interface DataType {
   title: string;
@@ -34,41 +34,6 @@ interface DataUser {
 }
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-
-const modules = {
-  toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ size: [] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-      { indent: "-1" },
-      { indent: "+1" },
-    ],
-    ["link", "image"],
-    ["clean"],
-  ],
-  clipboard: {
-    matchVisual: false,
-  },
-};
-
-const formats = [
-  "header",
-  "font",
-  "size",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-];
 
 const CreateTopic: React.FC = () => {
   const router = useRouter();
@@ -148,22 +113,6 @@ const CreateTopic: React.FC = () => {
     formData.append("id_anime", values.id_anime);
     formData.append("id_user", values.id_user);
 
-    // Ekstrak gambar dari content
-    const images: string[] = [];
-    const imageRegex = /<img[^>]+src="([^">]+)"/g; // Regex untuk mencari src dari tag <img>
-    let match: RegExpExecArray | null;
-
-    // Temukan semua gambar dalam body
-    while ((match = imageRegex.exec(content)) !== null) {
-      images.push(match[1]); // Simpan URL gambar
-    }
-
-    // Kompresi setiap gambar
-    for (const imgSrc of images) {
-      const compressedImage: string = await compressImage(imgSrc); // Kompresi gambar
-      content = content.replace(imgSrc, compressedImage); // Ganti src gambar dengan base64 yang sudah dikompresi
-    }
-
     // Tambahkan body yang sudah dimodifikasi ke FormData
     formData.append("body", content);
 
@@ -208,7 +157,7 @@ const CreateTopic: React.FC = () => {
   return (
     <>
       <PageTitle title="Add Topic" />
-      <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg">
+      <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg text-white">
         Form Add Topic
       </div>
       <Form layout="vertical" form={form} onFinish={handleSubmit}>

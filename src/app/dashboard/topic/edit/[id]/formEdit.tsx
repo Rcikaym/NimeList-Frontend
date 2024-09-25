@@ -20,17 +20,51 @@ import {
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { AnimeType, PhotosType, TopicType } from "./types";
+import "react-quill/dist/quill.snow.css";
+import { formats, modules } from "@/components/moduleAndFormatTextArea";
+import dynamic from "next/dynamic";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function TopicEdit({ id }: { id: string }) {
   const router = useRouter();
   const [form] = Form.useForm();
   const api = process.env.NEXT_PUBLIC_API_URL;
   const [topic, setTopic] = useState<any>(null);
+  let [content, setContent] = useState<string>("");
   const [animes, setAnimes] = useState<AnimeType[]>([]);
   const [loading, setLoading] = useState(true);
   const [fileList, setFileList] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const { confirm } = Modal;
+
+  // Fungsi untuk memperbarui src gambar dalam konten HTML
+  const htmlParser = (htmlString: string): string => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, "text/html");
+
+    // Update src untuk gambar
+    const images = doc.querySelectorAll("img");
+    images.forEach((img) => {
+      const originalSrc = img.getAttribute("src");
+      if (originalSrc && !originalSrc.startsWith("http")) {
+        img.setAttribute("src", `${api}${originalSrc}`);
+      }
+    });
+
+    // Tangani tag <p> kosong
+    const paragraphs = doc.querySelectorAll("p");
+    paragraphs.forEach((p) => {
+      // Jika tag <p> kosong (tidak ada teks dan tidak ada elemen anak)
+      if (p.textContent?.trim() === "" && p.children.length === 0) {
+        // Gantikan <p> kosong dengan <br> atau menambahkan spasi
+        const brElement = document.createElement("br");
+        p.replaceWith(brElement);
+      }
+    });
+
+    return doc.body.innerHTML; // Kembalikan konten dengan perubahan
+  };
 
   // Fetch topic edit data
   useEffect(() => {
@@ -39,6 +73,8 @@ export default function TopicEdit({ id }: { id: string }) {
       try {
         const response = await axios.get(`${api}/topic/get/${id}`);
         const topicData = response.data;
+
+        const updatedContent = htmlParser(topicData.body);
 
         // Set data foto ke setter dari fileList
         setFileList(
@@ -53,9 +89,11 @@ export default function TopicEdit({ id }: { id: string }) {
         // Set data ke dalam form
         form.setFieldsValue({
           title: topicData.title,
-          body: topicData.body,
           id_anime: topicData.id_anime,
+          body: updatedContent,
         });
+
+        // setContent(updatedContent);
 
         setTopic(topicData.title);
         setError(null);
@@ -89,16 +127,34 @@ export default function TopicEdit({ id }: { id: string }) {
     fetchAnime();
   }, []);
 
+  const setSrcImgOri = (html: string) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    // Update src untuk gambar
+    const images = doc.querySelectorAll("img");
+    images.forEach((img) => {
+      const originalSrc = img.getAttribute("data-original-src");
+      if (originalSrc) {
+        img.setAttribute("src", `${originalSrc}`);
+      }
+    });
+
+    return doc.body.innerHTML;
+  };
+
   // Fungsi untuk submit data
   const updateTopic = async (values: TopicType) => {
     const formData = new FormData();
 
     formData.append("title", values.title);
-    formData.append("body", values.body);
     formData.append("id_anime", values.id_anime);
 
-    const existing_photos = [] as string[];
+    // Tambahkan body yang sudah dimodifikasi ke FormData
+    formData.append("body", setSrcImgOri(content));
+
     const new_photos = [] as string[];
+    const existing_photos = [] as string[];
 
     // Tambahkan file foto anime (bisa lebih dari 1)
     fileList.forEach((file: any) => {
@@ -168,13 +224,6 @@ export default function TopicEdit({ id }: { id: string }) {
     showUpdateConfirm(); // Panggil fungsi addAnime dengan nilai form
   };
 
-  // Fungsi untuk mengubah default value dari episode jika tipe movie dipilih
-  const onValuesChange = (changedValues: any, allValues: any) => {
-    if (changedValues.type === "movie") {
-      form.setFieldsValue({ episodes: 1 });
-    }
-  };
-
   const handlePhotosUpload = (info: any) => {
     const { file, fileList } = info;
 
@@ -222,7 +271,13 @@ export default function TopicEdit({ id }: { id: string }) {
             label="Body"
             rules={[{ required: true, message: "Please input body" }]}
           >
-            <Input.TextArea autoSize placeholder="Input body" />
+            <ReactQuill
+              theme="snow"
+              modules={modules}
+              value={content}
+              onChange={(value) => setContent(value)}
+              formats={formats}
+            />
           </Form.Item>
 
           {/* Animes*/}
