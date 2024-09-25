@@ -25,7 +25,6 @@ import {
 import axios from "axios";
 import {
   AppstoreFilled,
-  CalendarOutlined,
   ExclamationCircleFilled,
   LoadingOutlined,
   UserOutlined,
