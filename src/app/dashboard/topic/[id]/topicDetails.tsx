@@ -17,7 +17,7 @@ import {
 // Types moved to a separate file to reduce bundle size
 import renderDateTime from "@/components/FormatDateTime";
 import { TopicType } from "./types";
-import DynamicContent from "@/components/htmlParses";
+import DynamicContent from "@/components/DynamicContent";
 
 // Memoized components
 const MemoizedImage = memo(Image);

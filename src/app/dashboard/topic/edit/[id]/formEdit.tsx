@@ -21,7 +21,7 @@ import {
 import { useRouter } from "next/navigation";
 import { AnimeType, PhotosType, TopicType } from "./types";
 import "react-quill/dist/quill.snow.css";
-import { formats, modules } from "@/components/moduleAndFormatTextArea";
+import { formats, modules } from "@/components/ModuleAndFormatTextArea";
 import dynamic from "next/dynamic";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
@@ -219,11 +219,6 @@ export default function TopicEdit({ id }: { id: string }) {
       });
   };
 
-  // Fungsi yang akan dipanggil saat submit form
-  const handleSubmit = () => {
-    showUpdateConfirm(); // Panggil fungsi addAnime dengan nilai form
-  };
-
   const handlePhotosUpload = (info: any) => {
     const { file, fileList } = info;
 
@@ -255,7 +250,7 @@ export default function TopicEdit({ id }: { id: string }) {
       <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg text-white">
         Form Edit Topic {topic}
       </div>
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
+      <Form form={form} layout="vertical" onFinish={showUpdateConfirm}>
         <div className="rounded-sm shadow-md p-4">
           {/* Form Items */}
           <Form.Item
