@@ -29,6 +29,7 @@ import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import { api } from "../../page";
+import PageTitle from "@/components/TitlePage";
 
 interface DataType {
   id: string;
@@ -49,7 +50,7 @@ const normFile = (e: any) => {
 const TopicPhotoList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [editingPhoto, setEditingPhoto] = useState<string>(""); // Menyimpan id photo yang sedang diedit
+  const [idPhoto, setIdPhoto] = useState<string>(""); // Menyimpan id photo yang sedang diedit
   const [modalUpdatePhoto, setModalUpdatePhoto] = useState<boolean>(false); // Untuk status modal edit photo
   const [modalDetail, setModalDetail] = useState<boolean>(false); // Untuk status modal detail
   const [detailPhoto, setDetailPhoto] = useState<any>(null);
@@ -57,7 +58,7 @@ const TopicPhotoList: React.FC = () => {
   const [form] = Form.useForm();
 
   const handleEditPhoto = (id: string) => {
-    setEditingPhoto(id); // Simpan data photo yang sedang diedit
+    setIdPhoto(id); // Simpan data photo yang sedang diedit
     setModalUpdatePhoto(true); // Buka modal
   };
 
@@ -73,15 +74,11 @@ const TopicPhotoList: React.FC = () => {
   const handleUpdatePhoto = async (values: any) => {
     const formData = new FormData();
 
-    // Handle file upload
-    if (values.photos) {
-      values.photos.forEach((file: any) => {
-        formData.append("photos", file.originFileObj);
-      });
-    }
+    const file = values.photos[0];
+    formData.append("photos", file.originFileObj);
 
     try {
-      await axios.put(`${api}/photo-topic/update/${editingPhoto}`, formData); // Update foto di server
+      await axios.put(`${api}/photo-topic/update/${idPhoto}`, formData); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
@@ -259,6 +256,7 @@ const TopicPhotoList: React.FC = () => {
 
   return (
     <>
+      <PageTitle title="Topic - PhotoList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
@@ -299,7 +297,19 @@ const TopicPhotoList: React.FC = () => {
         centered
         onClose={() => setModalUpdatePhoto(false)}
         open={modalUpdatePhoto}
-        onOk={showUpdateConfirm}
+        footer={[
+          <Button key="back" onClick={() => setModalUpdatePhoto(false)}>
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            loading={loading}
+            onClick={showUpdateConfirm}
+          >
+            Submit
+          </Button>,
+        ]}
         onCancel={() => {
           setModalUpdatePhoto(false);
         }}
@@ -309,6 +319,7 @@ const TopicPhotoList: React.FC = () => {
             name="photos"
             label="Update Photo"
             getValueFromEvent={normFile}
+            rules={[{ required: true, message: "Please upload image" }]}
           >
             <Upload
               {...uploadProps}

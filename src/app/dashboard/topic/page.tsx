@@ -37,7 +37,7 @@ const UserList: React.FC = () => {
 
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
-    const fetchAnime = async () => {
+    const fetchTopic = async () => {
       try {
         const response = await axios.get<DataType[]>(`${api}/topic/get-all`);
         setData(response.data); // Mengisi data dengan hasil dari API
@@ -48,20 +48,20 @@ const UserList: React.FC = () => {
       }
     };
 
-    fetchAnime(); // Panggil fungsi fetchUsers saat komponen dimuat
+    fetchTopic(); // Panggil fungsi fetchTopic saat komponen dimuat
   }, []);
 
-  // Fungsi untuk melakukan delete data genre
-  const handleDeleteAnime = async (id: string) => {
+  // Fungsi untuk melakukan delete data topic
+  const handleDeleteTopic = async (id: string) => {
     try {
       await axios.delete(`${api}/topic/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(`${api}/topic/get-all`);
-      setData(response.data); // Memperbarui data genre
+      setData(response.data); // Memperbarui data topic
     } catch (error) {
-      message.error("Failed to delete anime");
+      message.error("Failed to delete topic");
     }
   };
 
@@ -69,12 +69,12 @@ const UserList: React.FC = () => {
   const showDeleteConfirm = (id: string, title: string) => {
     confirm({
       centered: true,
-      title: "Do you want to delete " + title + " anime?",
+      title: "Do you want to delete " + title + " topic?",
       icon: <ExclamationCircleFilled />,
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handleDeleteAnime(id)
+        return handleDeleteTopic(id)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -187,7 +187,6 @@ const UserList: React.FC = () => {
       </div>
       <CustomTable
         columns={columns}
-        pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
         data={data} // Data dari state
       />
     </>

@@ -17,6 +17,7 @@ import {
   AiFillStar,
   AiOutlineClockCircle,
   AiOutlineDelete,
+  AiOutlineEdit,
   AiOutlineEye,
   AiOutlinePlus,
   AiOutlineSmile,
@@ -26,7 +27,6 @@ import axios from "axios";
 import {
   AppstoreFilled,
   ExclamationCircleFilled,
-  LoadingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
@@ -35,7 +35,7 @@ import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface DataType {
   id: string;
@@ -56,19 +56,53 @@ interface DataUser {
   username: string;
 }
 
+const api = process.env.NEXT_PUBLIC_API_URL;
+
 const UserList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
-  const [detailReview, setDetailReview] = useState<any>(null);
+  const [detailReview, setDetailReview] = useState<any>(null); // Data diisi dengan api
   const [dataAnime, setDataAnime] = useState<DataAnime[]>([]); // Data diisi dengan api
   const [dataUser, setDataUser] = useState<DataUser[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [modalGenre, setModalReview] = useState<boolean>(false); // Untuk status modal genre
-  const [modalDetail, setModalDetail] = useState<boolean>(false); // Untuk status modal detail
+  const [idReview, setIdReview] = useState<string>("");
   const [form] = Form.useForm();
+  const [modalMode, setMode] = useState<"post" | "edit" | "detail">();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { confirm } = Modal;
 
   const [reviewedAnime, setReviewedAnime] = useState<string[]>([]); // Menyimpan anime yang sudah direview oleh user yang dipilih
-  const [selectedUser, setSelectedUser] = useState<string | null>(null); // Menyimpan user yang dipilih
+  const [selectedUser, setSelectedUser] = useState<string | null>(null); // Menyimpan user yang dipili
+
+  const showModal = (modalMode: "post" | "edit" | "detail") => {
+    setMode(modalMode);
+    setModalVisible(true);
+  };
+
+  const handleOk = () => {
+    if (modalMode === "detail") {
+      setModalVisible(false); // Untuk mode detail, tidak perlu submit
+      return;
+    }
+    form
+      .validateFields()
+      .then((values: DataType) => {
+        if (modalMode === "post") {
+          showPostConfirm(values);
+        } else if (modalMode === "edit") {
+          showEditConfirm(values);
+        }
+        setModalVisible(false);
+        form.resetFields();
+      })
+      .catch(() => {
+        message.error("Please complete the form before submitting!");
+      });
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+    form.resetFields();
+  };
 
   // Fungsi untuk melakukan post data genre
   const handlePostReview = async (values: DataType) => {
@@ -87,52 +121,41 @@ const UserList: React.FC = () => {
     }
   };
 
-  // Fungsi untuk melakukan delete data genre
-  const handleDeleteGenre = async (id: string) => {
-    try {
-      await axios.delete(`http://localhost:4321/genre/delete/${id}`); // Melakukan DELETE ke server
-      message.success("Genre deleted successfully!");
+  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
+  const showPostConfirm = (values: DataType) => {
+    confirm({
+      centered: true,
+      title: "Do you want to add this review?",
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        setLoading(true); // Set status loading pada tombol OK
 
-      // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        "http://localhost:4321/genre/get-all"
-      );
+        return handlePostReview(values)
+          .then(() => {
+            setLoading(false); // Set loading ke false setelah selesai
+          })
+          .catch(() => {
+            setLoading(false); // Set loading ke false jika terjadi error
+          });
+      },
+      onCancel() {
+        setModalVisible(true); // Jika dibatalkan, buka kembali modal
+      },
+    });
+  };
+
+  // Fungsi untuk melakukan delete data review
+  const handleDeleteReview = async (id: string) => {
+    try {
+      await axios.delete(`${api}/review/delete/${id}`); // Melakukan DELETE ke server
+      message.success("Review deleted successfully!");
+
+      // Fetch ulang data setelah di delete
+      const response = await axios.get<DataType[]>(`${api}/genre/get-all`);
       setData(response.data); // Memperbarui data genre
     } catch (error) {
       message.error("Failed to delete review");
     }
-  };
-
-  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showPostConfirm = () => {
-    form
-      .validateFields() // Validasi input form terlebih dahulu
-      .then((values: DataType) => {
-        setModalReview(false); // Tutup modal genre
-
-        confirm({
-          centered: true,
-          title: "Do you want to add this review?",
-          icon: <ExclamationCircleFilled />,
-          onOk() {
-            setLoading(true); // Set status loading pada tombol OK
-
-            return handlePostReview(values)
-              .then(() => {
-                setLoading(false); // Set loading ke false setelah selesai
-              })
-              .catch(() => {
-                setLoading(false); // Set loading ke false jika terjadi error
-              });
-          },
-          onCancel() {
-            setModalReview(true); // Jika dibatalkan, buka kembali modal
-          },
-        });
-      })
-      .catch((info) => {
-        message.error("Please complete the form before submitting!");
-      });
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
@@ -144,7 +167,7 @@ const UserList: React.FC = () => {
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handleDeleteGenre(id)
+        return handleDeleteReview(id)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -155,9 +178,54 @@ const UserList: React.FC = () => {
     });
   };
 
-  const showModalDetail = (id: string) => {
-    setModalDetail(true);
-    const data = axios.get(`http://localhost:4321/review/get/${id}`);
+  const setDataEdit = (id: string) => {
+    setIdReview(id);
+    const data = axios.get(`${api}/review/get/${id}`);
+    data.then((res) => {
+      // Set data ke dalam form
+      form.setFieldsValue({
+        review: res.data.review,
+        rating: parseFloat(res.data.rating),
+      });
+    });
+  };
+
+  const handleEditReview = async (values: DataType) => {
+    try {
+      await axios.put(`${api}/review/update/${idReview}`, values);
+      message.success("Review updated successfully!");
+      setModalVisible(false);
+
+      // Fetch ulang data setelah update
+      const response = await axios.get<DataType[]>(`${api}/review/get-all`);
+      setData(response.data); // Memperbarui data review
+      form.resetFields(); // Reset form setelah submit
+    } catch (error) {
+      message.error("Failed to update review");
+    }
+  };
+
+  const showEditConfirm = (values: DataType) => {
+    confirm({
+      centered: true,
+      title: "Do you want to update this review ?",
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        setLoading(true); // Set status loading pada tombol OK
+
+        return handleEditReview(values)
+          .then(() => {
+            setLoading(false); // Set loading ke false setelah selesai
+          })
+          .catch(() => {
+            setLoading(false); // Set loading ke false jika terjadi error
+          });
+      },
+    });
+  };
+
+  const setDataDetail = (id: string) => {
+    const data = axios.get(`${api}/review/get/${id}`);
     data.then((res) => {
       setDetailReview(res.data);
     });
@@ -168,9 +236,7 @@ const UserList: React.FC = () => {
     const fetchReview = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<DataType[]>(
-          "http://localhost:4321/review/get-all"
-        );
+        const response = await axios.get<DataType[]>(`${api}/review/get-all`);
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
@@ -182,7 +248,7 @@ const UserList: React.FC = () => {
     const fetchAnime = async () => {
       try {
         const response = await axios.get<DataAnime[]>(
-          "http://localhost:4321/review/get-all-anime"
+          `${api}/review/get-all-anime`
         );
         setDataAnime(response.data); // Mengisi data dengan anime dari API
       } catch (error) {
@@ -193,7 +259,7 @@ const UserList: React.FC = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get<DataUser[]>(
-          "http://localhost:4321/review/get-all-user"
+          `${api}/review/get-all-user`
         );
         setDataUser(response.data); // Mengisi data dengan user dari API
       } catch (error) {
@@ -232,7 +298,7 @@ const UserList: React.FC = () => {
   const columns: TableColumnsType<DataType> = useMemo(
     () => [
       {
-        title: "Username",
+        title: "Created By",
         dataIndex: "username",
         sorter: (a: DataType, b: DataType) =>
           a.username.localeCompare(b.username),
@@ -240,7 +306,7 @@ const UserList: React.FC = () => {
         ...getColumnSearchProps("username"),
       },
       {
-        title: "Title",
+        title: "Title Anime",
         dataIndex: "title_anime",
         ...getColumnSearchProps("title_anime"),
       },
@@ -276,9 +342,22 @@ const UserList: React.FC = () => {
             <Button
               type="text"
               className="bg-emerald-700 text-white"
-              onClick={() => showModalDetail(record.id)}
+              onClick={() => {
+                showModal("detail");
+                setDataDetail(record.id);
+              }}
             >
               <AiOutlineEye style={{ fontSize: 20 }} />
+            </Button>
+            <Button
+              type="text"
+              className="bg-emerald-700 text-white"
+              onClick={() => {
+                showModal("edit");
+                setDataEdit(record.id);
+              }}
+            >
+              <AiOutlineEdit style={{ fontSize: 20 }} />
             </Button>
             <Button
               type="text"
@@ -305,7 +384,9 @@ const UserList: React.FC = () => {
             <h2 className="text-black text-lg font-regular">
               Review Information
             </h2>
-            <span className="text-black text-sm">Display review information</span>
+            <span className="text-black text-sm">
+              Display review information
+            </span>
           </div>
         </div>
         <div className="items-center flex gap-3">
@@ -328,7 +409,7 @@ const UserList: React.FC = () => {
         <Button
           type="text"
           className="bg-emerald-700 text-white"
-          onClick={() => setModalReview(true)}
+          onClick={() => showModal("post")}
         >
           <AiOutlinePlus /> Add Review
         </Button>
@@ -339,22 +420,27 @@ const UserList: React.FC = () => {
         data={data} // Data dari state
       />
 
-      {/* Modal view review */}
+      {/* Modal dynamic mode */}
       <Modal
         title={
-          <Title level={4}>
-            {detailReview
-              ? `Detail Review ${detailReview.title_anime}`
-              : "Detail Review"}
-          </Title>
+          "Modal " + modalMode === "post"
+            ? "Add New Review"
+            : modalMode === "edit"
+            ? "Edit Review"
+            : "Detail Review"
         }
         centered
-        open={modalDetail}
-        footer={null}
-        onOk={() => setModalDetail(false)}
-        onCancel={() => setModalDetail(false)}
+        open={modalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        cancelButtonProps={{
+          style: modalMode === "detail" ? { display: "none" } : {},
+        }}
+        okButtonProps={{
+          style: modalMode === "detail" ? { display: "none" } : {},
+        }}
       >
-        {detailReview ? (
+        {modalMode === "detail" && detailReview ? (
           <Space direction="vertical" size="middle" style={{ width: "100%" }}>
             <Space direction="vertical">
               <Space>
@@ -388,89 +474,105 @@ const UserList: React.FC = () => {
             </Space>
           </Space>
         ) : (
-          <LoadingOutlined size={35} />
+          ""
         )}
-      </Modal>
 
-      {/* Modal add review */}
-      <Modal
-        title="Modal Add Review"
-        centered
-        onClose={() => setModalReview(false)}
-        open={modalGenre}
-        onOk={showPostConfirm}
-        onCancel={() => {
-          setModalReview(false);
-        }}
-      >
-        <Form form={form} layout="vertical">
-          {/* Select user */}
-          <Form.Item
-            label="User"
-            name="id_user"
-            rules={[{ required: true, message: "Please select user" }]}
-          >
-            <Select
-              placeholder="Select user"
-              allowClear
-              onChange={handleUserChange}
-              filterOption={(input, option) =>
-                (option?.children as unknown as string)
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
+        {modalMode === "post" ? (
+          <Form form={form} layout="vertical">
+            {/* Select user */}
+            <Form.Item
+              label="User"
+              name="id_user"
+              rules={[{ required: true, message: "Please select user" }]}
             >
-              {dataUser.map((user) => (
-                <Option key={user.id} value={user.id}>
-                  {user.username}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          {/* Select anime */}
-          <Form.Item
-            label="Anime"
-            name="id_anime"
-            rules={[{ required: true, message: "Please select anime" }]}
-          >
-            <Select
-              placeholder="Select anime"
-              allowClear
-              filterOption={(input, option) =>
-                (option?.children as unknown as string)
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-            >
-              {dataAnime
-                .filter((anime) => !reviewedAnime.includes(anime.id)) // Filter anime yang belum direview
-                .map((anime) => (
-                  <Option key={anime.id} value={anime.id}>
-                    {anime.title}
+              <Select
+                placeholder="Select user"
+                allowClear
+                onChange={handleUserChange}
+                filterOption={(input, option) =>
+                  (option?.children as unknown as string)
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {dataUser.map((user) => (
+                  <Option key={user.id} value={user.id}>
+                    {user.username}
                   </Option>
                 ))}
-            </Select>
-          </Form.Item>
+              </Select>
+            </Form.Item>
 
-          {/* Input review */}
-          <Form.Item
-            label="Review"
-            name="review"
-            rules={[{ required: true, message: "Please input review" }]}
-          >
-            <Input.TextArea showCount maxLength={9999} autoSize />
-          </Form.Item>
+            {/* Select anime */}
+            <Form.Item
+              label="Anime"
+              name="id_anime"
+              rules={[{ required: true, message: "Please select anime" }]}
+            >
+              <Select
+                placeholder="Select anime"
+                allowClear
+                filterOption={(input, option) =>
+                  (option?.children as unknown as string)
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {dataAnime
+                  .filter((anime) => !reviewedAnime.includes(anime.id)) // Filter anime yang belum direview
+                  .map((anime) => (
+                    <Option key={anime.id} value={anime.id}>
+                      {anime.title}
+                    </Option>
+                  ))}
+              </Select>
+            </Form.Item>
 
-          {/* Input rating */}
-          <Form.Item
-            name="rating"
-            label="Rate"
-            rules={[{ required: true, message: "Please input rating" }]}
-          >
-            <Rate count={10} allowHalf />
-          </Form.Item>
-        </Form>
+            {/* Input review */}
+            <Form.Item
+              label="Review"
+              name="review"
+              rules={[{ required: true, message: "Please input review" }]}
+            >
+              <Input.TextArea showCount maxLength={9999} autoSize />
+            </Form.Item>
+
+            {/* Input rating */}
+            <Form.Item
+              name="rating"
+              label="Rate"
+              rules={[{ required: true, message: "Please input rating" }]}
+            >
+              <Rate count={10} allowHalf />
+            </Form.Item>
+          </Form>
+        ) : (
+          ""
+        )}
+
+        {modalMode === "edit" ? (
+          <Form form={form} layout="vertical">
+            {/* Input review */}
+            <Form.Item
+              label="Review"
+              name="review"
+              rules={[{ required: true, message: "Please input review" }]}
+            >
+              <Input.TextArea showCount maxLength={9999} autoSize />
+            </Form.Item>
+
+            {/* Input rating */}
+            <Form.Item
+              name="rating"
+              label="Rate"
+              rules={[{ required: true, message: "Please input rating" }]}
+            >
+              <Rate count={10} allowHalf />
+            </Form.Item>
+          </Form>
+        ) : (
+          ""
+        )}
       </Modal>
     </>
   );

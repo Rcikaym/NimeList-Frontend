@@ -50,29 +50,57 @@ interface DataPost {
   comment: string;
 }
 
+interface DataEdit {
+  comment: string;
+}
+
 const api = process.env.NEXT_PUBLIC_API_URL;
 
 const TopicCommentList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [modalPost, setModalPost] = useState<boolean>(false);
   const [user, setUser] = useState<any[]>([]);
   const [topic, setTopic] = useState<any[]>([]);
-  const [editingPhoto, setEditingPhoto] = useState<string>(""); // Menyimpan id photo yang sedang diedit
-  const [modalUpdatePhoto, setModalUpdatePhoto] = useState<boolean>(false); // Untuk status modal edit photo
-  const [modalDetail, setModalDetail] = useState<boolean>(false); // Untuk status modal detail
   const [detailComment, setDetailComment] = useState<any>(null);
+  const [modalMode, setMode] = useState<"post" | "edit" | "detail">();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [idComment, setId] = useState<string>("");
   const { confirm } = Modal;
   const [form] = Form.useForm();
 
-  const handleEditPhoto = (id: string) => {
-    setEditingPhoto(id); // Simpan data photo yang sedang diedit
-    setModalUpdatePhoto(true); // Buka modal
+  const showModal = (modalMode: "post" | "edit" | "detail") => {
+    setMode(modalMode);
+    setModalVisible(true);
   };
 
-  // Modal detail comment
-  const showModalDetail = (id: string) => {
-    setModalDetail(true);
+  const handleCancel = () => {
+    setModalVisible(false);
+    form.resetFields();
+  };
+
+  const handleOk = () => {
+    if (modalMode === "detail") {
+      setModalVisible(false); // Untuk mode detail, tidak perlu submit
+      return;
+    }
+    form
+      .validateFields()
+      .then((values: any) => {
+        if (modalMode === "post") {
+          showPostConfirm(values);
+        } else if (modalMode === "edit") {
+          showEditConfirm(values);
+        }
+        setModalVisible(false);
+        form.resetFields();
+      })
+      .catch(() => {
+        message.error("Please complete the form before submitting!");
+      });
+  };
+
+  // Set data detail comment
+  const setDataDetail = (id: string) => {
     const data = axios.get(`${api}/comment/get/${id}`);
     data.then((res) => {
       setDetailComment(res.data);
@@ -95,8 +123,76 @@ const TopicCommentList: React.FC = () => {
       setData(response.data); // Memperbarui data comment
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
-      message.error("Failed to add review");
+      message.error("Failed to add comment");
     }
+  };
+
+  // Tampilkan modal confirm saat ingin create data comment
+  const showPostConfirm = (values: DataPost) => {
+    confirm({
+      centered: true,
+      title: "Do you want to post this comment?",
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        setLoading(true); // Set status loading pada tombol OK
+
+        return handlePostComment(values)
+          .then(() => {
+            setLoading(false); // Set loading ke false setelah selesai
+          })
+          .catch(() => {
+            setLoading(false); // Set loading ke false jika terjadi error
+          });
+      },
+      onCancel() {
+        setModalVisible(true); // Jika dibatalkan, buka kembali modal
+      },
+    });
+  };
+
+  const setDataEdit = (id: string) => {
+    setId(id);
+    const data = axios.get(`${api}/comment/get/${id}`);
+    data.then((res) => {
+      // Set data ke dalam form
+      form.setFieldsValue({
+        comment: res.data.comment,
+      });
+    });
+  };
+
+  const handleEditComment = async (values: DataEdit) => {
+    try {
+      await axios.put(`${api}/comment/update/${idComment}`, values);
+      message.success("Comment updated successfully!");
+      setModalVisible(false);
+
+      // Fetch ulang data setelah update
+      const response = await axios.get<DataType[]>(`${api}/comment/get-all`);
+      setData(response.data); // Memperbarui data comment
+      form.resetFields(); // Reset form setelah submit
+    } catch (error) {
+      message.error("Failed to update comment");
+    }
+  };
+
+  const showEditConfirm = (values: DataEdit) => {
+    confirm({
+      centered: true,
+      title: "Do you want to update this comment ?",
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        setLoading(true); // Set status loading pada tombol OK
+
+        return handleEditComment(values)
+          .then(() => {
+            setLoading(false); // Set loading ke false setelah selesai
+          })
+          .catch(() => {
+            setLoading(false); // Set loading ke false jika terjadi error
+          });
+      },
+    });
   };
 
   // Fetch data dari API ketika komponen dimuat
@@ -139,64 +235,30 @@ const TopicCommentList: React.FC = () => {
     fetchComment(); // Panggil fungsi fetchComment saat komponen dimuat
   }, []);
 
-  // Fungsi untuk melakukan delete data photo
-  const handleDeletePhoto = async (id: string) => {
+  // Fungsi untuk melakukan delete data comment
+  const handleDeleteComment = async (id: string) => {
     try {
-      await axios.delete(`${api}/photo-topic/delete/${id}`); // Melakukan DELETE ke server
-      message.success("Photo deleted successfully!");
+      await axios.delete(`${api}/comment/delete/${id}`); // Melakukan DELETE ke server
+      message.success("Comment deleted successfully!");
 
-      // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        `${api}/photo-topic/get-all`
-      );
-      setData(response.data); // Memperbarui data photo
+      // Fetch ulang data setelah di delete
+      const response = await axios.get<DataType[]>(`${api}/comment/get-all`);
+      setData(response.data); // Memperbarui data comment
     } catch (error) {
-      message.error("Failed to delete photo");
+      message.error("Failed to delete comment");
     }
-  };
-
-  // Tampilkan modal confirm saat ingin create data comment
-  const showPostConfirm = () => {
-    form
-      .validateFields() // Validasi input form terlebih dahulu
-      .then((values: DataPost) => {
-        setModalPost(false); // Tutup modal Post
-
-        confirm({
-          centered: true,
-          title: "Do you want to post this photo?",
-          icon: <ExclamationCircleFilled />,
-          onOk() {
-            setLoading(true); // Set status loading pada tombol OK
-
-            return handlePostComment(values)
-              .then(() => {
-                setLoading(false); // Set loading ke false setelah selesai
-              })
-              .catch(() => {
-                setLoading(false); // Set loading ke false jika terjadi error
-              });
-          },
-          onCancel() {
-            setModalPost(true); // Jika dibatalkan, buka kembali modal
-          },
-        });
-      })
-      .catch((info) => {
-        message.error("Please complete the form before submitting!");
-      });
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
   const showDeleteConfirm = (id: string) => {
     confirm({
       centered: true,
-      title: "Do you want to delete this photo?",
+      title: "Do you want to delete this comment?",
       icon: <ExclamationCircleFilled />,
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handleDeletePhoto(id)
+        return handleDeleteComment(id)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -241,14 +303,20 @@ const TopicCommentList: React.FC = () => {
           <Button
             type="text"
             className="bg-emerald-700 text-white"
-            onClick={() => showModalDetail(record.id)}
+            onClick={() => {
+              showModal("detail");
+              setDataDetail(record.id);
+            }}
           >
             <AiOutlineEye style={{ fontSize: 20 }} />
           </Button>
           <Button
             type="text"
             className="bg-emerald-700 text-white"
-            onClick={() => handleEditPhoto(record.id)}
+            onClick={() => {
+              showModal("edit");
+              setDataEdit(record.id);
+            }}
           >
             <AiOutlineEdit style={{ fontSize: 20 }} />
           </Button>
@@ -300,7 +368,7 @@ const TopicCommentList: React.FC = () => {
         <Button
           type="text"
           className="bg-emerald-700 text-white"
-          onClick={() => setModalPost(true)}
+          onClick={() => showModal("post")}
         >
           <AiOutlinePlus /> Add Comment
         </Button>
@@ -310,44 +378,28 @@ const TopicCommentList: React.FC = () => {
         pagination={{ pageSize: 7 }} // Jumlah data yang ditampilkan
         data={data} // Data dari state
       />
-      {/* <Modal
-        title="Modal edit photo"
-        centered
-        onClose={() => setModalUpdatePhoto(false)}
-        open={modalUpdatePhoto}
-        onOk={showUpdateConfirm}
-        onCancel={() => {
-          setModalUpdatePhoto(false);
-        }}
-      >
-        <Form form={form} layout="vertical" className="mt-3">
-          <Form.Item name="photos" label="Update Photo">
-            <Upload
-              {...uploadProps}
-              listType="picture"
-              maxCount={1}
-              onChange={(info) => handleUpload(info)}
-            >
-              <Button icon={<UploadOutlined />}>Upload</Button>
-            </Upload>
-          </Form.Item>
-        </Form>
-      </Modal> */}
 
-      {/* Modal detail comment */}
+      {/* Modal dynamic mode */}
       <Modal
         title={
-          detailComment
-            ? `Detail Comment By ${detailComment.user}`
-            : "Detail Comment"
+          "Modal " + modalMode === "post"
+            ? "Add New Review"
+            : modalMode === "edit"
+            ? "Edit Review"
+            : "Detail Review"
         }
         centered
-        open={modalDetail}
-        onOk={() => setModalDetail(false)}
-        onCancel={() => setModalDetail(false)}
-        footer={false}
+        open={modalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        cancelButtonProps={{
+          style: modalMode === "detail" ? { display: "none" } : {},
+        }}
+        okButtonProps={{
+          style: modalMode === "detail" ? { display: "none" } : {},
+        }}
       >
-        {detailComment ? (
+        {modalMode === "detail" && detailComment ? (
           <Space direction="vertical" size="middle" style={{ width: "100%" }}>
             <div className="flex gap-1 items-center">
               <AiOutlineTag size={19} />
@@ -372,77 +424,84 @@ const TopicCommentList: React.FC = () => {
             </Space>
           </Space>
         ) : (
-          <LoadingOutlined size={35} />
+          ""
         )}
-      </Modal>
 
-      {/* Modal add comment */}
-      <Modal
-        title="Modal Add Comment"
-        centered
-        onClose={() => setModalPost(false)}
-        open={modalPost}
-        onOk={showPostConfirm}
-        onCancel={() => {
-          setModalPost(false);
-        }}
-      >
-        <Form form={form} layout="vertical">
-          {/* Select user */}
-          <Form.Item
-            label="User"
-            name="id_user"
-            rules={[{ required: true, message: "Please select user" }]}
-          >
-            <Select
-              placeholder="Select user"
-              allowClear
-              filterOption={(input, option) =>
-                (option?.children as unknown as string)
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
+        {modalMode === "post" ? (
+          <Form form={form} layout="vertical">
+            {/* Select user */}
+            <Form.Item
+              label="User"
+              name="id_user"
+              rules={[{ required: true, message: "Please select user" }]}
             >
-              {user.map((user) => (
-                <Option key={user.id} value={user.id}>
-                  {user.username}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+              <Select
+                placeholder="Select user"
+                allowClear
+                filterOption={(input, option) =>
+                  (option?.children as unknown as string)
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {user.map((user) => (
+                  <Option key={user.id} value={user.id}>
+                    {user.username}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
 
-          {/* Select topic */}
-          <Form.Item
-            label="Topic"
-            name="id_topic"
-            rules={[{ required: true, message: "Please select topic" }]}
-          >
-            <Select
-              placeholder="Select topic"
-              allowClear
-              filterOption={(input, option) =>
-                (option?.children as unknown as string)
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
+            {/* Select topic */}
+            <Form.Item
+              label="Topic"
+              name="id_topic"
+              rules={[{ required: true, message: "Please select topic" }]}
             >
-              {topic.map((topic) => (
-                <Option key={topic.id} value={topic.id}>
-                  {topic.title}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+              <Select
+                placeholder="Select topic"
+                allowClear
+                filterOption={(input, option) =>
+                  (option?.children as unknown as string)
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {topic.map((topic) => (
+                  <Option key={topic.id} value={topic.id}>
+                    {topic.title}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
 
-          {/* Input comment */}
-          <Form.Item
-            label="Comment"
-            name="comment"
-            rules={[{ required: true, message: "Please input comment" }]}
-          >
-            <Input.TextArea showCount maxLength={9999} autoSize />
-          </Form.Item>
-        </Form>
+            {/* Input comment */}
+            <Form.Item
+              label="Comment"
+              name="comment"
+              rules={[{ required: true, message: "Please input comment" }]}
+            >
+              <Input.TextArea showCount maxLength={9999} autoSize />
+            </Form.Item>
+          </Form>
+        ) : (
+          ""
+        )}
+
+        {modalMode === "edit" ? (
+          <Form form={form} layout="vertical">
+            {/* Input review */}
+            <Form.Item
+              label="Comment"
+              name="comment"
+              rules={[{ required: true, message: "Please input comment" }]}
+            >
+              <Input.TextArea showCount maxLength={9999} autoSize />
+            </Form.Item>
+          </Form>
+        ) : (
+          ""
+        )}
       </Modal>
     </>
   );

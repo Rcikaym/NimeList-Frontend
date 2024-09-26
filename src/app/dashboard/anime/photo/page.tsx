@@ -28,6 +28,7 @@ import {
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
+import PageTitle from "@/components/TitlePage";
 
 interface PhotosType {
   photos: string[];
@@ -50,6 +51,8 @@ const normFile = (e: any) => {
   return e?.fileList ? e.fileList : [];
 };
 
+const api = process.env.NEXT_PUBLIC_API_URL;
+
 const AnimeList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
@@ -68,7 +71,7 @@ const AnimeList: React.FC = () => {
   // Modal detail photo
   const showModalDetail = (id: string) => {
     setModalDetail(true);
-    const data = axios.get(`http://localhost:4321/photo-anime/get/${id}`);
+    const data = axios.get(`${api}/photo-anime/get/${id}`);
     data.then((res) => {
       setDetailPhoto(res.data);
     });
@@ -76,24 +79,17 @@ const AnimeList: React.FC = () => {
 
   const handleUpdatePhoto = async (values: PhotosType) => {
     const formData = new FormData();
+    const file: any = values.photos[0];
 
-    // Handle file upload
-    if (values.photos) {
-      values.photos.forEach((file: any) => {
-        formData.append("photos", file.originFileObj);
-      });
-    }
+    formData.append("photos", file.originFileObj);
 
     try {
-      await axios.put(
-        `http://localhost:4321/photo-anime/update/${editingPhoto}`,
-        formData
-      ); // Update foto di server
+      await axios.put(`${api}/photo-anime/update/${editingPhoto}`, formData); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
       const response = await axios.get<DataType[]>(
-        "http://localhost:4321/photo-anime/get-all"
+        `${api}/photo-anime/get-all`
       );
       setData(response.data); // Perbarui data foto anime
       form.resetFields(); // Reset form setelah submit
@@ -108,7 +104,7 @@ const AnimeList: React.FC = () => {
     const fetchAnime = async () => {
       try {
         const response = await axios.get<DataType[]>(
-          "http://localhost:4321/photo-anime/get-all"
+          `${api}/photo-anime/get-all`
         );
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -124,12 +120,12 @@ const AnimeList: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:4321/anime/delete/${id}`); // Melakukan DELETE ke server
+      await axios.delete(`${api}/photo-anime/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(
-        "http://localhost:4321/anime/get"
+        `${api}/photo-anime/get-all`
       );
       setData(response.data); // Memperbarui data genre
     } catch (error) {
@@ -170,7 +166,7 @@ const AnimeList: React.FC = () => {
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showDeleteConfirm = (id: string, title: string) => {
+  const showDeleteConfirm = (id: string) => {
     confirm({
       centered: true,
       title: "Do you want to delete this photo?",
@@ -262,7 +258,7 @@ const AnimeList: React.FC = () => {
           <Button
             type="text"
             className="bg-emerald-700 text-white"
-            onClick={() => setModalPhoto(true)}
+            onClick={() => showDeleteConfirm(record.id)}
           >
             <AiOutlineDelete style={{ fontSize: 20 }} />
           </Button>
@@ -273,6 +269,7 @@ const AnimeList: React.FC = () => {
 
   return (
     <>
+      <PageTitle title="Anime - PhotoList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">

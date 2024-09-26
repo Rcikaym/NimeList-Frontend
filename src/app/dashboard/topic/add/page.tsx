@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import PageTitle from "@/components/TitlePage";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-import { formats, modules } from "@/components/moduleAndFormatTextArea";
+import { formats, modules } from "@/components/ModuleAndFormatTextArea";
 
 interface DataType {
   title: string;
