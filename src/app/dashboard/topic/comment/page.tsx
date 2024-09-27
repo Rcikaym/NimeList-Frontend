@@ -383,10 +383,10 @@ const TopicCommentList: React.FC = () => {
       <Modal
         title={
           "Modal " + modalMode === "post"
-            ? "Add New Review"
+            ? "Add New Comment"
             : modalMode === "edit"
-            ? "Edit Review"
-            : "Detail Review"
+            ? "Edit Comment"
+            : "Detail Comment"
         }
         centered
         open={modalVisible}
