@@ -56,21 +56,43 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 const AnimeList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [editingPhoto, setEditingPhoto] = useState<string>(""); // Menyimpan anime yang sedang diedit
-  const [modalPhoto, setModalPhoto] = useState<boolean>(false); // Untuk status modal edit photo
-  const [modalDetail, setModalDetail] = useState<boolean>(false); // Untuk status modal detail
+  const [idPhoto, setId] = useState<string>(""); // Menyimpan anime yang sedang diedit
   const [detailPhoto, setDetailPhoto] = useState<any>(null);
+  const [modalMode, setMode] = useState<"edit" | "detail">();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { confirm } = Modal;
   const [form] = Form.useForm();
 
-  const handleEditPhoto = (id: string) => {
-    setEditingPhoto(id); // Simpan data anime yang sedang diedit
-    setModalPhoto(true); // Buka modal
+  const showModal = (modalMode: "edit" | "detail") => {
+    setMode(modalMode);
+    setModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+    form.resetFields();
+  };
+
+  const handleOk = () => {
+    if (modalMode === "detail") {
+      setModalVisible(false); // Untuk mode detail, tidak perlu submit
+      return;
+    }
+    form
+      .validateFields()
+      .then((values: PhotosType) => {
+        if (modalMode === "edit") {
+          showEditConfirm(values);
+        }
+        setModalVisible(false);
+      })
+      .catch(() => {
+        message.error("Please complete the form before submitting!");
+      });
   };
 
   // Modal detail photo
-  const showModalDetail = (id: string) => {
-    setModalDetail(true);
+  const setDataDetail = (id: string) => {
     const data = axios.get(`${api}/photo-anime/get/${id}`);
     data.then((res) => {
       setDetailPhoto(res.data);
@@ -84,7 +106,7 @@ const AnimeList: React.FC = () => {
     formData.append("photos", file.originFileObj);
 
     try {
-      await axios.put(`${api}/photo-anime/update/${editingPhoto}`, formData); // Update foto di server
+      await axios.put(`${api}/photo-anime/update/${idPhoto}`, formData); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
@@ -92,16 +114,37 @@ const AnimeList: React.FC = () => {
         `${api}/photo-anime/get-all`
       );
       setData(response.data); // Perbarui data foto anime
-      form.resetFields(); // Reset form setelah submit
-      setModalPhoto(false); // Tutup modal
     } catch (error) {
       message.error("Failed to update photo");
     }
   };
 
+  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
+  const showEditConfirm = (values: PhotosType) => {
+    confirm({
+      centered: true,
+      title: "Do you want to update this Photo?",
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        setLoading(true); // Set status loading pada tombol OK
+
+        return handleUpdatePhoto(values)
+          .then(() => {
+            setLoading(false); // Set loading ke false setelah selesai
+          })
+          .catch(() => {
+            setLoading(false); // Set loading ke false jika terjadi error
+          });
+      },
+      onCancel() {
+        showModal("edit"); // Jika dibatalkan, buka kembali modal
+      },
+    });
+  };
+
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
-    const fetchAnime = async () => {
+    const fetchPhoto = async () => {
       try {
         const response = await axios.get<DataType[]>(
           `${api}/photo-anime/get-all`
@@ -114,7 +157,7 @@ const AnimeList: React.FC = () => {
       }
     };
 
-    fetchAnime(); // Panggil fungsi fetchUsers saat komponen dimuat
+    fetchPhoto(); // Panggil fungsi fetchUsers saat komponen dimuat
   }, []);
 
   // Fungsi untuk melakukan delete data genre
@@ -131,38 +174,6 @@ const AnimeList: React.FC = () => {
     } catch (error) {
       message.error("Failed to delete anime");
     }
-  };
-
-  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showPostConfirm = () => {
-    form
-      .validateFields() // Validasi input form terlebih dahulu
-      .then((values: any) => {
-        setModalPhoto(false); // Tutup modal Photo
-
-        confirm({
-          centered: true,
-          title: "Do you want to update this Photo?",
-          icon: <ExclamationCircleFilled />,
-          onOk() {
-            setLoading(true); // Set status loading pada tombol OK
-
-            return handleUpdatePhoto(values)
-              .then(() => {
-                setLoading(false); // Set loading ke false setelah selesai
-              })
-              .catch(() => {
-                setLoading(false); // Set loading ke false jika terjadi error
-              });
-          },
-          onCancel() {
-            setModalPhoto(true); // Jika dibatalkan, buka kembali modal
-          },
-        });
-      })
-      .catch((info) => {
-        message.error("Please complete the form before submitting!");
-      });
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
@@ -244,14 +255,20 @@ const AnimeList: React.FC = () => {
           <Button
             type="text"
             className="bg-emerald-700 text-white"
-            onClick={() => showModalDetail(record.id)}
+            onClick={() => {
+              showModal("detail");
+              setDataDetail(record.id);
+            }}
           >
             <AiOutlineEye style={{ fontSize: 20 }} />
           </Button>
           <Button
             type="text"
             className="bg-emerald-700 text-white"
-            onClick={() => handleEditPhoto(record.id)} // Panggil fungsi untuk membuka modal
+            onClick={() => {
+              showModal("edit");
+              setId(record.id);
+            }}
           >
             <AiOutlineEdit style={{ fontSize: 20 }} />
           </Button>
@@ -306,54 +323,62 @@ const AnimeList: React.FC = () => {
         data={data} // Data dari state
       />
       <Modal
-        title="Modal edit photo"
+        title={
+          "Modal " + modalMode === "post"
+            ? "Add New Comment"
+            : modalMode === "edit"
+            ? "Edit Comment"
+            : "Detail Comment"
+        }
         centered
-        onClose={() => setModalPhoto(false)}
-        open={modalPhoto}
-        onOk={showPostConfirm}
-        onCancel={() => {
-          setModalPhoto(false);
+        open={modalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        cancelButtonProps={{
+          style: modalMode === "detail" ? { display: "none" } : {},
+        }}
+        okButtonProps={{
+          style: modalMode === "detail" ? { display: "none" } : {},
         }}
       >
-        <Form form={form} layout="vertical" className="mt-3">
-          <Form.Item
-            name="photos"
-            label="Update Photo"
-            getValueFromEvent={normFile}
-          >
-            <Upload
-              {...uploadProps}
-              listType="picture"
-              maxCount={1}
-              onChange={(info) => handleUpload(info, "photos")}
+        {modalMode === "edit" ? (
+          <Form form={form} layout="vertical" className="mt-3">
+            <Form.Item
+              name="photos"
+              label="Update Photo"
+              getValueFromEvent={normFile}
+              rules={[{ required: true, message: "Please select file!" }]}
             >
-              <Button icon={<UploadOutlined />}>Upload</Button>
-            </Upload>
-          </Form.Item>
-        </Form>
-      </Modal>
+              <Upload
+                {...uploadProps}
+                listType="picture"
+                maxCount={1}
+                onChange={(info) => handleUpload(info, "photos")}
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+              </Upload>
+            </Form.Item>
+          </Form>
+        ) : (
+          ""
+        )}
 
-      {/* Modal detail photo */}
-      <Modal
-        title={`Detail Photo ${detailPhoto?.anime}`}
-        centered
-        open={modalDetail}
-        onOk={() => setModalDetail(false)}
-        onCancel={() => setModalDetail(false)}
-        footer={false}
-      >
-        <div className="mt-3">
-          <Image
-            src={
-              "http://localhost:4321/" +
-              detailPhoto?.file_path.replace(/\\/g, "/")
-            }
-            alt="photo"
-            width={250}
-            height={150}
-          />
-          <h1 className="mt-2">File path: {detailPhoto?.file_path}</h1>
-        </div>
+        {modalMode === "detail" ? (
+          <div className="mt-3">
+            <Image
+              src={
+                "http://localhost:4321/" +
+                detailPhoto?.file_path.replace(/\\/g, "/")
+              }
+              alt="photo"
+              width={250}
+              height={150}
+            />
+            <h1 className="mt-2">File path: {detailPhoto?.file_path}</h1>
+          </div>
+        ) : (
+          ""
+        )}
       </Modal>
     </>
   );
