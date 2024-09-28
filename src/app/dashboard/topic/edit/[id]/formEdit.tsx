@@ -1,0 +1,318 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Select,
+  Upload,
+  UploadProps,
+} from "antd";
+import axios from "axios";
+import {
+  ExclamationCircleFilled,
+  LeftCircleOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import { useRouter } from "next/navigation";
+import { AnimeType, PhotosType, TopicType } from "./types";
+import "react-quill/dist/quill.snow.css";
+import { formats, modules } from "@/components/ModuleAndFormatTextArea";
+import dynamic from "next/dynamic";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
+export default function TopicEdit({ id }: { id: string }) {
+  const router = useRouter();
+  const [form] = Form.useForm();
+  const api = process.env.NEXT_PUBLIC_API_URL;
+  const [topic, setTopic] = useState<any>(null);
+  let [content, setContent] = useState<string>("");
+  const [animes, setAnimes] = useState<AnimeType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fileList, setFileList] = useState([]);
+  const [error, setError] = useState<string | null>(null);
+  const { confirm } = Modal;
+
+  // Fungsi untuk memperbarui src gambar dalam konten HTML
+  const htmlParser = (htmlString: string): string => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, "text/html");
+
+    // Update src untuk gambar
+    const images = doc.querySelectorAll("img");
+    images.forEach((img) => {
+      const originalSrc = img.getAttribute("src");
+      if (originalSrc && !originalSrc.startsWith("http")) {
+        img.setAttribute("src", `${api}${originalSrc}`);
+      }
+    });
+
+    // Tangani tag <p> kosong
+    const paragraphs = doc.querySelectorAll("p");
+    paragraphs.forEach((p) => {
+      // Jika tag <p> kosong (tidak ada teks dan tidak ada elemen anak)
+      if (p.textContent?.trim() === "" && p.children.length === 0) {
+        // Gantikan <p> kosong dengan <br> atau menambahkan spasi
+        const brElement = document.createElement("br");
+        p.replaceWith(brElement);
+      }
+    });
+
+    return doc.body.innerHTML; // Kembalikan konten dengan perubahan
+  };
+
+  // Fetch topic edit data
+  useEffect(() => {
+    const fetchAnime = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${api}/topic/get/${id}`);
+        const topicData = response.data;
+
+        const updatedContent = htmlParser(topicData.body);
+
+        // Set data foto ke setter dari fileList
+        setFileList(
+          topicData.photos.map((photo: PhotosType, index: number) => ({
+            uid: index + 1, // Unique identifier
+            name: `${photo.file_path}`, // Extract filename from file_path
+            status: "done",
+            url: `${api}/${photo.file_path.replace(/\\/g, "/")}`,
+          }))
+        );
+
+        // Set data ke dalam form
+        form.setFieldsValue({
+          title: topicData.title,
+          id_anime: topicData.id_anime,
+          body: updatedContent,
+        });
+
+        // setContent(updatedContent);
+
+        setTopic(topicData.title);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching topic:", error);
+        setError("Failed to fetch topic data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnime();
+  }, [id, form]);
+
+  // Fetch animes
+  useEffect(() => {
+    const fetchAnime = async () => {
+      const response = await axios.get<AnimeType[]>(
+        `${api}/topic/get-all-anime`
+      );
+      setLoading(true);
+      try {
+        setAnimes(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching animes:", error);
+        setLoading(true);
+      }
+    };
+
+    fetchAnime();
+  }, []);
+
+  const setSrcImgOri = (html: string) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    // Update src untuk gambar
+    const images = doc.querySelectorAll("img");
+    images.forEach((img) => {
+      const originalSrc = img.getAttribute("data-original-src");
+      if (originalSrc) {
+        img.setAttribute("src", `${originalSrc}`);
+      }
+    });
+
+    return doc.body.innerHTML;
+  };
+
+  // Fungsi untuk submit data
+  const updateTopic = async (values: TopicType) => {
+    const formData = new FormData();
+
+    formData.append("title", values.title);
+    formData.append("id_anime", values.id_anime);
+
+    // Tambahkan body yang sudah dimodifikasi ke FormData
+    formData.append("body", setSrcImgOri(content));
+
+    const new_photos = [] as string[];
+    const existing_photos = [] as string[];
+
+    // Tambahkan file foto anime (bisa lebih dari 1)
+    fileList.forEach((file: any) => {
+      if (file.url) {
+        // Existing file (old photo)
+        existing_photos.push(file.name);
+      } else {
+        // New file (new upload)
+        new_photos.push(file.originFileObj);
+      }
+    });
+
+    // Append new and existing files
+    new_photos.forEach((file: any) => formData.append("new_photos", file));
+    if (existing_photos.length === 0) {
+      formData.append("existing_photos", "");
+    } else {
+      existing_photos.forEach((file: any) =>
+        formData.append("existing_photos", file)
+      );
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.put(`${api}/topic/update/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      message.success("Topic updated successfully!");
+      router.push("/dashboard/topic");
+      setLoading(false);
+    } catch (error) {
+      message.error("Failed to add anime");
+    }
+  };
+
+  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
+  const showUpdateConfirm = async () => {
+    form
+      .validateFields() // Validasi input form terlebih dahulu
+      .then((values: TopicType) => {
+        confirm({
+          centered: true,
+          title: "Do you want to update an " + topic + " ?",
+          icon: <ExclamationCircleFilled />,
+          onOk() {
+            setLoading(true); // Set status loading pada tombol OK
+
+            return updateTopic(values)
+              .then(() => {
+                setLoading(false); // Set loading ke false setelah selesai
+              })
+              .catch(() => {
+                setLoading(false); // Set loading ke false jika terjadi error
+              });
+          },
+        });
+      })
+      .catch(() => {
+        message.error("Please complete the form before submitting!");
+      });
+  };
+
+  const handlePhotosUpload = (info: any) => {
+    const { file, fileList } = info;
+
+    setFileList(fileList);
+    if (file.status === "done") {
+      message.success(`${file.name} uploaded successfully`);
+    } else if (file.status === "error") {
+      message.error(`${file.name} upload failed.`);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    beforeUpload: (file) => {
+      const isJpgOrPng =
+        file.type === "image/jpeg" || file.type === "image/png";
+      if (!isJpgOrPng) {
+        message.error("You can only upload JPG/PNG file!");
+      }
+      const isLt2M = file.size / 1024 / 1024 < 5;
+      if (!isLt2M) {
+        message.error("Image must smaller than 5MB!");
+      }
+      return isJpgOrPng && isLt2M;
+    },
+  };
+
+  return (
+    <>
+      <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg text-white">
+        Form Edit Topic {topic}
+      </div>
+      <Form form={form} layout="vertical" onFinish={showUpdateConfirm}>
+        <div className="rounded-sm shadow-md p-4">
+          {/* Form Items */}
+          <Form.Item
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: "Please input title" }]}
+          >
+            <Input placeholder="Input title" />
+          </Form.Item>
+
+          <Form.Item
+            name="body"
+            label="Body"
+            rules={[{ required: true, message: "Please input body" }]}
+          >
+            <ReactQuill
+              theme="snow"
+              modules={modules}
+              value={content}
+              onChange={(value) => setContent(value)}
+              formats={formats}
+            />
+          </Form.Item>
+
+          {/* Animes*/}
+          <Form.Item
+            name="id_anime"
+            label="Anime"
+            rules={[{ required: true, message: "Please select anime" }]}
+          >
+            <Select placeholder="Select anime">
+              {animes.map((anime) => (
+                <Select.Option key={anime.id} value={anime.id}>
+                  {anime.title}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="photos" label="Upload Topic Photo">
+            <Upload
+              {...uploadProps}
+              listType="picture-card"
+              maxCount={4}
+              multiple
+              fileList={fileList}
+              onChange={(info) => handlePhotosUpload(info)}
+            >
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
+          </Form.Item>
+        </div>
+
+        <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
+          <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
+            Back
+          </Button>
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Submit
+          </Button>
+        </div>
+      </Form>
+    </>
+  );
+}

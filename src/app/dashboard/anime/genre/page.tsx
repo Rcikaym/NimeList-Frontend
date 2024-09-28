@@ -24,6 +24,8 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import renderDateTime from "@/components/FormatDateTime";
+import { CustomTable } from "@/components/CustomTable";
 
 interface DataType {
   id: string;
@@ -154,12 +156,12 @@ const UserList: React.FC = () => {
     {
       title: "Created At",
       dataIndex: "created_at",
-      render: (text: string) => formatDateTime(text),
+      render: (text: string) => renderDateTime(text),
     },
     {
       title: "Updated At",
       dataIndex: "updated_at",
-      render: (text: string) => formatDateTime(text),
+      render: (text: string) => renderDateTime(text),
     },
     {
       title: "Action",
@@ -178,30 +180,18 @@ const UserList: React.FC = () => {
     },
   ], []);
 
-  const formatDateTime = (isoDate: string): string => {
-    const date = new Date(isoDate);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // +1 karena bulan dimulai dari 0
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
-
   return (
     <>
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
+          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineTags style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
               Genre Information
             </h2>
-            <h2 className="text-black text-sm">Display genre information</h2>
+            <span className="text-black text-sm">Display genre information</span>
           </div>
         </div>
         <div className="items-center flex gap-3">
@@ -229,13 +219,11 @@ const UserList: React.FC = () => {
           <AiOutlinePlus /> Add Genre
         </Button>
       </div>
-      <Table
+      <CustomTable
         columns={columns}
-        // rowKey={(record) => record.username}
-        bordered
         loading={loading}
         pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
-        dataSource={data} // Data dari state
+        data={data} // Data dari state
       />
       <Modal
         title="Modal add genre"

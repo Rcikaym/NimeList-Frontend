@@ -11,6 +11,9 @@ import {
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
 import PageTitle from "@/components/TitlePage";
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+import { formats, modules } from "@/components/ModuleAndFormatTextArea";
 
 interface DataType {
   title: string;
@@ -30,25 +33,29 @@ interface DataUser {
   username: string;
 }
 
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
 const CreateTopic: React.FC = () => {
   const router = useRouter();
   const [form] = Form.useForm(); // Form handler dari Ant Design
   const [animes, setAnimes] = useState<DataAnime[]>([]);
   const [users, setUsers] = useState<DataUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  let [content, setContent] = useState<string>("");
   const { confirm } = Modal;
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchAnime = async () => {
       setLoading(true);
       try {
         const response = await axios.get<DataAnime[]>(
-          "http://localhost:4321/topic/get-all-anime"
+          `${api}/topic/get-all-anime`
         );
         setAnimes(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching animes:", error);
         setLoading(true); // Tetap menonaktifkan loading jika terjadi error
       }
     };
@@ -57,7 +64,7 @@ const CreateTopic: React.FC = () => {
       setLoading(true);
       try {
         const response = await axios.get<DataUser[]>(
-          "http://localhost:4321/topic/get-all-user"
+          `${api}/topic/get-all-user`
         );
         setUsers(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -103,9 +110,11 @@ const CreateTopic: React.FC = () => {
 
     // Tambahkan data dari form ke FormData untuk dikirim ke backend
     formData.append("title", values.title);
-    formData.append("body", values.body);
     formData.append("id_anime", values.id_anime);
     formData.append("id_user", values.id_user);
+
+    // Tambahkan body yang sudah dimodifikasi ke FormData
+    formData.append("body", content);
 
     // Tambahkan file foto anime (bisa lebih dari 1)
     if (values.photos) {
@@ -117,15 +126,11 @@ const CreateTopic: React.FC = () => {
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
       // Kirim data menggunakan axios
-      const response = await axios.post(
-        "http://localhost:4321/topic/post",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Tentukan header untuk form data
-          },
-        }
-      );
+      const response = await axios.post(`${api}/topic/post`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Tentukan header untuk form data
+        },
+      });
 
       // Tampilkan pesan sukses jika request berhasil
       message.success("Topic added successfully!");
@@ -152,7 +157,7 @@ const CreateTopic: React.FC = () => {
   return (
     <>
       <PageTitle title="Add Topic" />
-      <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg">
+      <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg text-white">
         Form Add Topic
       </div>
       <Form layout="vertical" form={form} onFinish={handleSubmit}>
@@ -167,12 +172,14 @@ const CreateTopic: React.FC = () => {
           </Form.Item>
 
           {/* Input synopsis */}
-          <Form.Item
-            name="body"
-            label="Body"
-            rules={[{ required: true, message: "Please input body" }]}
-          >
-            <Input.TextArea showCount autoSize maxLength={9999} />
+          <Form.Item label="Body" name="body">
+            <ReactQuill
+              theme="snow"
+              value={content}
+              onChange={setContent}
+              modules={modules}
+              formats={formats}
+            />
           </Form.Item>
 
           {/* Select anime */}

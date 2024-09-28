@@ -71,14 +71,24 @@ const getColumnSearchProps = (dataIndex: string): ColumnType<any> => ({
 const CustomTable = <T extends object>({
   data,
   columns,
-  pagination = { pageSize: 10 },
   onChange,
 }: CustomTableProps<T>) => {
+  const [pageSize, setPageSize] = useState(10);
+
+  const handlePageSizeChange = (current: number, size: number) => {
+    setPageSize(size);
+  };
+
   return (
     <Table
       dataSource={data}
       columns={columns}
-      pagination={pagination}
+      pagination={{
+        pageSize: pageSize,
+        pageSizeOptions: ["10", "20", "50", "100"],
+        showSizeChanger: true,
+        onShowSizeChange: handlePageSizeChange,
+      }}
       bordered
       onChange={onChange}
       rowKey={(record) => (record as any).id || (record as any).key} // Sesuaikan berdasarkan struktur data

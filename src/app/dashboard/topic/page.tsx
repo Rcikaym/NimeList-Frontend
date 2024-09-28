@@ -5,6 +5,7 @@ import { Button, message, Modal, Space } from "antd";
 import type { TableColumnsType } from "antd";
 import {
   AiOutlineDelete,
+  AiOutlineEdit,
   AiOutlinePicRight,
   AiOutlinePlus,
 } from "react-icons/ai";
@@ -32,14 +33,13 @@ const UserList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const { confirm } = Modal;
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
-    const fetchAnime = async () => {
+    const fetchTopic = async () => {
       try {
-        const response = await axios.get<DataType[]>(
-          "http://localhost:4321/topic/get-all"
-        );
+        const response = await axios.get<DataType[]>(`${api}/topic/get-all`);
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
@@ -48,22 +48,20 @@ const UserList: React.FC = () => {
       }
     };
 
-    fetchAnime(); // Panggil fungsi fetchUsers saat komponen dimuat
+    fetchTopic(); // Panggil fungsi fetchTopic saat komponen dimuat
   }, []);
 
-  // Fungsi untuk melakukan delete data genre
-  const handleDeleteAnime = async (id: string) => {
+  // Fungsi untuk melakukan delete data topic
+  const handleDeleteTopic = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:4321/topic/delete/${id}`); // Melakukan DELETE ke server
+      await axios.delete(`${api}/topic/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        "http://localhost:4321/topic/get-all"
-      );
-      setData(response.data); // Memperbarui data genre
+      const response = await axios.get<DataType[]>(`${api}/topic/get-all`);
+      setData(response.data); // Memperbarui data topic
     } catch (error) {
-      message.error("Failed to delete anime");
+      message.error("Failed to delete topic");
     }
   };
 
@@ -71,12 +69,12 @@ const UserList: React.FC = () => {
   const showDeleteConfirm = (id: string, title: string) => {
     confirm({
       centered: true,
-      title: "Do you want to delete " + title + " anime?",
+      title: "Do you want to delete " + title + " topic?",
       icon: <ExclamationCircleFilled />,
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handleDeleteAnime(id)
+        return handleDeleteTopic(id)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -129,6 +127,13 @@ const UserList: React.FC = () => {
           <Button
             type="text"
             className="bg-emerald-700 text-white"
+            href={`topic/edit/${record.id}`}
+          >
+            <AiOutlineEdit style={{ fontSize: 20 }} />
+          </Button>
+          <Button
+            type="text"
+            className="bg-emerald-700 text-white"
             onClick={() => showDeleteConfirm(record.id, record.title)}
           >
             <AiOutlineDelete style={{ fontSize: 20 }} />
@@ -143,16 +148,16 @@ const UserList: React.FC = () => {
       <PageTitle title="NimeList - TopicList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
+          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlinePicRight style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
               Topic Information
             </h2>
-            <h2 className="text-black text-sm">
+            <span className="text-black text-sm">
               Displays topic short information and topic details
-            </h2>
+            </span>
           </div>
         </div>
         <div className="items-center flex gap-3">
@@ -182,7 +187,6 @@ const UserList: React.FC = () => {
       </div>
       <CustomTable
         columns={columns}
-        pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
         data={data} // Data dari state
       />
     </>

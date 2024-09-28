@@ -24,13 +24,14 @@ interface DataType {
 const UserList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get<DataType[]>(
-          "http://localhost:4321/user/get-all"
+          `${api}/user/get-all`
         );
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -117,16 +118,16 @@ const UserList: React.FC = () => {
       <PageTitle title="NimeList - UserList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
+          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineUser style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
               User Information
             </h2>
-            <h2 className="text-black text-sm">
+            <span className="text-black text-sm">
               Displays user short information and user details
-            </h2>
+            </span>
           </div>
         </div>
         <div className="items-center flex gap-3">

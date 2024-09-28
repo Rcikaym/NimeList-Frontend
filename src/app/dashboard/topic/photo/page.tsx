@@ -28,16 +28,12 @@ import {
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
+import { api } from "../../page";
 import PageTitle from "@/components/TitlePage";
-
-interface PhotosType {
-  photos: string[];
-}
 
 interface DataType {
   id: string;
-  anime: string;
-  photos: PhotosType[];
+  topic: string;
   file_path: string;
   created_at: string;
   updated_at: string;
@@ -51,12 +47,10 @@ const normFile = (e: any) => {
   return e?.fileList ? e.fileList : [];
 };
 
-const api = process.env.NEXT_PUBLIC_API_URL;
-
-const AnimeList: React.FC = () => {
+const TopicPhotoList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [idPhoto, setId] = useState<string>(""); // Menyimpan anime yang sedang diedit
+  const [idPhoto, setIdPhoto] = useState<string>(""); // Menyimpan id photo yang sedang diedit
   const [detailPhoto, setDetailPhoto] = useState<any>(null);
   const [modalMode, setMode] = useState<"edit" | "detail">();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -80,7 +74,7 @@ const AnimeList: React.FC = () => {
     }
     form
       .validateFields()
-      .then((values: PhotosType) => {
+      .then((values: any) => {
         if (modalMode === "edit") {
           showEditConfirm(values);
         }
@@ -93,42 +87,42 @@ const AnimeList: React.FC = () => {
 
   // Modal detail photo
   const setDataDetail = (id: string) => {
-    const data = axios.get(`${api}/photo-anime/get/${id}`);
+    const data = axios.get(`${api}/photo-topic/get/${id}`);
     data.then((res) => {
       setDetailPhoto(res.data);
     });
   };
 
-  const handleUpdatePhoto = async (values: PhotosType) => {
+  const handleEditPhoto = async (values: any) => {
     const formData = new FormData();
-    const file: any = values.photos[0];
 
+    const file = values.photos[0];
     formData.append("photos", file.originFileObj);
 
     try {
-      await axios.put(`${api}/photo-anime/update/${idPhoto}`, formData); // Update foto di server
+      await axios.put(`${api}/photo-topic/update/${idPhoto}`, formData); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
       const response = await axios.get<DataType[]>(
-        `${api}/photo-anime/get-all`
+        `${api}/photo-topic/get-all`
       );
-      setData(response.data); // Perbarui data foto anime
+      setData(response.data); // Perbarui data foto topic
     } catch (error) {
       message.error("Failed to update photo");
     }
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showEditConfirm = (values: PhotosType) => {
+  const showEditConfirm = (values: any) => {
     confirm({
       centered: true,
-      title: "Do you want to update this Photo?",
+      title: "Do you want to update this photo?",
       icon: <ExclamationCircleFilled />,
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handleUpdatePhoto(values)
+        return handleEditPhoto(values)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -137,7 +131,7 @@ const AnimeList: React.FC = () => {
           });
       },
       onCancel() {
-        showModal("edit"); // Jika dibatalkan, buka kembali modal
+        setMode("edit"); // Jika dibatalkan, buka kembali modal
       },
     });
   };
@@ -147,7 +141,7 @@ const AnimeList: React.FC = () => {
     const fetchPhoto = async () => {
       try {
         const response = await axios.get<DataType[]>(
-          `${api}/photo-anime/get-all`
+          `${api}/photo-topic/get-all`
         );
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -157,22 +151,22 @@ const AnimeList: React.FC = () => {
       }
     };
 
-    fetchPhoto(); // Panggil fungsi fetchUsers saat komponen dimuat
+    fetchPhoto(); // Panggil fungsi fetchPhoto saat komponen dimuat
   }, []);
 
-  // Fungsi untuk melakukan delete data genre
-  const handleDeleteAnime = async (id: string) => {
+  // Fungsi untuk melakukan delete data photo
+  const handleDeletePhoto = async (id: string) => {
     try {
-      await axios.delete(`${api}/photo-anime/delete/${id}`); // Melakukan DELETE ke server
-      message.success("Anime deleted successfully!");
+      await axios.delete(`${api}/photo-topic/delete/${id}`); // Melakukan DELETE ke server
+      message.success("Photo deleted successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(
-        `${api}/photo-anime/get-all`
+        `${api}/photo-topic/get-all`
       );
-      setData(response.data); // Memperbarui data genre
+      setData(response.data); // Memperbarui data photo
     } catch (error) {
-      message.error("Failed to delete anime");
+      message.error("Failed to delete photo");
     }
   };
 
@@ -185,7 +179,7 @@ const AnimeList: React.FC = () => {
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handleDeleteAnime(id)
+        return handleDeletePhoto(id)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -196,20 +190,13 @@ const AnimeList: React.FC = () => {
     });
   };
 
-  const handleUpload = async (info: any, fieldName: string) => {
-    const { file, fileList } = info;
+  const handleUpload = async (info: any) => {
+    const { file } = info;
 
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
-      // Update form values
-      form.setFieldsValue({ [fieldName]: fileList });
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
-    }
-
-    // If you need to perform any action when the overall status changes
-    if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
     }
   };
 
@@ -231,11 +218,11 @@ const AnimeList: React.FC = () => {
   // Kolom table
   const columns: TableColumnsType<DataType> = [
     {
-      title: "Title",
-      dataIndex: "anime",
-      sorter: (a: DataType, b: DataType) => a.anime.localeCompare(b.anime),
+      title: "Title Topic",
+      dataIndex: "topic",
+      sorter: (a: DataType, b: DataType) => a.topic.localeCompare(b.topic),
       sortDirections: ["ascend", "descend"],
-      ...getColumnSearchProps("anime"),
+      ...getColumnSearchProps("topic"),
     },
     {
       title: "Created At",
@@ -256,7 +243,7 @@ const AnimeList: React.FC = () => {
             type="text"
             className="bg-emerald-700 text-white"
             onClick={() => {
-              showModal("detail");
+              showModal("detail"); // Panggil fungsi untuk membuka modal
               setDataDetail(record.id);
             }}
           >
@@ -266,8 +253,8 @@ const AnimeList: React.FC = () => {
             type="text"
             className="bg-emerald-700 text-white"
             onClick={() => {
-              showModal("edit");
-              setId(record.id);
+              showModal("edit"); // Panggil fungsi untuk membuka modal
+              setIdPhoto(record.id);
             }}
           >
             <AiOutlineEdit style={{ fontSize: 20 }} />
@@ -286,7 +273,7 @@ const AnimeList: React.FC = () => {
 
   return (
     <>
-      <PageTitle title="Anime - PhotoList" />
+      <PageTitle title="Topic - PhotoList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
@@ -294,10 +281,10 @@ const AnimeList: React.FC = () => {
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
-              Anime Photos Information
+              Topic Photos Information
             </h2>
             <span className="text-black text-sm">
-              Displays anime photo information
+              Displays topic photo information
             </span>
           </div>
         </div>
@@ -308,11 +295,11 @@ const AnimeList: React.FC = () => {
             </div>
           </Link>
           <span className="text-black"> / </span>
-          <h2 className="text-black text-lg mt-2"> Manage Anime </h2>
+          <h2 className="text-black text-lg mt-2"> Manage Topic </h2>
           <span className="text-black"> / </span>
           <Link href="/dashboard/anime/photo">
             <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
-              Anime Photo
+              Topic Photo
             </h2>
           </Link>
         </div>
@@ -322,6 +309,8 @@ const AnimeList: React.FC = () => {
         pagination={{ pageSize: 7 }} // Jumlah data yang ditampilkan
         data={data} // Data dari state
       />
+
+      {/* Dynamic modal */}
       <Modal
         title={
           "Modal " + modalMode === "post"
@@ -353,7 +342,7 @@ const AnimeList: React.FC = () => {
                 {...uploadProps}
                 listType="picture"
                 maxCount={1}
-                onChange={(info) => handleUpload(info, "photos")}
+                onChange={(info) => handleUpload(info)}
               >
                 <Button icon={<UploadOutlined />}>Upload</Button>
               </Upload>
@@ -371,8 +360,9 @@ const AnimeList: React.FC = () => {
                 detailPhoto?.file_path.replace(/\\/g, "/")
               }
               alt="photo"
-              width={250}
-              height={150}
+              width="full"
+              height={200}
+              className="rounded-sm"
             />
             <h1 className="mt-2">File path: {detailPhoto?.file_path}</h1>
           </div>
@@ -384,4 +374,4 @@ const AnimeList: React.FC = () => {
   );
 };
 
-export default AnimeList;
+export default TopicPhotoList;

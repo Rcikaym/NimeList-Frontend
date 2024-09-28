@@ -17,6 +17,8 @@ import Link from "next/link";
 import axios from "axios";
 import PageTitle from "@/components/TitlePage";
 
+export const api = process.env.NEXT_PUBLIC_API_URL;
+
 export default function Dashboard() {
   const [totalTopics, setTotalTopics] = useState<number | null>(null);
   const [totalMembers, setTotalMembers] = useState<number | null>(null);
@@ -75,9 +77,9 @@ export default function Dashboard() {
       try {
         const [topicsResponse, membersResponse, animeTopResponse] =
           await Promise.all([
-            axios.get("http://localhost:4321/dashboard/total-topic"),
-            axios.get("http://localhost:4321/dashboard/total-premium"),
-            axios.get("http://localhost:4321/dashboard/anime-top"),
+            axios.get(`${api}/dashboard/total-topic`),
+            axios.get(`${api}/dashboard/total-premium`),
+            axios.get(`${api}/dashboard/anime-top`),
           ]);
         setTotalTopics(topicsResponse.data.totalTopic);
         setTotalMembers(membersResponse.data.totalUserPremium);
@@ -96,14 +98,14 @@ export default function Dashboard() {
       <PageTitle title="NimeList - Dashboard" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300">
+          <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AppstoreFilled style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">Dashboard</h2>
-            <h2 className="text-black text-sm">
+            <span className="text-black text-sm">
               Short information about existing data{" "}
-            </h2>
+            </span>
           </div>
         </div>
         <div className="items-center flex gap-3">
