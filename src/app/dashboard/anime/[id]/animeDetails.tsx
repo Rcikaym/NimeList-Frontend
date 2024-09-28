@@ -6,10 +6,12 @@ import { Button, Image } from "antd";
 import axios from "axios";
 import {
   AiOutlineCalendar,
+  AiOutlineClockCircle,
   AiOutlinePaperClip,
   AiOutlinePlayCircle,
   AiOutlineStar,
   AiOutlineTags,
+  AiOutlineTool,
 } from "react-icons/ai";
 
 // Types moved to a separate file to reduce bundle size
@@ -20,17 +22,20 @@ import DisplayLongText from "@/components/DisplayLongText";
 // Memoized components
 const MemoizedImage = memo(Image);
 const MemoizedButton = memo(Button);
+const api = process.env.NEXT_PUBLIC_API_URL;
 
 const AnimeMetadata = memo(
   ({
     anime,
     averageRating,
+    totalFav,
   }: {
     anime: AnimeType["anime"];
     averageRating: number;
+    totalFav: number;
   }) => (
     <>
-      <div className="flex mt-2">
+      <div className="flex mt-auto">
         <AiOutlineCalendar className="mr-1 text-emerald-700" size={20} />
         <div className="flex gap-1">
           <h2 className="text-gray-800">Release Date:</h2>
@@ -52,22 +57,24 @@ const AnimeMetadata = memo(
         </div>
       </div>
 
-      <div className="flex gap-1 mt-2">
+      <div className="flex mt-2 gap-2">
         <div className="flex">
-          <AiOutlineStar
-            className="mr-1 text-emerald-700"
-            // style={{ color: "#fadb14" }}
-            size={20}
-          />
-          <h2 className="text-gray-800">Rating:</h2>
+          <AiOutlineStar className="mr-1 text-emerald-700" size={20} />
+          <div className="flex gap-1">
+            <h2 className="text-gray-800">Rating:</h2>
+            <span className="text-gray-800">{averageRating}</span>
+          </div>
         </div>
-        <span className="text-gray-800">{averageRating}</span>
+        <div className="flex gap-1">
+          <h2 className="text-gray-800">Total Fav:</h2>
+          <span className="text-gray-800">{totalFav}</span>
+        </div>
       </div>
 
-      {anime.trailer_link && (
+      {anime.trailer_link && anime.watch_link && (
         <>
           <div className="flex gap-1 mt-2">
-            <h2 className="text-gray-800 flex items-center">
+            <h2 className="text-gray-800 flex">
               <AiOutlinePaperClip className="mr-1 text-emerald-700" size={20} />
               Trailer Link:
             </h2>
@@ -80,10 +87,25 @@ const AnimeMetadata = memo(
               <span>{anime.trailer_link}</span>
             </a>
           </div>
+
+          <div className="flex gap-1 mt-2">
+            <h2 className="text-gray-800 flex">
+              <AiOutlinePaperClip className="mr-1 text-emerald-700" size={20} />
+              Watch Link:
+            </h2>
+            <a
+              href={anime.trailer_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 hover:text-blue-500"
+            >
+              <span>{anime.watch_link}</span>
+            </a>
+          </div>
         </>
       )}
 
-      <div className="flex gap-2 items-center mb-3">
+      <div className="flex gap-2 items-center mb-auto">
         <h2 className="text-gray-800 flex mt-2">
           <AiOutlineTags className="mr-1 text-emerald-700" size={20} />
           Genres:
@@ -92,7 +114,7 @@ const AnimeMetadata = memo(
           {anime.genres?.map((genre) => (
             <span
               key={genre.id}
-              className="rounded-xl px-2 py-1 text-sm bg-emerald-700"
+              className="rounded-xl py-1 px-2 text-sm bg-emerald-700 text-white"
             >
               {genre.name}
             </span>
@@ -109,7 +131,7 @@ const PhotoGallery = memo(
       {photos?.map((photo, index) => (
         <div key={index}>
           <MemoizedImage
-            src={`http://localhost:4321/${photo.file_path.replace(/\\/g, "/")}`}
+            src={`${api}/${photo.file_path.replace(/\\/g, "/")}`}
             alt={`${title} - Photo ${index + 1}`}
             className="rounded-lg shadow-md hover:shadow-xl transition-shadow"
             height={160}
@@ -130,7 +152,7 @@ export default function AnimeDetails({ id }: { id: string }) {
   const fetchAnime = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:4321/anime/get/${id}`);
+      const response = await axios.get(`${api}/anime/get/${id}`);
       setAnime(response.data);
       setError(null);
     } catch (error) {
@@ -154,39 +176,50 @@ export default function AnimeDetails({ id }: { id: string }) {
 
   return (
     <>
-      <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50]">
+      <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50] text-white">
         Anime Details
       </div>
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="md:flex items-center">
+        <div className="md:flex items-center mt-3">
           {/* Left column for image */}
-          <div className="md:w-1/3 justify-center p-2 ml-3">
+          <div className="justify-center p-2 ml-3 flex gap-5">
             {photo_cover && (
               <MemoizedImage
                 alt={title}
                 className="w-full h-auto object-cover rounded-md shadow-md hover:shadow-xl transition-shadow"
-                src={`http://localhost:4321/${photo_cover.replace(/\\/g, "/")}`}
+                src={`${api}/${photo_cover.replace(/\\/g, "/")}`}
                 loading="lazy"
+                height={330}
+                width="full"
               />
             )}
+            <div className="grid justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+              </div>
+              <AnimeMetadata
+                anime={anime.anime}
+                totalFav={anime.totalFav}
+                averageRating={anime.averageRating}
+              />
+              <div className="grid gap-1">
+                <div className="flex items-center text-gray-600 gap-2">
+                  <AiOutlineClockCircle />
+                  <span className="text-sm text-gray-600">
+                    {renderDateTime(created_at)}
+                  </span>
+                </div>
+                <div className="flex items-center text-gray-600 gap-2">
+                  <AiOutlineTool />
+                  <span className="text-sm text-gray-600">
+                    {renderDateTime(updated_at)}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Right column for details */}
-          <div className="md:w-2/3 p-6">
-            <h1 className="text-3xl font-bold mb-2 text-gray-800">{title}</h1>
-            <AnimeMetadata
-              anime={anime.anime}
-              averageRating={anime.averageRating}
-            />
-            <div className="grid gap-1">
-              <span className="text-sm text-gray-600">
-                Created At: {renderDateTime(created_at)}
-              </span>
-              <span className="text-sm text-gray-600">
-                Updated At: {renderDateTime(updated_at)}
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Synopsis */}
@@ -194,7 +227,9 @@ export default function AnimeDetails({ id }: { id: string }) {
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">
             Synopsis
           </h2>
-          <DisplayLongText text={synopsis} />
+          <div className="text-gray-600">
+            <DisplayLongText text={synopsis} />
+          </div>
         </div>
 
         {/* Photo gallery */}

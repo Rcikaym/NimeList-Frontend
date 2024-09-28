@@ -18,53 +18,10 @@ import {
   LeftCircleOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
-
-// Interfaces
-interface DataAnime {
-  title: string;
-  synopsis: string;
-  release_date: string;
-  trailer_link: string;
-  genres: [];
-  photos_anime: [];
-  photo_cover: [];
-  type: string;
-  episodes: number;
-}
-
-interface GenreType {
-  id: string;
-  name: string;
-}
-
-interface PhotosType {
-  id: string;
-  file_path: string;
-}
-
-interface AnimeType {
-  anime: {
-    title: string;
-    synopsis: string;
-    release_date: string;
-    trailer_link: string;
-    photos: PhotosType[];
-    photo_cover: string;
-    type: string;
-    episodes: number;
-    genres: GenreType[];
-  };
-}
-
-const normFile = (e: any) => {
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e && e.fileList;
-};
+import { api } from "./page";
+import { DataAnime, GenreType, PhotosType } from "./types";
 
 export default function AnimeEdit({ id }: { id: string }) {
   const router = useRouter();
@@ -72,20 +29,30 @@ export default function AnimeEdit({ id }: { id: string }) {
   const [genres, setGenres] = useState<GenreType[]>([]);
   const [type, setType] = useState<string | null>(null);
   const [episodes, setEpisodes] = useState<number | null>(null);
-  const [anime, setAnime] = useState<AnimeType | null>(null);
+  const [anime, setAnime] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [fileList, setFileList] = useState([]);
+  const [fileCover, setFileCover] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const { confirm } = Modal;
 
-  // Fetch anime details
+  // Fetch anime edit data
   useEffect(() => {
     const fetchAnime = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          `http://localhost:4321/anime/get/${id}`
-        );
+        const response = await axios.get(`${api}/anime/get/${id}`);
         const animeData = response.data.anime;
+
+        // Set data foto ke setter dari fileList
+        setFileList(
+          animeData.photos.map((photo: PhotosType) => ({
+            uid: photo.id, // Unique identifier
+            name: `${photo.file_path}`, // Extract filename from file_path
+            status: "done",
+            url: `${api}/${photo.file_path.replace(/\\/g, "/")}`,
+          }))
+        );
 
         // Set data ke dalam form
         form.setFieldsValue({
@@ -97,7 +64,8 @@ export default function AnimeEdit({ id }: { id: string }) {
           type: animeData.type,
           episodes: animeData.episodes,
         });
-        setAnime(response.data);
+
+        setAnime(animeData.title);
         setError(null);
       } catch (error) {
         console.error("Error fetching anime:", error);
@@ -114,7 +82,7 @@ export default function AnimeEdit({ id }: { id: string }) {
   useEffect(() => {
     const fetchGenre = async () => {
       const response = await axios.get<GenreType[]>(
-        "http://localhost:4321/anime/get-all-genre"
+        `${api}/anime/get-all-genre`
       );
       setLoading(true);
       try {
@@ -140,30 +108,47 @@ export default function AnimeEdit({ id }: { id: string }) {
     formData.append("trailer_link", values.trailer_link);
     formData.append("episodes", values.episodes.toString());
 
+    const existing_photos = [] as string[];
+    const new_photos = [] as string[];
+
     if (Array.isArray(values.genres)) {
       values.genres.forEach((genre: string) => {
         formData.append("genres", genre);
       });
     }
 
-    // Handle file upload
-    if (values.photo_cover) {
-      values.photo_cover.forEach((file: any) => {
-        formData.append("photo_cover", file.originFileObj);
-      });
+    fileCover.forEach((file: any) => {
+      formData.append("photo_cover", file.originFileObj);
+    });
+
+    // Tambahkan file foto anime (bisa lebih dari 1)
+    fileList.forEach((file: any) => {
+      if (file.url) {
+        // Existing file (old photo)
+        existing_photos.push(file.name);
+      } else {
+        // New file (new upload)
+        new_photos.push(file.originFileObj);
+      }
+    });
+
+    // Append new and existing files
+    new_photos.forEach((file: any) => formData.append("new_photos", file));
+    if (existing_photos.length === 0) {
+      formData.append("existing_photos", "");
+    } else {
+      existing_photos.forEach((file: any) =>
+        formData.append("existing_photos", file)
+      );
     }
 
     setLoading(true);
     try {
-      const response = await axios.put(
-        `http://localhost:4321/anime/update/${id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.put(`${api}/anime/update/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       router.push("/dashboard/anime");
       message.success("Anime updated successfully!");
       setLoading(false);
@@ -179,7 +164,7 @@ export default function AnimeEdit({ id }: { id: string }) {
       .then((values: DataAnime) => {
         confirm({
           centered: true,
-          title: "Do you want to update an " + anime?.anime.title + " ?",
+          title: "Do you want to update an " + anime + " ?",
           icon: <ExclamationCircleFilled />,
           onOk() {
             setLoading(true); // Set status loading pada tombol OK
@@ -194,14 +179,14 @@ export default function AnimeEdit({ id }: { id: string }) {
           },
         });
       })
-      .catch((info) => {
+      .catch(() => {
         message.error("Please complete the form before submitting!");
       });
   };
 
   // Fungsi yang akan dipanggil saat submit form
-  const handleSubmit = (values: any) => {
-    updateAnime(values); // Panggil fungsi addAnime dengan nilai form
+  const handleSubmit = () => {
+    showPostConfirm(); // Panggil fungsi addAnime dengan nilai form
   };
 
   // Fungsi untuk mengubah default value dari episode jika tipe movie dipilih
@@ -211,18 +196,25 @@ export default function AnimeEdit({ id }: { id: string }) {
     }
   };
 
-  const handleUpload = async (info: any, fieldName: string) => {
+  const handlePhotosUpload = (info: any) => {
     const { file, fileList } = info;
 
+    setFileList(fileList);
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
     }
+  };
 
-    // If you need to perform any action when the overall status changes
-    if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
+  const handleCoverUpload = (info: any) => {
+    const { file, fileList } = info;
+
+    setFileCover(fileList);
+    if (file.status === "done") {
+      message.success(`${file.name} file uploaded successfully`);
+    } else if (file.status === "error") {
+      message.error(`${file.name} file upload failed.`);
     }
   };
 
@@ -244,7 +236,7 @@ export default function AnimeEdit({ id }: { id: string }) {
   return (
     <>
       <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg">
-        Form Edit Anime {anime?.anime.title}
+        Form Edit Anime {anime}
       </div>
       <Form
         form={form}
@@ -283,7 +275,7 @@ export default function AnimeEdit({ id }: { id: string }) {
             label="Synopsis"
             rules={[{ required: true, message: "Please input synopsis" }]}
           >
-            <Input.TextArea />
+            <Input.TextArea autoSize />
           </Form.Item>
 
           {/* Genres */}
@@ -339,16 +331,26 @@ export default function AnimeEdit({ id }: { id: string }) {
           </Form.Item>
 
           {/* Upload Cover */}
-          <Form.Item
-            name="photo_cover"
-            label="Update Cover Image"
-            getValueFromEvent={normFile}
-          >
+          <Form.Item name="photo_cover" label="Update Cover Image">
             <Upload
               {...uploadProps}
               listType="picture"
               maxCount={1}
-              onChange={(info) => handleUpload(info, "photo_cover")}
+              fileList={fileCover}
+              onChange={(info) => handleCoverUpload(info)}
+            >
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
+          </Form.Item>
+
+          <Form.Item name="photos_anime" label="Upload Photo Anime">
+            <Upload
+              {...uploadProps}
+              listType="picture-card"
+              maxCount={4}
+              multiple
+              fileList={fileList}
+              onChange={(info) => handlePhotosUpload(info)}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
@@ -359,7 +361,7 @@ export default function AnimeEdit({ id }: { id: string }) {
           <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
             Back
           </Button>
-          <Button type="primary" onClick={showPostConfirm}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             Submit
           </Button>
         </div>
