@@ -146,10 +146,21 @@ const menuItems = [
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [mounted, setMounted] = useState(false); // Tracks if the component is mounted
+  const [username, setUsername] = useState("Guest");
+  const [description, setDescription] = useState("");
 
   // Ensure dynamic content only renders on the client
   useEffect(() => {
     setMounted(true);
+    const loggedInUser = localStorage.getItem("username"); // Retrieve the username from local storage
+    const userDescription = localStorage.getItem("email"); // Retrieve the user's role or description
+
+    if (loggedInUser) {
+      setUsername(loggedInUser); // Set the username in state
+    }
+    if (userDescription) {
+      setDescription(userDescription); // Set the description or role in state
+    }
   }, []);
 
   if (!mounted) {
@@ -285,7 +296,7 @@ const AuthNavbar = () => {
                   className="h-14 gap-2 opacity-100 "
                 >
                   <User
-                    name="Junior Garcia"
+                    name={username}
                     description="@jrgarciadev"
                     classNames={{
                       name: "text-white",
