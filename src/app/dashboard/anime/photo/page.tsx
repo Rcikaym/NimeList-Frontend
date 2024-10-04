@@ -51,9 +51,9 @@ const normFile = (e: any) => {
   return e?.fileList ? e.fileList : [];
 };
 
-const api = process.env.NEXT_PUBLIC_API_URL;
 
 const AnimeList: React.FC = () => {
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [idPhoto, setId] = useState<string>(""); // Menyimpan anime yang sedang diedit

@@ -2,7 +2,8 @@ import PageTitle from "@/components/TitlePage";
 import AnimeDetails from "./animeDetails";
 
 export default async function Page({ params }: { params: { id: string } }) {
-  const response = await fetch(`http://localhost:4321/anime/get/${params.id}`);
+  const api = process.env.NEXT_PUBLIC_API_URL;
+  const response = await fetch(`${api}/anime/get/${params.id}`);
   const anime = await response.json();
 
   return (

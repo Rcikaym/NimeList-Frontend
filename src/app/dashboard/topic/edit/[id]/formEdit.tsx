@@ -5,7 +5,6 @@ import {
   Button,
   Form,
   Input,
-  InputNumber,
   message,
   Modal,
   Select,
@@ -27,18 +26,18 @@ import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function TopicEdit({ id }: { id: string }) {
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const [form] = Form.useForm();
-  const api = process.env.NEXT_PUBLIC_API_URL;
   const [topic, setTopic] = useState<any>(null);
-  let [content, setContent] = useState<string>("");
+  const [content, setContent] = useState<string>("");
   const [animes, setAnimes] = useState<AnimeType[]>([]);
   const [loading, setLoading] = useState(true);
   const [fileList, setFileList] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const { confirm } = Modal;
 
-  // Fungsi untuk memperbarui src gambar dalam konten HTML
+  // Fungsi untuk parser elemen tag HTML
   const htmlParser = (htmlString: string): string => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, "text/html");

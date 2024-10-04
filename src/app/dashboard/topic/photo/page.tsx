@@ -5,11 +5,9 @@ import {
   Button,
   Form,
   Image,
-  Input,
   message,
   Modal,
   Space,
-  Table,
   Upload,
 } from "antd";
 import type { TableColumnsType, UploadProps } from "antd";
@@ -28,7 +26,6 @@ import {
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
-import { api } from "../../page";
 import PageTitle from "@/components/TitlePage";
 
 interface DataType {
@@ -48,6 +45,7 @@ const normFile = (e: any) => {
 };
 
 const TopicPhotoList: React.FC = () => {
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [idPhoto, setIdPhoto] = useState<string>(""); // Menyimpan id photo yang sedang diedit

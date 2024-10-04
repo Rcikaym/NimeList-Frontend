@@ -38,7 +38,15 @@ interface DataGenre {
   name: string;
 }
 
-const UserList: React.FC = () => {
+// Fungsi normFile untuk memastikan fileList berupa array
+const normFile = (e: any) => {
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e?.fileList ? e.fileList : [];
+};
+
+const AddAnime: React.FC = () => {
   const router = useRouter();
   const [form] = Form.useForm(); // Form handler dari Ant Design
   const [genres, setGenres] = useState<DataGenre[]>([]);
@@ -46,13 +54,14 @@ const UserList: React.FC = () => {
   const [type, setType] = useState<string | null>(null);
   const [episodes, setEpisodes] = useState<number | null>(null);
   const { confirm } = Modal;
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchGenre = async () => {
       setLoading(true);
       try {
         const response = await axios.get<DataGenre[]>(
-          "http://localhost:4321/anime/get-all-genre"
+          `${api}/anime/get-all-genre`
         );
         setGenres(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -135,15 +144,11 @@ const UserList: React.FC = () => {
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
       // Kirim data menggunakan axios
-      const response = await axios.post(
-        "http://localhost:4321/anime/post",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Tentukan header untuk form data
-          },
-        }
-      );
+      const response = await axios.post(`${api}/anime/post`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Tentukan header untuk form data
+        },
+      });
 
       // Tampilkan pesan sukses jika request berhasil
       message.success("Anime added successfully!");
@@ -155,19 +160,6 @@ const UserList: React.FC = () => {
     }
   };
 
-  // Fungsi yang akan dipanggil saat submit form
-  const handleSubmit = () => {
-    showPostConfirm(); // Panggil fungsi konfirmasi sebelum submit
-  };
-
-  // Fungsi normFile untuk memastikan fileList berupa array
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList ? e.fileList : [];
-  };
-
   return (
     <>
       <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg">
@@ -176,7 +168,7 @@ const UserList: React.FC = () => {
       <Form
         layout="vertical"
         form={form}
-        onFinish={handleSubmit}
+        onFinish={showPostConfirm}
         onValuesChange={onValuesChange}
       >
         <div className="rounded-sm shadow-md p-4">
@@ -322,4 +314,4 @@ const UserList: React.FC = () => {
   );
 };
 
-export default UserList;
+export default AddAnime;
