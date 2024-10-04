@@ -56,9 +56,8 @@ interface DataUser {
   username: string;
 }
 
-const api = process.env.NEXT_PUBLIC_API_URL;
-
 const UserList: React.FC = () => {
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [detailReview, setDetailReview] = useState<any>(null); // Data diisi dengan api
   const [dataAnime, setDataAnime] = useState<DataAnime[]>([]); // Data diisi dengan api
@@ -107,12 +106,12 @@ const UserList: React.FC = () => {
   // Fungsi untuk melakukan post data genre
   const handlePostReview = async (values: DataType) => {
     try {
-      await axios.post("http://localhost:4321/review/post", values); // Melakukan POST ke server
+      await axios.post(`${api}/review/post`, values); // Melakukan POST ke server
       message.success("Review added successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(
-        "http://localhost:4321/review/get-all"
+        `${api}/review/get-all`
       );
       setData(response.data); // Memperbarui data genre
       form.resetFields(); // Reset form setelah submit
@@ -151,8 +150,8 @@ const UserList: React.FC = () => {
       message.success("Review deleted successfully!");
 
       // Fetch ulang data setelah di delete
-      const response = await axios.get<DataType[]>(`${api}/genre/get-all`);
-      setData(response.data); // Memperbarui data genre
+      const response = await axios.get<DataType[]>(`${api}/review/get-all`);
+      setData(response.data); // Memperbarui data review
     } catch (error) {
       message.error("Failed to delete review");
     }
@@ -276,7 +275,7 @@ const UserList: React.FC = () => {
   const fetchReviewedAnime = async (userId: string) => {
     try {
       const response = await axios.get<string[]>(
-        `http://localhost:4321/review/anime-reviewed/${userId}`
+        `${api}/review/anime-reviewed/${userId}`
       );
       setReviewedAnime(response.data);
     } catch (error) {

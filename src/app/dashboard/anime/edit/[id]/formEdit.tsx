@@ -20,7 +20,6 @@ import {
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
-import { api } from "./page";
 import { DataAnime, GenreType, PhotosType } from "./types";
 
 export default function AnimeEdit({ id }: { id: string }) {
@@ -35,6 +34,7 @@ export default function AnimeEdit({ id }: { id: string }) {
   const [fileCover, setFileCover] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const { confirm } = Modal;
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   // Fetch anime edit data
   useEffect(() => {
@@ -184,11 +184,6 @@ export default function AnimeEdit({ id }: { id: string }) {
       });
   };
 
-  // Fungsi yang akan dipanggil saat submit form
-  const handleSubmit = () => {
-    showPostConfirm(); // Panggil fungsi addAnime dengan nilai form
-  };
-
   // Fungsi untuk mengubah default value dari episode jika tipe movie dipilih
   const onValuesChange = (changedValues: any, allValues: any) => {
     if (changedValues.type === "movie") {
@@ -241,7 +236,7 @@ export default function AnimeEdit({ id }: { id: string }) {
       <Form
         form={form}
         layout="vertical"
-        onFinish={handleSubmit}
+        onFinish={showPostConfirm}
         onValuesChange={onValuesChange}
       >
         <div className="rounded-sm shadow-md p-4">

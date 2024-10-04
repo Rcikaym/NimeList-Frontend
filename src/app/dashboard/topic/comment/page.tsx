@@ -111,13 +111,8 @@ const TopicCommentList: React.FC = () => {
   const handlePostComment = async (values: DataPost) => {
     try {
       const post = await axios.post(`${api}/comment/post`, values); // Melakukan POST ke server
-
-      if (post.status === 201) {
-        message.success("Comment added successfully!");
-      } else {
-        message.error("Failed to add comment");
-      }
-
+      
+      message.success("Comment added successfully!");
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(`${api}/comment/get-all`);
       setData(response.data); // Memperbarui data comment
