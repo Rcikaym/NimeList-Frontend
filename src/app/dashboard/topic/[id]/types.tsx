@@ -5,6 +5,7 @@ export interface TopicType {
   created_at: string;
   updated_at: string;
   totalLikes: number;
+  totalDislikes: number;
   totalComments: number;
   user: string;
   anime: string;
