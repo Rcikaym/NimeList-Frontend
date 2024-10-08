@@ -29,7 +29,7 @@ interface DataType {
   updated_at: string;
 }
 
-const UserList: React.FC = () => {
+const TopicList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const { confirm } = Modal;
@@ -193,4 +193,4 @@ const UserList: React.FC = () => {
   );
 };
 
-export default UserList;
+export default TopicList;

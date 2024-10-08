@@ -5,9 +5,9 @@ import { LeftCircleOutlined } from "@ant-design/icons";
 import { Button, Image } from "antd";
 import axios from "axios";
 import {
-  AiOutlineCalendar,
   AiOutlineClockCircle,
   AiOutlineComment,
+  AiOutlineDislike,
   AiOutlineLike,
   AiOutlineTag,
   AiOutlineTool,
@@ -17,7 +17,7 @@ import {
 // Types moved to a separate file to reduce bundle size
 import renderDateTime from "@/components/FormatDateTime";
 import { TopicType } from "./types";
-import DynamicContent from "@/components/DynamicContent";
+import DynamicContent from "@/components/dynamicContent";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -40,6 +40,13 @@ const AnimeMetadata = memo(({ topic }: { topic: TopicType }) => (
           <div className="flex gap-1 text-small">
             <h2 className="text-gray-800">:</h2>
             <span className="text-gray-800">{topic.totalLikes}</span>
+          </div>
+        </div>
+        <div className="flex">
+          <AiOutlineDislike className="mr-1 text-emerald-700" size={20} />
+          <div className="flex gap-1 text-small">
+            <h2 className="text-gray-800">:</h2>
+            <span className="text-gray-800">{topic.totalDislikes}</span>
           </div>
         </div>
         <div className="flex">
@@ -83,7 +90,7 @@ const PhotoGallery = memo(
           <MemoizedImage
             src={`${api}/${photo.file_path.replace(/\\/g, "/")}`}
             alt={`${title} - Photo ${index + 1}`}
-            className="rounded-lg shadow-md hover:shadow-xl transition-shadow"
+            className="rounded-sm shadow-md hover:shadow-xl transition-shadow"
             height={160}
             width={260}
             loading="lazy"

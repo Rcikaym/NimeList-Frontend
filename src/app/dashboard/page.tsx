@@ -16,6 +16,7 @@ import { AppstoreFilled, LoadingOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import axios from "axios";
 import PageTitle from "@/components/TitlePage";
+import BarChart from "@/components/barChart";
 
 export const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -210,7 +211,7 @@ export default function Dashboard() {
 
         {/* Chart Section */}
         <div className="bg-white rounded-md shadow-md mb-6">
-          <div className="mb-4 p-3 flex items-center gap-5">
+          <div className="mb-3 p-3 flex items-center gap-5">
             <div className="flex items-center rounded-md shadow-gray-400 shadow-sm w-fit p-3 text-emerald-700">
               <AiOutlineBarChart style={{ fontSize: 30 }} />
             </div>
@@ -223,8 +224,8 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
-          <div className="p-3 h-[100px]">
-            <BiBarChart />
+          <div className="p-3">
+            <BarChart />
           </div>
         </div>
 

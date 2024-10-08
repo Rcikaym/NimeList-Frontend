@@ -4,24 +4,14 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button, Form, Input, Modal, Space, Table, message } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import {
-  AiFillCheckCircle,
-  AiFillDelete,
-  AiFillStar,
-  AiOutlineCheck,
-  AiOutlineCheckCircle,
   AiOutlineDelete,
   AiOutlinePlus,
   AiOutlineTags,
-  AiOutlineUser,
 } from "react-icons/ai";
 import axios from "axios";
 import {
-  AppstoreAddOutlined,
   AppstoreFilled,
-  CheckCircleTwoTone,
   ExclamationCircleFilled,
-  EyeOutlined,
-  VideoCameraOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import renderDateTime from "@/components/FormatDateTime";
@@ -34,22 +24,23 @@ interface DataType {
   updated_at: string;
 }
 
-const UserList: React.FC = () => {
+const AnimeGenre: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [modalGenre, setModalGenre] = useState<boolean>(false); // Untuk status modal genre
   const [form] = Form.useForm();
   const { confirm } = Modal;
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   // Fungsi untuk melakukan post data genre
   const handlePostGenre = async (values: DataType) => {
     try {
-      await axios.post("http://localhost:4321/genre/post", values); // Melakukan POST ke server
+      await axios.post(`${api}/genre/post`, values); // Melakukan POST ke server
       message.success("Genre added successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(
-        "http://localhost:4321/genre/get-all"
+        `${api}/genre/get-all`
       );
       setData(response.data); // Memperbarui data genre
       form.resetFields(); // Reset form setelah submit
@@ -61,12 +52,12 @@ const UserList: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteGenre = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:4321/genre/delete/${id}`); // Melakukan DELETE ke server
+      await axios.delete(`${api}/genre/delete/${id}`); // Melakukan DELETE ke server
       message.success("Genre deleted successfully!");
 
       // Fetch ulang data setelah post
       const response = await axios.get<DataType[]>(
-        "http://localhost:4321/genre/get-all"
+        `${api}/genre/get-all`
       );
       setData(response.data); // Memperbarui data genre
     } catch (error) {
@@ -132,7 +123,7 @@ const UserList: React.FC = () => {
       setLoading(true);
       try {
         const response = await axios.get<DataType[]>(
-          "http://localhost:4321/genre/get-all"
+          `${api}/genre/get-all`
         );
         setData(response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -249,4 +240,4 @@ const UserList: React.FC = () => {
   );
 };
 
-export default UserList;
+export default AnimeGenre;
