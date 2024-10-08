@@ -1,7 +1,7 @@
 // File: components/SalesData.tsx
 import React, { useState, useEffect } from "react";
 import { DatePicker, message, Spin } from "antd";
-import type { Moment } from "moment";
+import dayjs from "dayjs";
 import moment from "moment";
 import "antd/dist/reset.css";
 import { Bar } from "react-chartjs-2";
@@ -33,8 +33,8 @@ interface SalesItem {
 }
 
 const SalesData: React.FC = () => {
-  const currentYear = moment().year(); // Mendapatkan tahun saat ini
-  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+  const currentYear = dayjs().year();
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [salesData, setSalesData] = useState<SalesItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -64,11 +64,10 @@ const SalesData: React.FC = () => {
   }, [currentYear]);
 
   // Handle ketika tahun dipilih menggunakan DatePicker
-  const handleYearChange = (date: Moment | null) => {
+  const handleYearChange = (date: dayjs.Dayjs) => {
     if (date) {
-      const year = date.year();
-      setSelectedYear(year);
-      fetchSalesData(year);
+      setSelectedYear(date.year().toString());
+      fetchSalesData(date.year());
     }
   };
 
