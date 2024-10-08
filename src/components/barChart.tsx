@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { DatePicker, message, Spin } from "antd";
 import dayjs from "dayjs";
-import moment from "moment";
 import "antd/dist/reset.css";
 import { Bar } from "react-chartjs-2";
 import {
