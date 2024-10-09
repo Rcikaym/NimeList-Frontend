@@ -143,11 +143,13 @@ const AddAnime: React.FC = () => {
 
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
-      // Kirim data menggunakan axios
-      const response = await axios.post(`${api}/anime/post`, formData, {
+      // Kirim data menggunakan swr
+      const response = await fetch(`${api}/anime/post`, {
+        method: "POST",
         headers: {
-          "Content-Type": "multipart/form-data", // Tentukan header untuk form data
+          "Content-Type": "application/json",
         },
+        body: formData,
       });
 
       // Tampilkan pesan sukses jika request berhasil
@@ -162,8 +164,8 @@ const AddAnime: React.FC = () => {
 
   return (
     <>
-      <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg">
-        Form Add Anime
+      <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg text-white">
+        Add Anime
       </div>
       <Form
         layout="vertical"

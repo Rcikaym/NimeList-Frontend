@@ -84,9 +84,9 @@ const UserList: React.FC = () => {
     }
     form
       .validateFields()
-      .then((values: DataType) => {
+      .then(async (values: DataType) => {
         if (modalMode === "post") {
-          showPostConfirm(values);
+          await showPostConfirm(values);
         } else if (modalMode === "edit") {
           showEditConfirm(values);
         }
@@ -106,15 +106,25 @@ const UserList: React.FC = () => {
   // Fungsi untuk melakukan post data genre
   const handlePostReview = async (values: DataType) => {
     try {
-      await axios.post(`${api}/review/post`, values); // Melakukan POST ke server
-      message.success("Review added successfully!");
+      const res = await fetch(`${api}/review/post`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      }); // Melakukan POST ke server
 
-      // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        `${api}/review/get-all`
-      );
-      setData(response.data); // Memperbarui data genre
-      form.resetFields(); // Reset form setelah submit
+      if (res.status === 201) {
+        message.success("Review added successfully!");
+        // Fetch ulang data setelah post
+        const response = await fetch(`${api}/review/get-all`, {
+          method: "GET",
+        });
+        setData(await response.json()); // Memperbarui data genre
+        form.resetFields(); // Reset form setelah submit
+      } else {
+        const err = await res.json();
+        message.error(err.message);
+        setMode("post");
+      }
     } catch (error) {
       message.error("Failed to add review");
     }
@@ -126,10 +136,10 @@ const UserList: React.FC = () => {
       centered: true,
       title: "Do you want to add this review?",
       icon: <ExclamationCircleFilled />,
-      onOk() {
+      async onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handlePostReview(values)
+        return await handlePostReview(values)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -146,12 +156,14 @@ const UserList: React.FC = () => {
   // Fungsi untuk melakukan delete data review
   const handleDeleteReview = async (id: string) => {
     try {
-      await axios.delete(`${api}/review/delete/${id}`); // Melakukan DELETE ke server
+      await fetch(`${api}/review/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
       message.success("Review deleted successfully!");
 
       // Fetch ulang data setelah di delete
-      const response = await axios.get<DataType[]>(`${api}/review/get-all`);
-      setData(response.data); // Memperbarui data review
+      const response = await fetch(`${api}/review/get-all`, {
+        method: "GET",
+      });
+      setData(await response.json()); // Memperbarui data review
     } catch (error) {
       message.error("Failed to delete review");
     }
@@ -177,27 +189,33 @@ const UserList: React.FC = () => {
     });
   };
 
-  const setDataEdit = (id: string) => {
+  const setDataEdit = async (id: string) => {
     setIdReview(id);
-    const data = axios.get(`${api}/review/get/${id}`);
-    data.then((res) => {
-      // Set data ke dalam form
-      form.setFieldsValue({
-        review: res.data.review,
-        rating: parseFloat(res.data.rating),
-      });
+    const response = await fetch(`${api}/review/get/${id}`, { method: "GET" });
+    const data = await response.json();
+
+    // Set data ke dalam form
+    form.setFieldsValue({
+      review: data.review,
+      rating: parseFloat(data.rating),
     });
   };
 
   const handleEditReview = async (values: DataType) => {
     try {
-      await axios.put(`${api}/review/update/${idReview}`, values);
+      await fetch(`${api}/review/update/${idReview}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
       message.success("Review updated successfully!");
       setModalVisible(false);
 
       // Fetch ulang data setelah update
-      const response = await axios.get<DataType[]>(`${api}/review/get-all`);
-      setData(response.data); // Memperbarui data review
+      const response = await fetch(`${api}/review/get-all`, {
+        method: "GET",
+      });
+      setData(await response.json()); // Memperbarui data review
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
       message.error("Failed to update review");
@@ -223,11 +241,9 @@ const UserList: React.FC = () => {
     });
   };
 
-  const setDataDetail = (id: string) => {
-    const data = axios.get(`${api}/review/get/${id}`);
-    data.then((res) => {
-      setDetailReview(res.data);
-    });
+  const setDataDetail = async (id: string) => {
+    const data = await fetch(`${api}/review/get/${id}`, { method: "GET" });
+    setDetailReview(await data.json());
   };
 
   // Fetch data dari API ketika komponen dimuat
@@ -235,8 +251,10 @@ const UserList: React.FC = () => {
     const fetchReview = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<DataType[]>(`${api}/review/get-all`);
-        setData(response.data); // Mengisi data dengan hasil dari API
+        const response = await fetch(`${api}/review/get-all`, {
+          method: "GET",
+        });
+        setData(await response.json()); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching review:", error);
@@ -246,10 +264,10 @@ const UserList: React.FC = () => {
 
     const fetchAnime = async () => {
       try {
-        const response = await axios.get<DataAnime[]>(
-          `${api}/review/get-all-anime`
-        );
-        setDataAnime(response.data); // Mengisi data dengan anime dari API
+        const response = await fetch(`${api}/review/get-all-anime`, {
+          method: "GET",
+        });
+        setDataAnime(await response.json()); // Mengisi data dengan anime dari API
       } catch (error) {
         console.error("Error fetching animes:", error);
       }
@@ -257,10 +275,10 @@ const UserList: React.FC = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await axios.get<DataUser[]>(
-          `${api}/review/get-all-user`
-        );
-        setDataUser(response.data); // Mengisi data dengan user dari API
+        const response = await fetch(`${api}/review/get-all-user`, {
+          method: "GET",
+        });
+        setDataUser(await response.json()); // Mengisi data dengan user dari API
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -274,10 +292,10 @@ const UserList: React.FC = () => {
   // Fetch anime yang sudah direview oleh user yang dipilih
   const fetchReviewedAnime = async (userId: string) => {
     try {
-      const response = await axios.get<string[]>(
-        `${api}/review/anime-reviewed/${userId}`
-      );
-      setReviewedAnime(response.data);
+      const response = await fetch(`${api}/review/anime-reviewed/${userId}`, {
+        method: "GET",
+      });
+      setReviewedAnime(await response.json());
     } catch (error) {
       console.error("Error fetching reviewed anime:", error);
     }

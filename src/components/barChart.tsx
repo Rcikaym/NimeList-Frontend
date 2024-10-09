@@ -15,6 +15,7 @@ import {
   ChartOptions,
   ChartData,
 } from "chart.js";
+import axios from "axios";
 
 // Register Chart.js components
 ChartJS.register(
@@ -41,13 +42,13 @@ const SalesData: React.FC = () => {
   const fetchSalesData = async (year: number) => {
     setLoading(true);
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `http://localhost:4321/dashboard/bar-chart?year=${year}`
       );
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Network response was not ok");
       }
-      const data: SalesItem[] = await response.json();
+      const data: SalesItem[] = await response.data;
       setSalesData(data);
     } catch (error) {
       console.error("Error fetching sales data:", error);
@@ -87,6 +88,7 @@ const SalesData: React.FC = () => {
   // Opsi untuk Chart.js
   const options: ChartOptions<"bar"> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
@@ -110,7 +112,9 @@ const SalesData: React.FC = () => {
       {loading ? (
         <Spin tip="Loading..." />
       ) : salesData.length > 0 ? (
-        <Bar data={chartData} options={options} />
+        <div className="h-[460px] w-full">
+          <Bar data={chartData} options={options} />
+        </div>
       ) : (
         <p>There is no income report for this year.</p>
       )}

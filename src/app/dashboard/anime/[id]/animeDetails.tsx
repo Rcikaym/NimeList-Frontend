@@ -152,8 +152,10 @@ export default function AnimeDetails({ id }: { id: string }) {
   const fetchAnime = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${api}/anime/get/${id}`);
-      setAnime(response.data);
+      const response = await fetch(`${api}/anime/get/${id}`, {
+        method: "GET",
+      });
+      setAnime(await response.json());
       setError(null);
     } catch (error) {
       console.error("Error fetching anime:", error);
@@ -224,9 +226,7 @@ export default function AnimeDetails({ id }: { id: string }) {
 
         {/* Synopsis */}
         <div className="p-6">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-            Synopsis
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-800">Synopsis</h2>
           <div className="text-gray-600">
             <DisplayLongText text={synopsis} />
           </div>
