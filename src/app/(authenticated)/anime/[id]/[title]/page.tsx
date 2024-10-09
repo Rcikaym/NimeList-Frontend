@@ -48,6 +48,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
         if (id) {
           // Fetch anime details using the ID
           const animeResponse = await fetch(
+            
             // `http://localhost:3001/animes/${id}`
             `${api}/anime/get/${id}`
           );

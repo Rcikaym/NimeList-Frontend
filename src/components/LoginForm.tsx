@@ -12,14 +12,16 @@ const LoginForm: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const api = process.env.NEXT_PUBLIC_API_URL;
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   // Function to handle login
-  const handleLogin = async () => {
-    setError(""); // Clear any previous errors
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
+
     try {
-      const response = await fetch("http://localhost:4321/auth/login", {
+      const response = await fetch(`${api}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,18 +32,15 @@ const LoginForm: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Store the JWT token
-        localStorage.setItem("token", data.access_token);
-
-        // Redirect or update UI after successful login
+        // Store the JWT token (you can choose localStorage, cookie, or other storage)
+        localStorage.setItem("access_token", data.access_token);
+        // Redirect to the dashboard or protected page after successful login
         router.push("/home");
       } else {
-        // Handle error responses
-        setError(data.message || "Invalid credentials");
+        setError(data.message || "Login failed");
       }
     } catch (err) {
-      console.error("Login error:", err);
-      setError("An error occurred while logging in.");
+      setError("Something went wrong!");
     }
   };
 
@@ -53,7 +52,7 @@ const LoginForm: React.FC = () => {
         </p>
         <span className="font-semibold text-sm">For better experience.</span>
       </div>
-      <div className="w-[447px] h-[574px] items-center justify-center pt-[9rem]">
+      <form className="w-[447px] h-[574px] items-center justify-center pt-[9rem]" onSubmit={handleLogin}>
         <Input
           className="w-[368px] m-8 select-none"
           value={username}
@@ -91,7 +90,7 @@ const LoginForm: React.FC = () => {
           className="w-[368px] m-8 mb-2 bg-[#014A42] h-[60px]"
           size="lg"
           color="primary"
-          onClick={handleLogin}
+          type="submit"
         >
           <p className="font-semibold text-2xl m-0 mb-1">Log in </p>
           <BiRightArrowAlt className="w-[24px] h-[24px]" />
@@ -106,7 +105,7 @@ const LoginForm: React.FC = () => {
             </span>
           </p>
         </div>
-      </div>
+      </form>
       <BorderBeam size={200} duration={15} delay={9} borderWidth={4} />
     </div>
   );
