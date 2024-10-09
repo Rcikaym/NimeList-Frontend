@@ -81,12 +81,14 @@ export default function AnimeEdit({ id }: { id: string }) {
   // Fetch genres
   useEffect(() => {
     const fetchGenre = async () => {
-      const response = await axios.get<GenreType[]>(
-        `${api}/anime/get-all-genre`
+      const response = await fetch(
+        `${api}/anime/get-all-genre`, {
+          method: "GET",
+        }
       );
       setLoading(true);
       try {
-        setGenres(response.data);
+        setGenres(await response.json());
         setLoading(false);
       } catch (error) {
         console.error("Error fetching genres:", error);
@@ -144,16 +146,15 @@ export default function AnimeEdit({ id }: { id: string }) {
 
     setLoading(true);
     try {
-      const response = await axios.put(`${api}/anime/update/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await fetch(`${api}/anime/update/${id}`, {
+        method: "PUT",
+        body: formData,
       });
       router.push("/dashboard/anime");
       message.success("Anime updated successfully!");
       setLoading(false);
     } catch (error) {
-      message.error("Failed to add anime");
+      message.error(`Failed to update anime: ${error}`);
     }
   };
 
@@ -230,8 +231,8 @@ export default function AnimeEdit({ id }: { id: string }) {
 
   return (
     <>
-      <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg">
-        Form Edit Anime {anime}
+      <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg text-white">
+        Edit Anime {anime}
       </div>
       <Form
         form={form}

@@ -38,10 +38,10 @@ const AnimeList: React.FC = () => {
   useEffect(() => {
     const fetchAnime = async () => {
       try {
-        const response = await axios.get<DataType[]>(
-          "http://localhost:4321/anime/get"
-        );
-        setData(response.data); // Mengisi data dengan hasil dari API
+        const response = await fetch("http://localhost:4321/anime/get", {
+          method: "GET",
+        });
+        setData(await response.json()); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -55,14 +55,16 @@ const AnimeList: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:4321/anime/delete/${id}`); // Melakukan DELETE ke server
+      await fetch(`http://localhost:4321/anime/delete/${id}`, {
+        method: "DELETE",
+      }); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        "http://localhost:4321/anime/get"
-      );
-      setData(response.data); // Memperbarui data genre
+      const response = await fetch("http://localhost:4321/anime/get", {
+        method: "GET",
+      });
+      setData(await response.json()); // Memperbarui data genre
     } catch (error) {
       message.error("Failed to delete anime");
     }

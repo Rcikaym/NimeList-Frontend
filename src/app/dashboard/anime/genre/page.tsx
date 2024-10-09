@@ -3,16 +3,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Form, Input, Modal, Space, Table, message } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
-import {
-  AiOutlineDelete,
-  AiOutlinePlus,
-  AiOutlineTags,
-} from "react-icons/ai";
+import { AiOutlineDelete, AiOutlinePlus, AiOutlineTags } from "react-icons/ai";
 import axios from "axios";
-import {
-  AppstoreFilled,
-  ExclamationCircleFilled,
-} from "@ant-design/icons";
+import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 import renderDateTime from "@/components/FormatDateTime";
 import { CustomTable } from "@/components/CustomTable";
@@ -35,13 +28,17 @@ const AnimeGenre: React.FC = () => {
   // Fungsi untuk melakukan post data genre
   const handlePostGenre = async (values: DataType) => {
     try {
-      await axios.post(`${api}/genre/post`, values); // Melakukan POST ke server
+      await fetch(`${api}/genre/post`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      }); // Melakukan POST ke server
       message.success("Genre added successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        `${api}/genre/get-all`
-      );
+      const response = await axios.get<DataType[]>(`${api}/genre/get-all`);
       setData(response.data); // Memperbarui data genre
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
@@ -52,13 +49,13 @@ const AnimeGenre: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteGenre = async (id: string) => {
     try {
-      await axios.delete(`${api}/genre/delete/${id}`); // Melakukan DELETE ke server
+      await fetch(`${api}/genre/delete/${id}`, {
+        method: "DELETE",
+      }); // Melakukan DELETE ke server
       message.success("Genre deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        `${api}/genre/get-all`
-      );
+      const response = await axios.get<DataType[]>(`${api}/genre/get-all`);
       setData(response.data); // Memperbarui data genre
     } catch (error) {
       message.error("Failed to delete genre");
@@ -122,10 +119,10 @@ const AnimeGenre: React.FC = () => {
     const fetchGenre = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<DataType[]>(
-          `${api}/genre/get-all`
-        );
-        setData(response.data); // Mengisi data dengan hasil dari API
+        const response = await fetch(`${api}/genre/get-all`, {
+          method: "GET",
+        });
+        setData(await response.json()); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -137,39 +134,42 @@ const AnimeGenre: React.FC = () => {
   }, []);
 
   // Kolom table
-  const columns: TableColumnsType<DataType> = useMemo(() => [
-    {
-      title: "Name",
-      dataIndex: "name",
-      sorter: (a: DataType, b: DataType) => a.name.localeCompare(b.name),
-      sortDirections: ["ascend", "descend"],
-    },
-    {
-      title: "Created At",
-      dataIndex: "created_at",
-      render: (text: string) => renderDateTime(text),
-    },
-    {
-      title: "Updated At",
-      dataIndex: "updated_at",
-      render: (text: string) => renderDateTime(text),
-    },
-    {
-      title: "Action",
-      dataIndex: "action",
-      render: (text: string, record: DataType) => (
-        <Space size="middle">
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
-            onClick={() => showDeleteConfirm(record.id, record.name)}
-          >
-            <AiOutlineDelete style={{ fontSize: 20 }} />
-          </Button>
-        </Space>
-      ),
-    },
-  ], []);
+  const columns: TableColumnsType<DataType> = useMemo(
+    () => [
+      {
+        title: "Name",
+        dataIndex: "name",
+        sorter: (a: DataType, b: DataType) => a.name.localeCompare(b.name),
+        sortDirections: ["ascend", "descend"],
+      },
+      {
+        title: "Created At",
+        dataIndex: "created_at",
+        render: (text: string) => renderDateTime(text),
+      },
+      {
+        title: "Updated At",
+        dataIndex: "updated_at",
+        render: (text: string) => renderDateTime(text),
+      },
+      {
+        title: "Action",
+        dataIndex: "action",
+        render: (text: string, record: DataType) => (
+          <Space size="middle">
+            <Button
+              type="text"
+              className="bg-emerald-700 text-white"
+              onClick={() => showDeleteConfirm(record.id, record.name)}
+            >
+              <AiOutlineDelete style={{ fontSize: 20 }} />
+            </Button>
+          </Space>
+        ),
+      },
+    ],
+    []
+  );
 
   return (
     <>
@@ -182,7 +182,9 @@ const AnimeGenre: React.FC = () => {
             <h2 className="text-black text-lg font-regular">
               Genre Information
             </h2>
-            <span className="text-black text-sm">Display genre information</span>
+            <span className="text-black text-sm">
+              Display genre information
+            </span>
           </div>
         </div>
         <div className="items-center flex gap-3">

@@ -51,13 +51,12 @@ const normFile = (e: any) => {
   return e?.fileList ? e.fileList : [];
 };
 
-
 const AnimeList: React.FC = () => {
   const api = process.env.NEXT_PUBLIC_API_URL;
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [idPhoto, setId] = useState<string>(""); // Menyimpan anime yang sedang diedit
-  const [detailPhoto, setDetailPhoto] = useState<any>(null);
+  const [detailPhoto, setDetailPhoto] = useState<any>();
   const [modalMode, setMode] = useState<"edit" | "detail">();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { confirm } = Modal;
@@ -92,11 +91,10 @@ const AnimeList: React.FC = () => {
   };
 
   // Modal detail photo
-  const setDataDetail = (id: string) => {
-    const data = axios.get(`${api}/photo-anime/get/${id}`);
-    data.then((res) => {
-      setDetailPhoto(res.data);
-    });
+  const setDataDetail = async (id: string) => {
+    const data = await fetch(`${api}/photo-anime/get/${id}`, { method: "GET" });
+    setDetailPhoto(await data.json());
+    console.log(detailPhoto);
   };
 
   const handleUpdatePhoto = async (values: PhotosType) => {
@@ -106,14 +104,17 @@ const AnimeList: React.FC = () => {
     formData.append("photos", file.originFileObj);
 
     try {
-      await axios.put(`${api}/photo-anime/update/${idPhoto}`, formData); // Update foto di server
+      await fetch(`${api}/photo-anime/update/${idPhoto}`, {
+        method: "PUT",
+        body: formData,
+      }); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
-      const response = await axios.get<DataType[]>(
-        `${api}/photo-anime/get-all`
-      );
-      setData(response.data); // Perbarui data foto anime
+      const response = await fetch(`${api}/photo-anime/get-all`, {
+        method: "GET",
+      });
+      setData(await response.json()); // Perbarui data foto anime
     } catch (error) {
       message.error("Failed to update photo");
     }
@@ -146,10 +147,10 @@ const AnimeList: React.FC = () => {
   useEffect(() => {
     const fetchPhoto = async () => {
       try {
-        const response = await axios.get<DataType[]>(
-          `${api}/photo-anime/get-all`
-        );
-        setData(response.data); // Mengisi data dengan hasil dari API
+        const response = await fetch(`${api}/photo-anime/get-all`, {
+          method: "GET",
+        });
+        setData(await response.json()); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -163,14 +164,14 @@ const AnimeList: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
     try {
-      await axios.delete(`${api}/photo-anime/delete/${id}`); // Melakukan DELETE ke server
+      await fetch(`${api}/photo-anime/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        `${api}/photo-anime/get-all`
-      );
-      setData(response.data); // Memperbarui data genre
+      const response = await fetch(`${api}/photo-anime/get-all`, {
+        method: "GET",
+      });
+      setData(await response.json()); // Memperbarui data genre
     } catch (error) {
       message.error("Failed to delete anime");
     }
