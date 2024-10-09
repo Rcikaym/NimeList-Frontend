@@ -1,11 +1,8 @@
 
-import { Button, Input } from "@nextui-org/react";
+import { Button,} from "@nextui-org/react";
 import React from "react";
 import BoxReveal from "@/components/magicui/BoxReveal";
-// import { BorderBeam } from "@/components/magicui/Borderbeam";
-// import { BiHide, BiShow, BiRightArrowAlt } from "react-icons/bi";
 import NumberTicker from "@/components/magicui/NumberTicker";
-// import ShinyButton from "@/components/magicui/ShinyButton";
 import LoginForm from "@/components/LoginForm";
 
 export default function Login() {
