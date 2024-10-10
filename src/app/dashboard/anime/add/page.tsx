@@ -60,10 +60,10 @@ const AddAnime: React.FC = () => {
     const fetchGenre = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<DataGenre[]>(
-          `${api}/anime/get-all-genre`
-        );
-        setGenres(response.data); // Mengisi data dengan hasil dari API
+        const response = await fetch(`${api}/anime/get-all-genre`, {
+          method: "GET",
+        });
+        setGenres(await response.json()); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching genre:", error);
@@ -103,7 +103,7 @@ const AddAnime: React.FC = () => {
           },
         });
       })
-      .catch((info) => {
+      .catch(() => {
         message.error("Please complete the form before submitting!");
       });
   };
@@ -111,13 +111,28 @@ const AddAnime: React.FC = () => {
   const addAnime = async (values: DataAnime) => {
     const formData = new FormData();
 
+    function convertToEmbedUrl(url: any) {
+      // Regular expression to match YouTube video IDs
+      const videoIdMatch = url.match(
+        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      );
+
+      // Check if the video ID was found
+      if (videoIdMatch && videoIdMatch[1]) {
+        const videoId = videoIdMatch[1];
+        return `https://www.youtube.com/embed/${videoId}`;
+      } else {
+        // Return null or the original URL if it's not a valid YouTube link
+        return null;
+      }
+    }
+
     // Tambahkan data dari form ke FormData untuk dikirim ke backend
     formData.append("title", values.title);
     formData.append("release_date", values.release_date);
     formData.append("synopsis", values.synopsis);
     formData.append("type", values.type);
     formData.append("watch_link", values.watch_link);
-    formData.append("trailer_link", values.trailer_link);
     formData.append("episodes", values.episodes.toString());
 
     // Kirim genres dalam bentuk array
@@ -141,14 +156,17 @@ const AddAnime: React.FC = () => {
       });
     }
 
+    //Ubah format youtube link url menjadi embedUrl
+    if (values.trailer_link) {
+      const embedUrl = convertToEmbedUrl(values.trailer_link) ?? "";
+      formData.append("trailer_link", embedUrl);
+    }
+
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
-      // Kirim data menggunakan swr
+      // Kirim data menggunakan axios
       const response = await fetch(`${api}/anime/post`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: formData,
       });
 

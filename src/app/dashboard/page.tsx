@@ -78,13 +78,13 @@ export default function Dashboard() {
       try {
         const [topicsResponse, membersResponse, animeTopResponse] =
           await Promise.all([
-            axios.get(`${api}/dashboard/total-topic`),
-            axios.get(`${api}/dashboard/total-premium`),
-            axios.get(`${api}/dashboard/anime-top`),
-          ]);
-        setTotalTopics(topicsResponse.data.totalTopic);
-        setTotalMembers(membersResponse.data.totalUserPremium);
-        setAnimeTop(animeTopResponse.data);
+            fetch(`${api}/dashboard/total-topic`),
+            fetch(`${api}/dashboard/total-premium`),
+            fetch(`${api}/dashboard/anime-top`),
+          ]).then((responses) => Promise.all(responses.map((r) => r.json())));
+        setTotalTopics(topicsResponse.totalTopic);
+        setTotalMembers(membersResponse.totalUserPremium);
+        setAnimeTop(animeTopResponse);
         setLoading(false);
       } catch (error) {
         setTotalTopics(null);
@@ -135,12 +135,12 @@ export default function Dashboard() {
                 </div>
               </div>
               <div>
-                <div className="mt-4">
-                  <h3 className="text-lg text-white mb-1">Total Members</h3>
+                <div className="mt-4 text-white">
+                  <h3 className="text-lg mb-1">Total Members</h3>
                   {loading ? (
                     <LoadingOutlined />
                   ) : (
-                    <p className="text-lg text-white font-bold ">
+                    <p className="text-lg font-bold ">
                       {totalMembers !== null ? totalMembers : "N/A"}
                     </p>
                   )}
@@ -158,12 +158,12 @@ export default function Dashboard() {
                 </div>
               </div>
               <div>
-                <div className="mt-4">
-                  <h3 className="text-lg text-white mb-1">Total Topics</h3>
+                <div className="mt-4 text-white">
+                  <h3 className="text-lg mb-1">Total Topics</h3>
                   {loading ? (
                     <LoadingOutlined />
                   ) : (
-                    <p className="text-lg text-white font-bold">
+                    <p className="text-lg font-bold">
                       {totalTopics !== null ? totalTopics : "N/A"}
                     </p>
                   )}

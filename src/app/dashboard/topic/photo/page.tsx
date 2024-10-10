@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Form,
-  Image,
-  message,
-  Modal,
-  Space,
-  Upload,
-} from "antd";
+import { Button, Form, Image, message, Modal, Space, Upload } from "antd";
 import type { TableColumnsType, UploadProps } from "antd";
 import {
   AiOutlineDelete,
@@ -84,11 +76,9 @@ const TopicPhotoList: React.FC = () => {
   };
 
   // Modal detail photo
-  const setDataDetail = (id: string) => {
-    const data = axios.get(`${api}/photo-topic/get/${id}`);
-    data.then((res) => {
-      setDetailPhoto(res.data);
-    });
+  const setDataDetail = async (id: string) => {
+    const data = await fetch(`${api}/photo-topic/get/${id}`);
+    setDetailPhoto(await data.json());
   };
 
   const handleEditPhoto = async (values: any) => {
@@ -98,14 +88,15 @@ const TopicPhotoList: React.FC = () => {
     formData.append("photos", file.originFileObj);
 
     try {
-      await axios.put(`${api}/photo-topic/update/${idPhoto}`, formData); // Update foto di server
+      await fetch(`${api}/photo-topic/update/${idPhoto}`, {
+        method: "PUT",
+        body: formData,
+      }); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
-      const response = await axios.get<DataType[]>(
-        `${api}/photo-topic/get-all`
-      );
-      setData(response.data); // Perbarui data foto topic
+      const response = await fetch(`${api}/photo-topic/get-all`);
+      setData(await response.json()); // Perbarui data foto topic
     } catch (error) {
       message.error("Failed to update photo");
     }
@@ -138,10 +129,8 @@ const TopicPhotoList: React.FC = () => {
   useEffect(() => {
     const fetchPhoto = async () => {
       try {
-        const response = await axios.get<DataType[]>(
-          `${api}/photo-topic/get-all`
-        );
-        setData(response.data); // Mengisi data dengan hasil dari API
+        const response = await fetch(`${api}/photo-topic/get-all`);
+        setData(await response.json()); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -155,14 +144,14 @@ const TopicPhotoList: React.FC = () => {
   // Fungsi untuk melakukan delete data photo
   const handleDeletePhoto = async (id: string) => {
     try {
-      await axios.delete(`${api}/photo-topic/delete/${id}`); // Melakukan DELETE ke server
+      await fetch(`${api}/photo-topic/delete/${id}`, {
+        method: "DELETE",
+      }); // Melakukan DELETE ke server
       message.success("Photo deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(
-        `${api}/photo-topic/get-all`
-      );
-      setData(response.data); // Memperbarui data photo
+      const response = await fetch(`${api}/photo-topic/get-all`);
+      setData(await response.json()); // Memperbarui data photo
     } catch (error) {
       message.error("Failed to delete photo");
     }

@@ -3,6 +3,7 @@ export interface DataAnime {
   synopsis: string;
   release_date: string;
   trailer_link: string;
+  watch_link: string;
   genres: [];
   photos_anime: [];
   photo_cover: [];

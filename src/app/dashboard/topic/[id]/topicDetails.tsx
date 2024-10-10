@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, memo } from "react";
-import { LeftCircleOutlined } from "@ant-design/icons";
+import { LeftCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Button, Image } from "antd";
 import axios from "axios";
 import {
@@ -9,6 +9,8 @@ import {
   AiOutlineComment,
   AiOutlineDislike,
   AiOutlineLike,
+  AiOutlineLoading,
+  AiOutlineLoading3Quarters,
   AiOutlineTag,
   AiOutlineTool,
   AiOutlineUser,
@@ -106,25 +108,36 @@ export default function TopicDetails({ id }: { id: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTopic = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${api}/topic/get/${id}`);
-      setTopic(response.data);
-      setError(null);
-    } catch (error) {
-      console.error("Error fetching topic:", error);
-      setError("Failed to fetch topic data");
-    } finally {
-      setLoading(false);
-    }
+  useEffect(() => {
+    const fetchTopic = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${api}/topic/get/${id}`, {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch topic data");
+        }
+
+        setTopic(await response.json());
+        setError(null);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching topic:", error);
+        setError("Failed to fetch topic data");
+      }
+    };
+
+    fetchTopic();
   }, [id]);
 
-  useEffect(() => {
-    fetchTopic();
-  }, [fetchTopic]);
-
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div>
+        Loading <LoadingOutlined size={20} />
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
   if (!topic) return <div>No topic data found</div>;
 

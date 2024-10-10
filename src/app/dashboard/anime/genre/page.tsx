@@ -38,8 +38,10 @@ const AnimeGenre: React.FC = () => {
       message.success("Genre added successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(`${api}/genre/get-all`);
-      setData(response.data); // Memperbarui data genre
+      const response = await fetch(`${api}/genre/get-all`, {
+        method: "GET",
+      });
+      setData(await response.json()); // Memperbarui data genre
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
       message.error("Failed to add genre");
@@ -55,8 +57,10 @@ const AnimeGenre: React.FC = () => {
       message.success("Genre deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(`${api}/genre/get-all`);
-      setData(response.data); // Memperbarui data genre
+      const response = await fetch(`${api}/genre/get-all`, {
+        method: "GET",
+      });
+      setData(await response.json()); // Memperbarui data genre
     } catch (error) {
       message.error("Failed to delete genre");
     }
