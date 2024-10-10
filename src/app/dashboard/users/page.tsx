@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button, Space } from "antd";
 import type { TableColumnsType } from "antd";
 import { AiOutlineUser } from "react-icons/ai";
-
 import axios from "axios";
 import { AppstoreFilled, EyeOutlined } from "@ant-design/icons";
 import Link from "next/link";
@@ -30,10 +29,10 @@ const UserList: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get<DataType[]>(
+        const response = await fetch(
           `${api}/user/get-all`
         );
-        setData(response.data); // Mengisi data dengan hasil dari API
+        setData(await response.json()); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching users:", error);
