@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   AiFillStar,
   AiOutlineBarChart,
@@ -11,7 +11,6 @@ import {
   AiOutlineTrophy,
 } from "react-icons/ai";
 import { Table } from "antd";
-import { BiBarChart } from "react-icons/bi";
 import { AppstoreFilled, LoadingOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import axios from "axios";

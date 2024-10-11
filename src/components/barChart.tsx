@@ -27,57 +27,56 @@ ChartJS.register(
   Legend
 );
 
-interface SalesItem {
+interface IncomeItem {
   month: string;
   income: number;
 }
 
-const SalesData: React.FC = () => {
+const IncomeData: React.FC = () => {
   const currentYear = dayjs().year();
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
-  const [salesData, setSalesData] = useState<SalesItem[]>([]);
+  const [incomeData, setIncomeData] = useState<IncomeItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   // Fetch data penjualan berdasarkan tahun yang dipilih
-  const fetchSalesData = async (year: number) => {
+  const fetchIncomeData = async (year: number) => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `http://localhost:4321/dashboard/bar-chart?year=${year}`
+      const response = await fetch(
+        `http://localhost:4321/dashboard/income-data?year=${year}`
       );
       if (response.status !== 200) {
+        setLoading(true);
         throw new Error("Network response was not ok");
       }
-      const data: SalesItem[] = await response.data;
-      setSalesData(data);
-    } catch (error) {
-      console.error("Error fetching sales data:", error);
-      message.error("Gagal mengambil data penjualan.");
-    } finally {
+      const data: IncomeItem[] = await response.json();
+      setIncomeData(data);
       setLoading(false);
+    } catch (error) {
+      message.error("Gagal mengambil data penjualan.");
     }
   };
 
   // Fetch data penjualan saat component pertama kali di-load
   useEffect(() => {
-    fetchSalesData(currentYear); // Default ke tahun saat ini
+    fetchIncomeData(currentYear); // Default ke tahun saat ini
   }, [currentYear]);
 
   // Handle ketika tahun dipilih menggunakan DatePicker
   const handleYearChange = (date: dayjs.Dayjs) => {
     if (date) {
       setSelectedYear(date.year().toString());
-      fetchSalesData(date.year());
+      fetchIncomeData(date.year());
     }
   };
 
   // Menyiapkan data untuk Chart.js
   const chartData: ChartData<"bar", number[], string> = {
-    labels: salesData.map((item) => item.month),
+    labels: incomeData.map((item) => item.month),
     datasets: [
       {
         label: `Income (Rp)`,
-        data: salesData.map((item) => item.income),
+        data: incomeData.map((item) => item.income),
         backgroundColor: "#047857",
         borderColor: "#047857",
         borderWidth: 1,
@@ -110,8 +109,10 @@ const SalesData: React.FC = () => {
       />
 
       {loading ? (
-        <Spin tip="Loading..." />
-      ) : salesData.length > 0 ? (
+        <div className="h-[460px] w-full flex justify-center items-center">
+          <Spin tip="Loading..." />
+        </div>
+      ) : incomeData.length > 0 ? (
         <div className="h-[460px] w-full">
           <Bar data={chartData} options={options} />
         </div>
@@ -122,4 +123,4 @@ const SalesData: React.FC = () => {
   );
 };
 
-export default SalesData;
+export default IncomeData;
