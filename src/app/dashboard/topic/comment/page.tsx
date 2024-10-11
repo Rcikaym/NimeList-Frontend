@@ -18,6 +18,7 @@ import {
   AiOutlineDelete,
   AiOutlineEdit,
   AiOutlineEye,
+  AiOutlineHeart,
   AiOutlinePlus,
   AiOutlineTag,
   AiOutlineTool,
@@ -393,9 +394,15 @@ const TopicCommentList: React.FC = () => {
       >
         {modalMode === "detail" && detailComment ? (
           <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-            <div className="flex gap-1 items-center">
-              <AiOutlineTag size={19} />
-              <Text>{detailComment.topic}</Text>
+            <div className="flex gap-3 items-center">
+              <div className="flex gap-1 items-center">
+                <AiOutlineTag size={19} />
+                <Text>{detailComment.topic}</Text>
+              </div>
+              <div className="flex gap-1 items-center">
+                <AiOutlineHeart size={19} />
+                <Text>{detailComment.likes}</Text>
+              </div>
             </div>
 
             <DisplayLongText text={detailComment.comment} />
