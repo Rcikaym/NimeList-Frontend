@@ -8,7 +8,11 @@ import axios from "axios";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 import renderDateTime from "@/components/FormatDateTime";
-import { CustomTable } from "@/components/CustomTable";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import { TablePaginationConfig } from "antd/es/table";
+import { SorterResult } from "antd/es/table/interface";
+import { TIMEOUT } from "dns/promises";
+import useDebounce from "@/hooks/useDebounce";
 
 interface DataType {
   id: string;
@@ -22,6 +26,14 @@ const AnimeGenre: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [modalGenre, setModalGenre] = useState<boolean>(false); // Untuk status modal genre
   const [form] = Form.useForm();
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [sortOrder, setOrder] = useState<string>("ASC");
+  const [searchText, setSearchText] = useState<string>("");
+  const debounceText = useDebounce(searchText, 1000);
   const { confirm } = Modal;
   const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -38,10 +50,7 @@ const AnimeGenre: React.FC = () => {
       message.success("Genre added successfully!");
 
       // Fetch ulang data setelah post
-      const response = await fetch(`${api}/genre/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data genre
+      fetchGenre();
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
       message.error("Failed to add genre");
@@ -57,10 +66,7 @@ const AnimeGenre: React.FC = () => {
       message.success("Genre deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await fetch(`${api}/genre/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data genre
+      fetchGenre();
     } catch (error) {
       message.error("Failed to delete genre");
     }
@@ -118,62 +124,86 @@ const AnimeGenre: React.FC = () => {
     });
   };
 
+  // Kolom table
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      sorter: true,
+      sortDirections: ["descend"],
+      ...getColumnSearchProps("name", setSearchText),
+    },
+    {
+      title: "Created At",
+      dataIndex: "created_at",
+      render: (text: string) => renderDateTime(text),
+    },
+    {
+      title: "Updated At",
+      dataIndex: "updated_at",
+      render: (text: string) => renderDateTime(text),
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      render: (text: string, record: DataType) => (
+        <Space size="middle">
+          <Button
+            type="text"
+            className="bg-emerald-700 text-white"
+            onClick={() => showDeleteConfirm(record.id, record.name)}
+          >
+            <AiOutlineDelete style={{ fontSize: 20 }} />
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const fetchGenre = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${api}/genre/get-all?page=${pagination.current}&limit=${
+          pagination.pageSize
+        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
+        {
+          method: "GET",
+        }
+      );
+      const { data, total } = await response.json();
+      setData(data); // Mengisi data dengan hasil dari API
+      setPagination({
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+        total: total,
+      });
+      setLoading(false); // Menonaktifkan status loading setelah data didapat
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(true); // Tetap menonaktifkan loading jika terjadi error
+    }
+  };
+
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
-    const fetchGenre = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${api}/genre/get-all`, {
-          method: "GET",
-        });
-        setData(await response.json()); // Mengisi data dengan hasil dari API
-        setLoading(false); // Menonaktifkan status loading setelah data didapat
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(true); // Tetap menonaktifkan loading jika terjadi error
-      }
-    };
+    fetchGenre();
+  }, [JSON.stringify(pagination), sortOrder, debounceText]);
 
-    fetchGenre(); // Panggil fungsi fetchUsers saat komponen dimuat
-  }, []);
-
-  // Kolom table
-  const columns: TableColumnsType<DataType> = useMemo(
-    () => [
-      {
-        title: "Name",
-        dataIndex: "name",
-        sorter: (a: DataType, b: DataType) => a.name.localeCompare(b.name),
-        sortDirections: ["ascend", "descend"],
-      },
-      {
-        title: "Created At",
-        dataIndex: "created_at",
-        render: (text: string) => renderDateTime(text),
-      },
-      {
-        title: "Updated At",
-        dataIndex: "updated_at",
-        render: (text: string) => renderDateTime(text),
-      },
-      {
-        title: "Action",
-        dataIndex: "action",
-        render: (text: string, record: DataType) => (
-          <Space size="middle">
-            <Button
-              type="text"
-              className="bg-emerald-700 text-white"
-              onClick={() => showDeleteConfirm(record.id, record.name)}
-            >
-              <AiOutlineDelete style={{ fontSize: 20 }} />
-            </Button>
-          </Space>
-        ),
-      },
-    ],
-    []
-  );
+  const handleTableChange: TableProps<DataType>["onChange"] = (
+    pagination: TablePaginationConfig,
+    filters,
+    sorter
+  ) => {
+    const sortParsed = sorter as SorterResult<DataType>;
+    setPagination({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      total: pagination.total,
+    });
+    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
+    console.log(sortOrder);
+  };
 
   return (
     <>
@@ -217,9 +247,10 @@ const AnimeGenre: React.FC = () => {
         </Button>
       </div>
       <CustomTable
-        columns={columns}
+        columns={columns as any}
         loading={loading}
-        pagination={{ pageSize: 10 }} // Jumlah data yang ditampilkan
+        pagination={pagination} // Jumlah data yang ditampilkan
+        onChange={handleTableChange}
         data={data} // Data dari state
       />
       <Modal
