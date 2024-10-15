@@ -1,4 +1,3 @@
-// pages/index.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -19,11 +18,11 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="h-screen flex items-center justify-center">
       <Row justify="center">
         <Col>
           <Title level={2} className="text-center mb-6">
-            Selamat Datang di Sistem Pembayaran Membership
+            Test Sistem Pembayaran Menggunakan Midtrans
           </Title>
           <div className="flex justify-center">
             <Button type="primary" onClick={showModal}>

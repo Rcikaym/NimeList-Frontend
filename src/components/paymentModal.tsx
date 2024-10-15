@@ -1,6 +1,6 @@
 // components/PaymentModal.js
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Alert, Button, Form, InputNumber, Modal, Select, Spin } from "antd";
 import { Option } from "antd/es/mentions";
@@ -14,7 +14,7 @@ declare global {
 const PaymentModal = ({ show, handleClose }: any) => {
   const api = process.env.NEXT_PUBLIC_API_URL;
   const [users, setUsers] = useState([]);
-  const [memberships, setMemberships] = useState<any>([]);
+  const [memberships, setMemberships] = useState([]);
   const [selectedUser, setSelectedUser] = useState<any>("");
   const [selectedMembership, setSelectedMembership] = useState<any>("");
   const [totalPrice, setTotalPrice] = useState(0);
@@ -59,16 +59,16 @@ const PaymentModal = ({ show, handleClose }: any) => {
     });
   };
 
-  // Fetch memberships and users on mount
+  // Fetch premium dan user saat komponen dimuat
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [membershipsRes, usersRes] = await Promise.all([
-          axios.get(`${api}/premium/get-all`),
-          axios.get(`${api}/user/get-all`),
+        const [membershipsRes, usersRes]: any = await Promise.all([
+          await fetch(`${api}/premium/get-all`),
+          await fetch(`${api}/user/get-all`),
         ]);
-        setMemberships(membershipsRes.data);
-        setUsers(usersRes.data);
+        setMemberships(await membershipsRes.json());
+        setUsers(await usersRes.json());
       } catch (err) {
         console.error("Error fetching data:", err);
         setError("Gagal memuat data. Silakan coba lagi.");
@@ -80,10 +80,10 @@ const PaymentModal = ({ show, handleClose }: any) => {
     }
   }, [show]);
 
-  // Update total price when membership changes
+  // Update total price ketika premium dipilih
   useEffect(() => {
     if (selectedMembership) {
-      const membership = memberships.find((m: any) => m.id);
+      const membership: any = memberships.find((m: any) => m.id);
       if (membership) {
         setTotalPrice(membership.price);
       } else {
@@ -97,7 +97,6 @@ const PaymentModal = ({ show, handleClose }: any) => {
   const handleSubmit = async () => {
     await loadMidtransScript();
     setError("");
-
     setLoading(true);
 
     try {
@@ -106,8 +105,14 @@ const PaymentModal = ({ show, handleClose }: any) => {
         id_premium: selectedMembership,
       };
 
-      const response = await axios.post(`${api}/transactions/create`, payload);
-      const token = response.data;
+      const response = await fetch(`${api}/transactions/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const token = await response.json();
 
       // Redirect ke Midtrans
       window.snap.pay(token, {
@@ -119,6 +124,9 @@ const PaymentModal = ({ show, handleClose }: any) => {
             id_premium: selectedMembership,
             payment_platform: result.payment_type,
           };
+          if (result.payment_type === "bank_transfer") {
+            data.payment_platform = result.va_numbers[0].bank;
+          }
           await fetch(`${api}/transactions/success`, {
             method: "POST",
             headers: {
@@ -126,6 +134,9 @@ const PaymentModal = ({ show, handleClose }: any) => {
             },
             body: JSON.stringify(data),
           });
+        },
+        onPending: async function (result: any) {
+          console.log("closed", result);
         },
       });
     } catch (err) {
@@ -170,7 +181,7 @@ const PaymentModal = ({ show, handleClose }: any) => {
             placeholder="Pilih User"
             onChange={(value: string) => setSelectedUser(value)}
             value={selectedUser}
-            loading={!users && !setError}
+            loading={!users}
           >
             {users &&
               users.map((user: any) => (
