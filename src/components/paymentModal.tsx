@@ -65,7 +65,7 @@ const PaymentModal = ({ show, handleClose }: any) => {
       try {
         const [membershipsRes, usersRes]: any = await Promise.all([
           await fetch(`${api}/premium/get-all`),
-          await fetch(`${api}/user/get-all`),
+          await fetch(`${api}/user/get-user-for-pay`),
         ]);
         setMemberships(await membershipsRes.json());
         setUsers(await usersRes.json());
@@ -112,7 +112,7 @@ const PaymentModal = ({ show, handleClose }: any) => {
         },
         body: JSON.stringify(payload),
       });
-      const token = await response.json();
+      const { token } = await response.json();
 
       // Redirect ke Midtrans
       window.snap.pay(token, {

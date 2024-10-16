@@ -114,7 +114,7 @@ const AnimeMetadata = memo(
           {anime.genres?.map((genre) => (
             <span
               key={genre.id}
-              className="rounded-xl py-1 px-2 text-sm bg-emerald-700 text-white"
+              className="rounded-md py-1 px-2 text-sm bg-emerald-700 text-white"
             >
               {genre.name}
             </span>
