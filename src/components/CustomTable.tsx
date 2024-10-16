@@ -43,29 +43,8 @@ const getColumnSearchProps = (
           setSearchText(e.target.value);
         }}
         onPressEnter={() => confirm()}
-        style={{ marginBottom: 8, display: "block" }}
+        style={{ display: "block" }}
       />
-      <Space>
-        <Button
-          type="primary"
-          onClick={() => confirm()}
-          icon={<SearchOutlined />}
-          size="small"
-          style={{ width: 90 }}
-        >
-          Search
-        </Button>
-        <Button
-          onClick={() => {
-            clearFilters && clearFilters();
-            setSearchText("");
-          }}
-          size="small"
-          style={{ width: 90 }}
-        >
-          Reset
-        </Button>
-      </Space>
     </div>
   ),
   filterIcon: (filtered: boolean) => (
