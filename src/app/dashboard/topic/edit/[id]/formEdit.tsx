@@ -20,7 +20,7 @@ import {
 import { useRouter } from "next/navigation";
 import { AnimeType, PhotosType, TopicType } from "./types";
 import "react-quill/dist/quill.snow.css";
-import { formats, modules } from "@/components/ModuleAndFormatTextArea";
+import { formats, modules } from "@/components/moduleAndFormatTextArea";
 import dynamic from "next/dynamic";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
@@ -70,8 +70,8 @@ export default function TopicEdit({ id }: { id: string }) {
     const fetchAnime = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${api}/topic/get/${id}`);
-        const topicData = response.data;
+        const response = await fetch(`${api}/topic/get/${id}`);
+        const topicData = await response.json();
 
         const updatedContent = htmlParser(topicData.body);
 
@@ -110,12 +110,10 @@ export default function TopicEdit({ id }: { id: string }) {
   // Fetch animes
   useEffect(() => {
     const fetchAnime = async () => {
-      const response = await axios.get<AnimeType[]>(
-        `${api}/topic/get-all-anime`
-      );
+      const response = await fetch(`${api}/topic/get-all-anime`);
       setLoading(true);
       try {
-        setAnimes(response.data);
+        setAnimes(await response.json());
         setLoading(false);
       } catch (error) {
         console.error("Error fetching animes:", error);
@@ -178,16 +176,20 @@ export default function TopicEdit({ id }: { id: string }) {
 
     setLoading(true);
     try {
-      const response = await axios.put(`${api}/topic/update/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await fetch(`${api}/topic/update/${id}`, {
+        method: "PUT",
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to update topic");
+      }
+
       message.success("Topic updated successfully!");
       router.push("/dashboard/topic");
       setLoading(false);
     } catch (error) {
-      message.error("Failed to add anime");
+      message.error("Failed to update topic");
     }
   };
 
@@ -304,7 +306,7 @@ export default function TopicEdit({ id }: { id: string }) {
         </div>
 
         <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
-          <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
+          <Button icon={<LeftCircleOutlined />} href="/dashboard/topic">
             Back
           </Button>
           <Button type="primary" htmlType="submit" loading={loading}>

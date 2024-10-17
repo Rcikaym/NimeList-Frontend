@@ -14,20 +14,17 @@ import {
 import type { TableColumnsType } from "antd";
 import {
   AiOutlineClockCircle,
+  AiOutlineComment,
   AiOutlineDelete,
   AiOutlineEdit,
   AiOutlineEye,
-  AiOutlineFileImage,
+  AiOutlineHeart,
   AiOutlinePlus,
   AiOutlineTag,
   AiOutlineTool,
 } from "react-icons/ai";
 import axios from "axios";
-import {
-  AppstoreFilled,
-  ExclamationCircleFilled,
-  LoadingOutlined,
-} from "@ant-design/icons";
+import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
@@ -100,22 +97,24 @@ const TopicCommentList: React.FC = () => {
   };
 
   // Set data detail comment
-  const setDataDetail = (id: string) => {
-    const data = axios.get(`${api}/comment/get/${id}`);
-    data.then((res) => {
-      setDetailComment(res.data);
-    });
+  const setDataDetail = async (id: string) => {
+    const data = await fetch(`${api}/comment/get/${id}`);
+    setDetailComment(await data.json());
   };
 
   // Fungsi untuk melakukan post data genre
   const handlePostComment = async (values: DataPost) => {
     try {
-      const post = await axios.post(`${api}/comment/post`, values); // Melakukan POST ke server
-      
+      const post = await fetch(`${api}/comment/post`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      }); // Melakukan POST ke server
+
       message.success("Comment added successfully!");
       // Fetch ulang data setelah post
-      const response = await axios.get<DataType[]>(`${api}/comment/get-all`);
-      setData(response.data); // Memperbarui data comment
+      const response = await fetch(`${api}/comment/get-all`);
+      setData(await response.json()); // Memperbarui data comment
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
       message.error("Failed to add comment");
@@ -145,26 +144,29 @@ const TopicCommentList: React.FC = () => {
     });
   };
 
-  const setDataEdit = (id: string) => {
+  const setDataEdit = async (id: string) => {
     setId(id);
-    const data = axios.get(`${api}/comment/get/${id}`);
-    data.then((res) => {
-      // Set data ke dalam form
-      form.setFieldsValue({
-        comment: res.data.comment,
-      });
+    const data = await fetch(`${api}/comment/get/${id}`);
+    const res = await data.json();
+    // Set data ke dalam form
+    form.setFieldsValue({
+      comment: res.comment,
     });
   };
 
   const handleEditComment = async (values: DataEdit) => {
     try {
-      await axios.put(`${api}/comment/update/${idComment}`, values);
+      await fetch(`${api}/comment/update/${idComment}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
       message.success("Comment updated successfully!");
       setModalVisible(false);
 
       // Fetch ulang data setelah update
-      const response = await axios.get<DataType[]>(`${api}/comment/get-all`);
-      setData(response.data); // Memperbarui data comment
+      const response = await fetch(`${api}/comment/get-all`);
+      setData(await response.json()); // Memperbarui data comment
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
       message.error("Failed to update comment");
@@ -194,8 +196,8 @@ const TopicCommentList: React.FC = () => {
   useEffect(() => {
     const fetchComment = async () => {
       try {
-        const response = await axios.get<DataType[]>(`${api}/comment/get-all`);
-        setData(response.data); // Mengisi data dengan hasil dari API
+        const response = await fetch(`${api}/comment/get-all`);
+        setData(await response.json()); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -205,10 +207,8 @@ const TopicCommentList: React.FC = () => {
 
     const fetchUser = async () => {
       try {
-        const response = await axios.get<DataType[]>(
-          `${api}/comment/get-all-user`
-        );
-        setUser(response.data); // Mengisi data dengan hasil dari API
+        const response = await fetch(`${api}/comment/get-all-user`);
+        setUser(await response.json()); // Mengisi data dengan hasil dari API
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -216,10 +216,8 @@ const TopicCommentList: React.FC = () => {
 
     const fetchTopic = async () => {
       try {
-        const response = await axios.get<DataType[]>(
-          `${api}/comment/get-all-topic`
-        );
-        setTopic(response.data); // Mengisi data dengan isi dari API
+        const response = await fetch(`${api}/comment/get-all-topic`);
+        setTopic(await response.json()); // Mengisi data dengan isi dari API
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -233,12 +231,12 @@ const TopicCommentList: React.FC = () => {
   // Fungsi untuk melakukan delete data comment
   const handleDeleteComment = async (id: string) => {
     try {
-      await axios.delete(`${api}/comment/delete/${id}`); // Melakukan DELETE ke server
+      await fetch(`${api}/comment/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
       message.success("Comment deleted successfully!");
 
       // Fetch ulang data setelah di delete
-      const response = await axios.get<DataType[]>(`${api}/comment/get-all`);
-      setData(response.data); // Memperbarui data comment
+      const response = await fetch(`${api}/comment/get-all`);
+      setData(await response.json()); // Memperbarui data comment
     } catch (error) {
       message.error("Failed to delete comment");
     }
@@ -332,7 +330,7 @@ const TopicCommentList: React.FC = () => {
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
-            <AiOutlineFileImage style={{ fontSize: 20 }} />
+            <AiOutlineComment style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
@@ -396,9 +394,15 @@ const TopicCommentList: React.FC = () => {
       >
         {modalMode === "detail" && detailComment ? (
           <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-            <div className="flex gap-1 items-center">
-              <AiOutlineTag size={19} />
-              <Text>{detailComment.topic}</Text>
+            <div className="flex gap-3 items-center">
+              <div className="flex gap-1 items-center">
+                <AiOutlineTag size={19} />
+                <Text>{detailComment.topic}</Text>
+              </div>
+              <div className="flex gap-1 items-center">
+                <AiOutlineHeart size={19} />
+                <Text>{detailComment.likes}</Text>
+              </div>
             </div>
 
             <DisplayLongText text={detailComment.comment} />
