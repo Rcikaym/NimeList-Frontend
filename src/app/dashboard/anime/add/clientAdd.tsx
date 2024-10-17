@@ -46,7 +46,7 @@ const normFile = (e: any) => {
   return e?.fileList ? e.fileList : [];
 };
 
-const AddAnime: React.FC = () => {
+export default function AddAnime() {
   const router = useRouter();
   const [form] = Form.useForm(); // Form handler dari Ant Design
   const [genres, setGenres] = useState<DataGenre[]>([]);
@@ -332,6 +332,4 @@ const AddAnime: React.FC = () => {
       </Form>
     </>
   );
-};
-
-export default AddAnime;
+}

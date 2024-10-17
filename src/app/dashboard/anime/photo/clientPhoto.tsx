@@ -12,7 +12,12 @@ import {
   Table,
   Upload,
 } from "antd";
-import type { TableColumnsType, UploadProps } from "antd";
+import type {
+  TableColumnsType,
+  TablePaginationConfig,
+  TableProps,
+  UploadProps,
+} from "antd";
 import {
   AiOutlineDelete,
   AiOutlineEdit,
@@ -29,6 +34,8 @@ import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import PageTitle from "@/components/TitlePage";
+import useDebounce from "@/hooks/useDebounce";
+import { SorterResult } from "antd/es/table/interface";
 
 interface PhotosType {
   photos: string[];
@@ -61,6 +68,14 @@ const AnimePhotos: React.FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { confirm } = Modal;
   const [form] = Form.useForm();
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [sortOrder, setOrder] = useState<string>("ASC");
+  const [searchText, setSearchText] = useState<string>("");
+  const debounceText = useDebounce(searchText, 1000);
 
   const showModal = (modalMode: "edit" | "detail") => {
     setMode(modalMode);
@@ -143,23 +158,49 @@ const AnimePhotos: React.FC = () => {
     });
   };
 
-  // Fetch data dari API ketika komponen dimuat
-  useEffect(() => {
-    const fetchPhoto = async () => {
-      try {
-        const response = await fetch(`${api}/photo-anime/get-all`, {
+  // Fetch data dari API
+  const fetchPhoto = async () => {
+    try {
+      const response = await fetch(
+        `${api}/photo-anime/get-all?page=${pagination.current}&limit=${
+          pagination.pageSize
+        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
+        {
           method: "GET",
-        });
-        setData(await response.json()); // Mengisi data dengan hasil dari API
-        setLoading(false); // Menonaktifkan status loading setelah data didapat
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(false); // Tetap menonaktifkan loading jika terjadi error
-      }
-    };
+        }
+      );
+      const { data, total } = await response.json();
+      setData(data); // Mengisi data dengan hasil dari API
+      setPagination({
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+        total: total,
+      });
+      setLoading(false); // Menonaktifkan status loading setelah data didapat
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(false); // Tetap menonaktifkan loading jika terjadi error
+    }
+  };
 
+  useEffect(() => {
     fetchPhoto(); // Panggil fungsi fetchUsers saat komponen dimuat
-  }, []);
+  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+
+  const handleTableChange: TableProps<DataType>["onChange"] = (
+    pagination: TablePaginationConfig,
+    filters,
+    sorter
+  ) => {
+    const sortParsed = sorter as SorterResult<DataType>;
+    setPagination({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      total: pagination.total,
+    });
+    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
+    console.log(sortOrder);
+  };
 
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
@@ -234,9 +275,9 @@ const AnimePhotos: React.FC = () => {
     {
       title: "Title",
       dataIndex: "anime",
-      sorter: (a: DataType, b: DataType) => a.anime.localeCompare(b.anime),
-      sortDirections: ["ascend", "descend"],
-      ...getColumnSearchProps("anime"),
+      sorter: true,
+      sortDirections: ["descend"],
+      ...getColumnSearchProps("anime", setSearchText),
     },
     {
       title: "Created At",
@@ -320,8 +361,9 @@ const AnimePhotos: React.FC = () => {
       </div>
       <CustomTable
         columns={columns}
-        pagination={{ pageSize: 7 }} // Jumlah data yang ditampilkan
+        pagination={pagination} // Jumlah data yang ditampilkan
         data={data} // Data dari state
+        onChange={handleTableChange}
       />
       <Modal
         title={

@@ -48,7 +48,7 @@ const AnimeList: React.FC = () => {
   const fetchAnime = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4321/anime/get?page=${pagination.current}&limit=${
+        `http://localhost:4321/anime/get-admin?page=${pagination.current}&limit=${
           pagination.pageSize
         }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`
       );
@@ -94,10 +94,7 @@ const AnimeList: React.FC = () => {
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await fetch("http://localhost:4321/anime/get", {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data genre
+      fetchAnime();
     } catch (error) {
       message.error("Failed to delete anime");
     }
