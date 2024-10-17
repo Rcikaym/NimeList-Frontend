@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Inter } from "next/font/google";
-// import "/app/globals.css";
 import Image from "next/image";
 import React from "react";
 import { BiChevronDown, BiLogOut } from "react-icons/bi";
@@ -145,17 +144,24 @@ const menuItems = [
 ];
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [mounted, setMounted] = useState(false); // Tracks if the component is mounted
+  const [username, setUsername] = useState("Guest");
+  const [description, setDescription] = useState("");
 
   // Ensure dynamic content only renders on the client
   useEffect(() => {
-    setMounted(true);
+
+    const token = localStorage.getItem("access_token");
+    // console.log("Token:", token);
+
+    if (token) {
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      setUsername(decodedToken.username);
+      setDescription(decodedToken.email);
+    }
+
   }, []);
 
-  if (!mounted) {
-    // Prevent server-side rendering issues
-    return null;
-  }
+
   return (
     <>
       <Navbar
@@ -280,13 +286,13 @@ const AuthNavbar = () => {
                 }}
               >
                 <DropdownItem
-                  key="profile"
+                  key="profile1"
                   isReadOnly
                   className="h-14 gap-2 opacity-100 "
                 >
                   <User
-                    name="Junior Garcia"
-                    description="@jrgarciadev"
+                    name={username}
+                    description={description}
                     classNames={{
                       name: "text-white",
                       description: "text-white",
@@ -298,7 +304,7 @@ const AuthNavbar = () => {
                   />
                 </DropdownItem>
                 <DropdownItem
-                  key="profile"
+                  key="profile2"
                   className="dark:hover:text-white"
                   href="/profile"
                 >
