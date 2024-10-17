@@ -51,7 +51,7 @@ export default function MostPopular() {
         Most Popular
       </h1>
       <ul className="place-items-center grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {/* Sort the anime list by rating in descending order */}
+        {/* Sort the anime list by r  ating in descending order */}
         {anime
           .sort((a: AnimeType, b: AnimeType) => b.avg_rating - a.avg_rating) // Sort by rating from highest to lowest
           .map((anime: AnimeType) => (
