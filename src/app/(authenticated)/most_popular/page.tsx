@@ -7,7 +7,7 @@ import { StarFilled } from "@ant-design/icons";
 import { Image } from "@nextui-org/react";
 import ClientPagination from "@/components/ClientPagination";
 import { useSearchParams } from "next/navigation"; // Next.js hook to manage query params
-import { AnimeType, PhotosType } from "./types";
+import { AnimeType } from "./types";
 
 export default function MostPopular() {
   const [anime, setAnime] = useState<AnimeType[]>([]); // Using AnimeType[] for anime list

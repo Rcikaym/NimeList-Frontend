@@ -18,7 +18,7 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
-import { AnimeType, PhotosType } from "./types";
+import { AnimeType } from "./types";
 
 type Review = {
   id: number;
@@ -36,7 +36,7 @@ type AnimeDetailProps = {
 };
 
 const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
-  const { id, title } = params;
+  const { id } = params;
   const [anime, setAnime] = useState<AnimeType | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
