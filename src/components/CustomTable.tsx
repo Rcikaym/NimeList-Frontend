@@ -3,7 +3,10 @@ import React, { useState } from "react";
 import { Table, Input, Button, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import type { TableCurrentDataSource } from "antd/es/table/interface";
+import type {
+  SorterResult,
+  TableCurrentDataSource,
+} from "antd/es/table/interface";
 import { ColumnType } from "antd/es/table";
 import { FilterDropdownProps } from "antd/es/table/interface";
 
@@ -21,7 +24,10 @@ interface CustomTableProps<T> {
 }
 
 // Fungsi untuk membuat filter pencarian di kolom tabel
-const getColumnSearchProps = (dataIndex: string): ColumnType<any> => ({
+const getColumnSearchProps = (
+  dataIndex: string,
+  setSearchText: (value: string) => void
+): ColumnType<any> => ({
   filterDropdown: ({
     setSelectedKeys,
     selectedKeys,
@@ -32,45 +38,24 @@ const getColumnSearchProps = (dataIndex: string): ColumnType<any> => ({
       <Input
         placeholder={`Search`}
         value={selectedKeys[0]}
-        onChange={(e) =>
-          setSelectedKeys(e.target.value ? [e.target.value] : [])
-        }
+        onChange={(e) => {
+          setSelectedKeys(e.target.value ? [e.target.value] : []);
+          setSearchText(e.target.value);
+        }}
         onPressEnter={() => confirm()}
-        style={{ marginBottom: 8, display: "block" }}
+        style={{ display: "block" }}
       />
-      <Space>
-        <Button
-          type="primary"
-          onClick={() => confirm()}
-          icon={<SearchOutlined />}
-          size="small"
-          style={{ width: 90 }}
-        >
-          Search
-        </Button>
-        <Button
-          onClick={() => clearFilters && clearFilters()}
-          size="small"
-          style={{ width: 90 }}
-        >
-          Reset
-        </Button>
-      </Space>
     </div>
   ),
   filterIcon: (filtered: boolean) => (
     <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
   ),
-  onFilter: (value, record) =>
-    record[dataIndex]
-      .toString()
-      .toLowerCase()
-      .includes(value.toString().toLowerCase()),
 });
 
 const CustomTable = <T extends object>({
   data,
   columns,
+  pagination,
   onChange,
 }: CustomTableProps<T>) => {
   const [pageSize, setPageSize] = useState(10);
@@ -88,6 +73,7 @@ const CustomTable = <T extends object>({
         pageSizeOptions: ["10", "20", "50", "100"],
         showSizeChanger: true,
         onShowSizeChange: handlePageSizeChange,
+        ...pagination,
       }}
       bordered
       onChange={onChange}

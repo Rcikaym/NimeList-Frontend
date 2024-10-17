@@ -41,8 +41,11 @@ export default function AnimeEdit({ id }: { id: string }) {
     const fetchAnime = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${api}/anime/get/${id}`);
-        const animeData = response.data.anime;
+        const response = await fetch(`${api}/anime/get/${id}`, {
+          method: "GET",
+        });
+        const data = await response.json();
+        const animeData = data.anime;
 
         // Set data foto ke setter dari fileList
         setFileList(
@@ -60,6 +63,7 @@ export default function AnimeEdit({ id }: { id: string }) {
           release_date: animeData.release_date,
           synopsis: animeData.synopsis,
           trailer_link: animeData.trailer_link,
+          watch_link: animeData.watch_link,
           genres: animeData.genres.map((genre: GenreType) => genre.id),
           type: animeData.type,
           episodes: animeData.episodes,
@@ -81,12 +85,12 @@ export default function AnimeEdit({ id }: { id: string }) {
   // Fetch genres
   useEffect(() => {
     const fetchGenre = async () => {
-      const response = await axios.get<GenreType[]>(
-        `${api}/anime/get-all-genre`
-      );
+      const response = await fetch(`${api}/anime/get-all-genre`, {
+        method: "GET",
+      });
       setLoading(true);
       try {
-        setGenres(response.data);
+        setGenres(await response.json());
         setLoading(false);
       } catch (error) {
         console.error("Error fetching genres:", error);
@@ -101,11 +105,27 @@ export default function AnimeEdit({ id }: { id: string }) {
   const updateAnime = async (values: DataAnime) => {
     const formData = new FormData();
 
+    function convertToEmbedUrl(url: any) {
+      // Regular expression to match YouTube video IDs
+      const videoIdMatch = url.match(
+        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      );
+
+      // Check if the video ID was found
+      if (videoIdMatch && videoIdMatch[1]) {
+        const videoId = videoIdMatch[1];
+        return `https://www.youtube.com/embed/${videoId}`;
+      } else {
+        // Return null or the original URL if it's not a valid YouTube link
+        return null;
+      }
+    }
+
     formData.append("title", values.title);
     formData.append("release_date", values.release_date);
     formData.append("synopsis", values.synopsis);
+    formData.append("watch_link", values.watch_link);
     formData.append("type", values.type);
-    formData.append("trailer_link", values.trailer_link);
     formData.append("episodes", values.episodes.toString());
 
     const existing_photos = [] as string[];
@@ -142,18 +162,24 @@ export default function AnimeEdit({ id }: { id: string }) {
       );
     }
 
+    //Ubah format youtube url menjadi embedUrl
+    if (values.trailer_link) {
+      const youtubeUrl = values.trailer_link;
+      const embedUrl = convertToEmbedUrl(youtubeUrl) ?? "";
+      formData.append("trailer_link", embedUrl);
+    }
+
     setLoading(true);
     try {
-      const response = await axios.put(`${api}/anime/update/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await fetch(`${api}/anime/update/${id}`, {
+        method: "PUT",
+        body: formData,
       });
       router.push("/dashboard/anime");
       message.success("Anime updated successfully!");
       setLoading(false);
     } catch (error) {
-      message.error("Failed to add anime");
+      message.error(`Failed to update anime: ${error}`);
     }
   };
 
@@ -230,8 +256,8 @@ export default function AnimeEdit({ id }: { id: string }) {
 
   return (
     <>
-      <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg">
-        Form Edit Anime {anime}
+      <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg text-white">
+        Edit Anime {anime}
       </div>
       <Form
         form={form}
@@ -263,6 +289,14 @@ export default function AnimeEdit({ id }: { id: string }) {
             rules={[{ required: true, message: "Please input trailer link" }]}
           >
             <Input placeholder="yyyy-mm-dd" />
+          </Form.Item>
+
+          <Form.Item
+            label="Watch Link"
+            name="watch_link"
+            rules={[{ required: true, message: "Please input watch link" }]}
+          >
+            <Input placeholder="Input watch link" />
           </Form.Item>
 
           <Form.Item
