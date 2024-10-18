@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Space } from "antd";
+import { Button, message, Space } from "antd";
 import { TablePaginationConfig } from "antd/es/table";
 import type { TableColumnsType, TableProps } from "antd";
-import { AiOutlineUser } from "react-icons/ai";
+import { AiOutlineReload, AiOutlineUser } from "react-icons/ai";
 import axios from "axios";
 import { AppstoreFilled, EyeOutlined } from "@ant-design/icons";
 import Link from "next/link";
@@ -35,6 +35,19 @@ const UserList = () => {
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
   const api = process.env.NEXT_PUBLIC_API_URL;
+
+  const handleRefreshUsers = async () => {
+    try {
+      const res = await fetch(`${api}/user/refresh-users`, {
+        method: "PUT",
+      });
+
+      message.success("Users refreshed successfully!");
+      fetchUsers();
+    } catch (error) {
+      message.error("Failed to refresh users");
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -150,7 +163,6 @@ const UserList = () => {
 
   return (
     <>
-      <PageTitle title="NimeList - UserList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
@@ -177,6 +189,17 @@ const UserList = () => {
               Users
             </h2>
           </Link>
+        </div>
+      </div>
+      <div className="flex justify-between">
+        <div className="mb-3">
+          <Button
+            type="text"
+            onClick={handleRefreshUsers}
+            className="bg-emerald-700 text-white"
+          >
+            <AiOutlineReload /> Refresh Users
+          </Button>
         </div>
       </div>
       <CustomTable
