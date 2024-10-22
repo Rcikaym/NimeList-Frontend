@@ -9,6 +9,7 @@ import {
   AiOutlineAlignCenter,
 } from "react-icons/ai";
 import styles from "@/styles/sidebar.module.css";
+import Image from "next/image";
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;
@@ -53,7 +54,7 @@ const SidebarMenu = () => {
       <div className="flex items-center justify-between p-5">
         <Link href="/dashboard" className="flex items-center space-x-2">
           <div className="flex items-center rounded-md bg-[#005B50] p-2">
-            <img
+            <Image
               src="/images/logo.png"
               alt="logo"
               width={40}

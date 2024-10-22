@@ -1,16 +1,14 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, message, Space } from "antd";
+import { message } from "antd";
 import { TablePaginationConfig } from "antd/es/table";
 import type { TableColumnsType, TableProps } from "antd";
 import { AiOutlineReload, AiOutlineUser } from "react-icons/ai";
-import axios from "axios";
 import { AppstoreFilled, EyeOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import PageTitle from "@/components/TitlePage";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import renderDateTime from "@/components/formatDateTime";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 
@@ -150,11 +148,14 @@ const UserList = () => {
         title: "Action",
         dataIndex: "action",
         render: (text: string, record: DataType) => (
-          <Space size="middle">
-            <Button type="text" className="bg-emerald-700 text-white">
-              <EyeOutlined style={{ fontSize: 20 }} />
-            </Button>
-          </Space>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="bg-emerald-700 text-white items-center w-fit rounded-md px-4 py-2 flex hover:bg-emerald-800"
+            >
+              <EyeOutlined style={{ fontSize: 18 }} />
+            </button>
+          </div>
         ),
       },
     ],
@@ -193,13 +194,16 @@ const UserList = () => {
       </div>
       <div className="flex justify-between">
         <div className="mb-3">
-          <Button
-            type="text"
+          <button
+            type="button"
             onClick={handleRefreshUsers}
-            className="bg-emerald-700 text-white"
+            className="bg-emerald-700 text-white rounded-md hover:bg-emerald-800"
           >
-            <AiOutlineReload /> Refresh Users
-          </Button>
+            <div className="flex p-2 gap-2 items-center">
+              <AiOutlineReload size={20} />
+              <span>Refresh Users</span>
+            </div>
+          </button>
         </div>
       </div>
       <CustomTable

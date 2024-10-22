@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Form,
-  Image,
-  Input,
-  message,
-  Modal,
-  Space,
-  Table,
-  Upload,
-} from "antd";
+import { Button, Form, message, Modal, Space, Upload } from "antd";
 import type {
   TableColumnsType,
   TablePaginationConfig,
@@ -24,18 +14,18 @@ import {
   AiOutlineEye,
   AiOutlineFileImage,
 } from "react-icons/ai";
-import axios from "axios";
 import {
   AppstoreFilled,
   ExclamationCircleFilled,
   UploadOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
-import PageTitle from "@/components/TitlePage";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import renderDateTime from "@/components/formatDateTime";
+import PageTitle from "@/components/titlePage";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
+import Image from "next/image";
 
 interface PhotosType {
   photos: string[];
@@ -126,10 +116,7 @@ const AnimePhotos: React.FC = () => {
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
-      const response = await fetch(`${api}/photo-anime/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Perbarui data foto anime
+      fetchPhoto();
     } catch (error) {
       message.error("Failed to update photo");
     }
@@ -202,17 +189,14 @@ const AnimePhotos: React.FC = () => {
     console.log(sortOrder);
   };
 
-  // Fungsi untuk melakukan delete data genre
+  // Fungsi untuk melakukan delete data photo
   const handleDeleteAnime = async (id: string) => {
     try {
       await fetch(`${api}/photo-anime/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
-      // Fetch ulang data setelah post
-      const response = await fetch(`${api}/photo-anime/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data genre
+      // Fetch ulang data setelah data didelete
+      fetchPhoto();
     } catch (error) {
       message.error("Failed to delete anime");
     }
@@ -293,35 +277,35 @@ const AnimePhotos: React.FC = () => {
       title: "Action",
       dataIndex: "action",
       render: (text: string, record: DataType) => (
-        <Space size="middle">
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+        <div className="flex gap-3">
+          <button
+            type="button"
             onClick={() => {
               showModal("detail");
               setDataDetail(record.id);
             }}
           >
-            <AiOutlineEye style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+              <AiOutlineEye style={{ fontSize: 20 }} />
+            </div>
+          </button>
+          <button
+            type="button"
             onClick={() => {
               showModal("edit");
               setId(record.id);
             }}
           >
-            <AiOutlineEdit style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
-            onClick={() => showDeleteConfirm(record.id)}
-          >
-            <AiOutlineDelete style={{ fontSize: 20 }} />
-          </Button>
-        </Space>
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+              <AiOutlineEdit style={{ fontSize: 20 }} />
+            </div>
+          </button>
+          <button type="button" onClick={() => showDeleteConfirm(record.id)}>
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+              <AiOutlineDelete style={{ fontSize: 20 }} />
+            </div>
+          </button>
+        </div>
       ),
     },
   ];
@@ -335,12 +319,8 @@ const AnimePhotos: React.FC = () => {
             <AiOutlineFileImage style={{ fontSize: 20 }} />
           </div>
           <div>
-            <h2 className="text-black text-lg font-regular">
-              Anime Photos Information
-            </h2>
-            <span className="text-black text-sm">
-              Displays anime photo information
-            </span>
+            <h2 className="text-lg">Anime Photos Information</h2>
+            <span className="text-sm">Displays anime photo information</span>
           </div>
         </div>
         <div className="items-center flex gap-3">
@@ -414,8 +394,8 @@ const AnimePhotos: React.FC = () => {
                 detailPhoto?.file_path.replace(/\\/g, "/")
               }
               alt="photo"
-              width={250}
-              height={150}
+              width={550}
+              height={350}
             />
             <h1 className="mt-2">File path: {detailPhoto?.file_path}</h1>
           </div>

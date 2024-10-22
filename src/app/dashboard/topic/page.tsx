@@ -2,23 +2,23 @@
 
 import React, { useEffect, useState } from "react";
 import { Button, message, Modal, Space } from "antd";
-import type { TableColumnsType } from "antd";
+import type { TableColumnsType, TablePaginationConfig } from "antd";
 import {
   AiOutlineDelete,
   AiOutlineEdit,
   AiOutlinePicRight,
   AiOutlinePlus,
 } from "react-icons/ai";
-import axios from "axios";
 import {
   AppstoreFilled,
   ExclamationCircleFilled,
   EyeOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import PageTitle from "@/components/TitlePage";
-import renderDateTime from "@/components/FormatDateTime";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import PageTitle from "@/components/titlePage";
+import renderDateTime from "@/components/formatDateTime";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import useDebounce from "@/hooks/useDebounce";
 
 interface DataType {
   id: string;
@@ -33,23 +33,30 @@ const TopicList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const { confirm } = Modal;
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [sortOrder, setOrder] = useState<string>("ASC");
+  const [searchText, setSearchText] = useState<string>("");
+  const debounceText = useDebounce(searchText, 1000);
   const api = process.env.NEXT_PUBLIC_API_URL;
 
-  // Fetch data dari API ketika komponen dimuat
-  useEffect(() => {
-    const fetchTopic = async () => {
-      try {
-        const response = await fetch(`${api}/topic/get-all`);
-        setData(await response.json()); // Mengisi data dengan hasil dari API
-        setLoading(false); // Menonaktifkan status loading setelah data didapat
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(false); // Tetap menonaktifkan loading jika terjadi error
-      }
-    };
+  const fetchTopic = async () => {
+    try {
+      const response = await fetch(`${api}/topic/get-all`);
+      setData(await response.json()); // Mengisi data dengan hasil dari API
+      setLoading(false); // Menonaktifkan status loading setelah data didapat
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(false); // Tetap menonaktifkan loading jika terjadi error
+    }
+  };
 
+  useEffect(() => {
     fetchTopic(); // Panggil fungsi fetchTopic saat komponen dimuat
-  }, []);
+  }, [JSON.stringify(pagination), sortOrder, debounceText]);
 
   // Fungsi untuk melakukan delete data topic
   const handleDeleteTopic = async (id: string) => {
