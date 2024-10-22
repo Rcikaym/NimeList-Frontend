@@ -17,7 +17,7 @@ import {
 } from "react-icons/ai";
 
 // Types moved to a separate file to reduce bundle size
-import renderDateTime from "@/components/FormatDateTime";
+import renderDateTime from "@/components/formatDateTime";
 import { TopicType } from "./types";
 import DynamicContent from "@/components/dynamicContent";
 

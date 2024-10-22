@@ -26,9 +26,9 @@ import {
 import axios from "axios";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
-import DisplayLongText from "@/components/DisplayLongText";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import renderDateTime from "@/components/formatDateTime";
+import DisplayLongText from "@/components/displayLongText";
 import { Option } from "antd/es/mentions";
 
 const { Text } = Typography;

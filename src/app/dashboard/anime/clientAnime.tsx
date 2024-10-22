@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, message, Modal, Space } from "antd";
+import { message, Modal } from "antd";
 import type { TableColumnsType, TablePaginationConfig, TableProps } from "antd";
 import {
   AiFillStar,
@@ -9,7 +9,6 @@ import {
   AiOutlineEdit,
   AiOutlinePlus,
 } from "react-icons/ai";
-import axios from "axios";
 import {
   AppstoreFilled,
   ExclamationCircleFilled,
@@ -17,9 +16,8 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import PageTitle from "@/components/TitlePage";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import renderDateTime from "@/components/formatDateTime";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 
@@ -48,7 +46,9 @@ const AnimeList: React.FC = () => {
   const fetchAnime = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4321/anime/get-admin?page=${pagination.current}&limit=${
+        `http://localhost:4321/anime/get-admin?page=${
+          pagination.current
+        }&limit=${
           pagination.pageSize
         }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`
       );
@@ -158,31 +158,27 @@ const AnimeList: React.FC = () => {
       title: "Action",
       dataIndex: "action",
       render: (text: string, record: DataType) => (
-        <Space size="middle">
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
-            href={`anime/${record.anime_id}`}
-          >
-            <EyeOutlined style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
-            href={`anime/edit/${record.anime_id}`}
-          >
-            <AiOutlineEdit style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+        <div className="flex gap-3">
+          <a href={`anime/${record.anime_id}`}>
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+              <EyeOutlined style={{ fontSize: 20 }} />
+            </div>
+          </a>
+          <a href={`anime/edit/${record.anime_id}`}>
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+              <AiOutlineEdit style={{ fontSize: 20 }} />
+            </div>
+          </a>
+          <a
             onClick={() =>
               showDeleteConfirm(record.anime_id, record.anime_title)
             }
           >
-            <AiOutlineDelete style={{ fontSize: 20 }} />
-          </Button>
-        </Space>
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+              <AiOutlineDelete style={{ fontSize: 20 }} />
+            </div>
+          </a>
+        </div>
       ),
     },
   ];
@@ -221,13 +217,12 @@ const AnimeList: React.FC = () => {
       </div>
       <div className="flex justify-between">
         <div className="mb-3">
-          <Button
-            type="text"
-            href="/dashboard/anime/add"
-            className="bg-emerald-700 text-white"
-          >
-            <AiOutlinePlus /> Add Anime
-          </Button>
+          <a href="/dashboard/anime/add">
+            <div className="flex items-center gap-1 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">
+              <AiOutlinePlus />
+              <span>Add Anime</span>
+            </div>
+          </a>
         </div>
       </div>
       <CustomTable

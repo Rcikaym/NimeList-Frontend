@@ -153,7 +153,7 @@ export default function AnimeEdit({ id }: { id: string }) {
     });
 
     // Append new and existing files
-    new_photos.forEach((file: any) => formData.append("new_photos", file));
+    new_photos.forEach((file: any) => formData.append("photos_anime", file));
     if (existing_photos.length === 0) {
       formData.append("existing_photos", "");
     } else {

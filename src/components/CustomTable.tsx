@@ -1,6 +1,7 @@
-// components/CustomTable.tsx
+"use client";
+
 import React, { useState } from "react";
-import { Table, Input, Button, Space } from "antd";
+import { Table, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type {

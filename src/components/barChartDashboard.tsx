@@ -1,6 +1,8 @@
+"use client";
+
 // File: components/SalesData.tsx
 import React, { useState, useEffect } from "react";
-import { DatePicker, message, Spin } from "antd";
+import { DatePicker, message } from "antd";
 import dayjs from "dayjs";
 import "antd/dist/reset.css";
 import { Bar } from "react-chartjs-2";
@@ -15,7 +17,7 @@ import {
   ChartOptions,
   ChartData,
 } from "chart.js";
-import axios from "axios";
+import { LoadingOutlined } from "@ant-design/icons";
 
 // Register Chart.js components
 ChartJS.register(
@@ -104,13 +106,14 @@ const IncomeData: React.FC = () => {
       <h2>Select the Year for the Income Report</h2>
       <DatePicker
         picker="year"
+        value={dayjs(selectedYear, "YYYY")}
         onChange={handleYearChange}
         style={{ marginBottom: "20px" }}
       />
 
       {loading ? (
         <div className="h-[460px] w-full flex justify-center items-center">
-          <Spin tip="Loading..." />
+          <LoadingOutlined />
         </div>
       ) : incomeData.length > 0 ? (
         <div className="h-[460px] w-full">

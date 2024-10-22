@@ -11,10 +11,10 @@ import {
   Select,
   Upload,
 } from "antd";
-import axios from "axios";
 import {
   ExclamationCircleFilled,
   LeftCircleOutlined,
+  LoadingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
@@ -322,12 +322,28 @@ export default function AddAnime() {
           </Form.Item>
         </div>
         <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
-          <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
-            Back
-          </Button>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            Submit
-          </Button>
+          <a href="/dashboard/anime">
+            <div className="flex gap-1 bg-white text-[#005B50] px-3 py-1 rounded-md items-center hover:text-blue-500">
+              <LeftCircleOutlined className="mr-1" style={{ fontSize: 18 }} />
+              <span>Back</span>
+            </div>
+          </a>
+          {loading ? (
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-3 py-1 rounded-md items-center"
+            >
+              <LoadingOutlined className="mr-1" style={{ fontSize: 18 }} />
+              Loading
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-3 py-1 rounded-md items-center hover:text-black"
+            >
+              Submit
+            </button>
+          )}
         </div>
       </Form>
     </>

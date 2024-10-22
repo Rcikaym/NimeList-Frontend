@@ -1,7 +1,7 @@
-import PageTitle from "@/components/TitlePage";
-import Dashboard from "./clientDashboard";
+import PageTitle from "@/components/titlePage";
+import Dashboard from "./dashboard";
 
-export default async function Page() {
+export default function Page() {
   return (
     <>
       <PageTitle title={`NimeList - Dashboard`} />

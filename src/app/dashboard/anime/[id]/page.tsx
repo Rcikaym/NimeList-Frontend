@@ -1,4 +1,4 @@
-import PageTitle from "@/components/TitlePage";
+import PageTitle from "@/components/titlePage";
 import AnimeDetails from "./animeDetails";
 
 export default async function Page({ params }: { params: { id: string } }) {

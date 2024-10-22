@@ -1,6 +1,5 @@
-import PageTitle from "@/components/TitlePage";
+import PageTitle from "@/components/titlePage";
 import TopicEdit from "./formEdit";
-
 
 export default async function Page({ params }: { params: { id: string } }) {
   const api = process.env.NEXT_PUBLIC_API_URL;

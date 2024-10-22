@@ -16,9 +16,9 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
-import PageTitle from "@/components/TitlePage";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import renderDateTime from "@/components/formatDateTime";
+import PageTitle from "@/components/titlePage";
 
 interface DataType {
   id: string;
