@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { message, Modal } from "antd";
+import { Input, message, Modal } from "antd";
 import type { TableColumnsType, TablePaginationConfig, TableProps } from "antd";
 import {
   AiFillStar,
   AiOutlineDelete,
   AiOutlineEdit,
   AiOutlinePlus,
+  AiOutlineSearch,
 } from "react-icons/ai";
 import {
   AppstoreFilled,
@@ -40,7 +41,7 @@ const AnimeList: React.FC = () => {
   });
   const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
-  const debounceText = useDebounce(searchText, 1000);
+  const debounceText = useDebounce(searchText, 1500);
 
   // Fetch data dari API ketika komponen dimuat
   const fetchAnime = async () => {
@@ -125,10 +126,8 @@ const AnimeList: React.FC = () => {
     {
       title: "Title",
       dataIndex: "anime_title",
-      // ...getColumnSearchProps("anime_title"),
       sorter: true,
       sortDirections: ["descend"],
-      ...getColumnSearchProps("anime_title", setSearchText),
     },
     {
       title: "Rating",
@@ -223,6 +222,13 @@ const AnimeList: React.FC = () => {
               <span>Add Anime</span>
             </div>
           </a>
+        </div>
+        <div>
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Search Anime"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
         </div>
       </div>
       <CustomTable
