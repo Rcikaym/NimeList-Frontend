@@ -1,27 +1,27 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { message } from "antd";
 import { TablePaginationConfig } from "antd/es/table";
-import type { TableColumnsType, TableProps } from "antd";
-import { AiOutlineReload, AiOutlineUser } from "react-icons/ai";
-import { AppstoreFilled, EyeOutlined } from "@ant-design/icons";
+import { Input, Modal, type TableColumnsType, type TableProps } from "antd";
+import {
+  AiFillCaretDown,
+  AiOutlineClockCircle,
+  AiOutlineShoppingCart,
+  AiOutlineTool,
+} from "react-icons/ai";
+import { AppstoreFilled, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/customTable";
 import renderDateTime from "@/components/formatDateTime";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
+import StatusFilter from "@/components/buttonFilterStatus";
+import { DataType, TransactionDetails } from "./types";
+import ModalDetailTransaction from "@/components/modalDetailTransaction";
 
-interface DataType {
-  username: string;
-  status_premium: boolean;
-  email: string;
-  badge: string;
-  start_premium: string;
-  end_premium: string;
-}
+const { Search } = Input;
 
-const UserList = () => {
+const TransactionList = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -31,28 +31,31 @@ const UserList = () => {
   });
   const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
-  const debounceText = useDebounce(searchText, 1000);
+  const debounceText = useDebounce(searchText, 1500);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [detailTransaction, setDetailTransaction] = useState(
+    {} as TransactionDetails
+  );
+  const [isVisible, setIsVisible] = useState(false);
+  const [filterStatus, setFilterStatus] = useState(null); // State untuk filter status
   const api = process.env.NEXT_PUBLIC_API_URL;
 
-  const handleRefreshUsers = async () => {
-    try {
-      const res = await fetch(`${api}/user/refresh-users`, {
-        method: "PUT",
-      });
-
-      message.success("Users refreshed successfully!");
-      fetchUsers();
-    } catch (error) {
-      message.error("Failed to refresh users");
-    }
+  const showModalDetail = async (id: string) => {
+    setModalVisible(true);
+    const res = await fetch(`${api}/transactions/get-admin/${id}`, {
+      method: "GET",
+    });
+    setDetailTransaction(await res.json());
   };
 
-  const fetchUsers = async () => {
+  const fetchTransaction = async () => {
     try {
       const response = await fetch(
-        `${api}/user/get-all?page=${pagination.current}&limit=${
+        `${api}/transactions/get-admin?page=${pagination.current}&limit=${
           pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
+        }&search=${debounceText}&order=${encodeURIComponent(
+          sortOrder
+        )}&status=${filterStatus || "all"}`,
         {
           method: "GET",
         }
@@ -71,10 +74,9 @@ const UserList = () => {
     }
   };
 
-  // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
-    fetchUsers(); // Panggil fungsi fetchUsers saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+    fetchTransaction(); // Panggil fungsi fetchTransaction saat komponen dimuat
+  }, [JSON.stringify(pagination), sortOrder, debounceText, filterStatus]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
     pagination: TablePaginationConfig,
@@ -99,48 +101,51 @@ const UserList = () => {
         dataIndex: "username",
         sorter: true,
         sortDirections: ["descend"],
-        ...getColumnSearchProps("username", setSearchText),
       },
       {
-        title: "Email",
-        dataIndex: "email",
+        title: "Order Id",
+        dataIndex: "order_id",
       },
       {
-        title: "Premium Status",
-        dataIndex: "status_premium",
-        render: (status_premium: string) =>
-          status_premium === "active" ? (
+        title: "Status",
+        dataIndex: "status",
+        render: (status: string) =>
+          status === "success" ? (
             <>
               <div className="flex rounded-md bg-emerald-700 px-3 py-1 justify-center w-fit">
-                <span className="text-white">Active</span>
+                <span className="text-white">Success</span>
+              </div>
+            </>
+          ) : status === "pending" ? (
+            <>
+              <div className="flex rounded-md bg-yellow-600 px-3 py-1 justify-center w-fit">
+                <span className="text-white">Pending</span>
               </div>
             </>
           ) : (
             <>
               <div className="flex rounded-md bg-red-600 px-3 py-1 justify-center w-fit">
-                <span className="text-white">Inactive</span>
+                <span className="text-white">Failed</span>
               </div>
             </>
           ),
       },
       {
-        title: "Badge",
-        dataIndex: "badge",
-        render: (badge: string) =>
-          badge
-            .split(" ") // Memisahkan string berdasarkan spasi menjadi array
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Mengubah huruf pertama setiap kata menjadi huruf besar
-            .join(" "), // Menggabungkan kembali array menjadi string
+        title: "Total",
+        dataIndex: "total",
+        render: (total: number) => (
+          <span>{`Rp${new Intl.NumberFormat("id-ID").format(total)}`}</span>
+        ),
       },
       {
-        title: "Start Premium",
-        dataIndex: "start_premium",
+        title: "Created At",
+        dataIndex: "created_at",
         render: (start_premium: string | null) =>
           start_premium ? renderDateTime(start_premium) : "0000-00-00 00:00:00",
       },
       {
-        title: "End Premium",
-        dataIndex: "end_premium",
+        title: "Updated At",
+        dataIndex: "updated_at",
         render: (end_premium: string | null) =>
           end_premium ? renderDateTime(end_premium) : "0000-00-00 00:00:00",
       },
@@ -151,6 +156,7 @@ const UserList = () => {
           <div className="flex gap-2">
             <button
               type="button"
+              onClick={() => showModalDetail(record.id)}
               className="bg-emerald-700 text-white items-center w-fit rounded-md px-4 py-2 flex hover:bg-emerald-800"
             >
               <EyeOutlined style={{ fontSize: 18 }} />
@@ -162,19 +168,32 @@ const UserList = () => {
     []
   );
 
+  function toTitleCase(str?: string): string {
+    // Jika input tidak valid, kembalikan string kosong
+    if (!str) {
+      return "";
+    }
+
+    return str
+      .toLowerCase() // Mengubah seluruh string menjadi huruf kecil
+      .split(" ") // Memisahkan string menjadi array kata
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Mengubah huruf pertama setiap kata menjadi huruf besar
+      .join(" "); // Menggabungkan kembali array kata menjadi string
+  }
+
   return (
     <>
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
-            <AiOutlineUser style={{ fontSize: 20 }} />
+            <AiOutlineShoppingCart style={{ fontSize: 20 }} />
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
-              User Information
+              Transaction Information
             </h2>
             <span className="text-black text-sm">
-              Displays user short information and user details
+              Displays transaction short information and transaction details
             </span>
           </div>
         </div>
@@ -187,25 +206,26 @@ const UserList = () => {
           <span className="text-black"> / </span>
           <Link href="/dashboard/users">
             <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
-              Users
+              Transaction
             </h2>
           </Link>
         </div>
       </div>
-      <div className="flex justify-between">
-        <div className="mb-3">
-          <button
-            type="button"
-            onClick={handleRefreshUsers}
-            className="bg-emerald-700 text-white rounded-md hover:bg-emerald-800"
-          >
-            <div className="flex p-2 gap-2 items-center">
-              <AiOutlineReload size={20} />
-              <span>Refresh Users</span>
-            </div>
-          </button>
+      <div className="flex justify-end">
+        <div className="flex gap-3">
+          <Input
+            addonBefore={<SearchOutlined />}
+            placeholder="Only user and order id"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+          <StatusFilter onFilterChange={setFilterStatus} />
         </div>
       </div>
+      <ModalDetailTransaction
+        data={detailTransaction}
+        modalVisible={modalVisible}
+        handleCancel={() => setModalVisible(false)}
+      />
       <CustomTable
         loading={loading}
         columns={columns}
@@ -217,4 +237,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
+export default TransactionList;

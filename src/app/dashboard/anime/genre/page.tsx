@@ -1,5 +1,5 @@
 import PageTitle from "@/components/titlePage";
-import AnimeGenre from "./clientGenre";
+import AnimeGenre from "./genre";
 
 export default async function Page() {
   return (

@@ -1,0 +1,16 @@
+.additionalContent {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+  overflow: hidden; /* Menyembunyikan konten ketika tidak terlihat */
+}
+
+.visible {
+  max-height: 500px; /* Atur nilai yang cukup tinggi untuk konten */
+  opacity: 1; /* Membuat konten terlihat */
+}
+
+.hidden {
+  max-height: 0; /* Menyembunyikan konten */
+  opacity: 0; /* Menghilangkan konten */
+}

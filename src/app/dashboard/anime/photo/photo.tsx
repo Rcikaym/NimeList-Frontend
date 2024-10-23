@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Form, message, Modal, Space, Upload } from "antd";
+import { Button, Form, Input, message, Modal, Space, Upload } from "antd";
 import type {
   TableColumnsType,
   TablePaginationConfig,
@@ -13,6 +13,7 @@ import {
   AiOutlineEdit,
   AiOutlineEye,
   AiOutlineFileImage,
+  AiOutlineSearch,
 } from "react-icons/ai";
 import {
   AppstoreFilled,
@@ -261,7 +262,6 @@ const AnimePhotos: React.FC = () => {
       dataIndex: "anime",
       sorter: true,
       sortDirections: ["descend"],
-      ...getColumnSearchProps("anime", setSearchText),
     },
     {
       title: "Created At",
@@ -339,6 +339,15 @@ const AnimePhotos: React.FC = () => {
           </Link>
         </div>
       </div>
+      <div className="flex justify-end mb-3">
+        <div>
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Search Anime Title"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </div>
+      </div>
       <CustomTable
         columns={columns}
         pagination={pagination} // Jumlah data yang ditampilkan
@@ -346,13 +355,7 @@ const AnimePhotos: React.FC = () => {
         onChange={handleTableChange}
       />
       <Modal
-        title={
-          "Modal " + modalMode === "post"
-            ? "Add New Comment"
-            : modalMode === "edit"
-            ? "Edit Comment"
-            : "Detail Comment"
-        }
+        title={"Modal " + modalMode === "edit" ? "Edit Photo" : "Detail Photo"}
         centered
         open={modalVisible}
         onOk={handleOk}

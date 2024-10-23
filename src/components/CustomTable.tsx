@@ -34,20 +34,29 @@ const getColumnSearchProps = (
     selectedKeys,
     confirm,
     clearFilters,
-  }: FilterDropdownProps) => (
-    <div style={{ padding: 8 }}>
-      <Input
-        placeholder={`Search`}
-        value={selectedKeys[0]}
-        onChange={(e) => {
-          setSelectedKeys(e.target.value ? [e.target.value] : []);
-          setSearchText(e.target.value);
-        }}
-        onPressEnter={() => confirm()}
-        style={{ display: "block" }}
-      />
-    </div>
-  ),
+  }: FilterDropdownProps) => {
+    const [searchValue, setSearchValue] = useState<string>("");
+
+    const handleSearch = (value: string) => {
+      setSelectedKeys(value ? [value] : []);
+      setSearchText(value);
+      confirm(); // Konfirmasi pencarian setelah memasukkan teks
+    };
+
+    return (
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder={`Search`}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onPressEnter={(e) => {
+            handleSearch(searchValue); // Ambil nilai dari input
+          }}
+          style={{ display: "block" }}
+        />
+      </div>
+    );
+  },
   filterIcon: (filtered: boolean) => (
     <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
   ),

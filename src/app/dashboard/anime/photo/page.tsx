@@ -1,5 +1,5 @@
 import PageTitle from "@/components/titlePage";
-import AnimePhotos from "./clientPhoto";
+import AnimePhotos from "./photo";
 
 export default async function Page() {
   return (
