@@ -65,43 +65,27 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
 
   return (
     <>
-      {/* /* left content */}
-      <div className="w-full lg:w-1/2 h-64 lg:h-auto relative">
-        <div className="relative w-full h-full overflow-hidden">
-          <div className="flex justify-center">
-            {animeData.map((data, index) => (
-              <img
-                key={index}
-                src={`${api}/${data.photo_cover.replace(/\\/g, "/")}`}
-                alt={`Carousel item ${index}`}
-                className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-1000 ease-in-out ${
-                  index === currentIndex ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            ))}
-          </div>
-          <button
-            className="absolute h-full left-0 p-4 text-white bg-black bg-opacity-0 hover:bg-opacity-75"
-            onClick={handlePrev}
-          >
-            <TiChevronLeft className="text-2xl" />
-          </button>
-          <button
-            className="absolute h-full right-0 p-4 text-white bg-black bg-opacity-0 hover:bg-opacity-75"
-            onClick={handleNext}
-          >
-            <TiChevronRight className="text-2xl" />
-          </button>
+      {/* Left content (carousel) */}
+      <div className="w-[52.625rem] h-[57.934rem] lg:w-1/2 lg:h-auto relative overflow-hidden">
+        <div className="flex justify-center items-center h-full">
+          {animeData.map((data, index) => (
+            <img
+              key={index}
+              src={`${api}/${data.photo_cover.replace(/\\/g, "/")}`}
+              alt={`Carousel item ${index}`}
+              className={`absolute w-auto h-full object-contain transition-opacity duration-1000 ease-in-out ${
+                index === currentIndex ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
         </div>
       </div>
-      {/* // right content */}
+
+      {/* Right content */}
       <div className="flex flex-col justify-center w-full lg:w-1/2 p-6 lg:p-10">
         <h1 className="text-3xl lg:text-5xl font-bold mb-2 select-none">
           {currentAnime.title}
         </h1>
-        {/* <p className="text-xs lg:text-sm mb-4">
-          <span className="font-semibold">Action,Drama,Bla...Bla..Blaa</span>
-          </p> */}
         <div className="flex gap-2">
           {currentAnime.genres.map((genre: any) => (
             <Chip
@@ -120,7 +104,6 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
         <p className="text-gray-300 mb-6 text-sm lg:text-base line-clamp-4">
           {currentAnime.synopsis}
         </p>
-
         <div className="flex items-center mb-6">
           <Button
             onPress={onOpen}
@@ -137,6 +120,19 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
           </a>
         </div>
       </div>
+      {/* Navigation buttons (prev and next) */}
+      <button
+        className="absolute h-full top-0 left-0 p-4 text-white bg-black bg-opacity-0 hover:bg-opacity-100 "
+        onClick={handlePrev}
+      >
+        <TiChevronLeft className="text-2xl" />
+      </button>
+      <button
+        className="absolute h-full top-0 right-0 p-4 text-white bg-black bg-opacity-0 hover:bg-opacity-100 "
+        onClick={handleNext}
+      >
+        <TiChevronRight className="text-2xl" />
+      </button>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
