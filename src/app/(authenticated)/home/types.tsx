@@ -17,4 +17,5 @@ export interface AnimeType {
   photo_cover: string;
   type: string;
   genres: string[];
+  avgRating: number;
 }

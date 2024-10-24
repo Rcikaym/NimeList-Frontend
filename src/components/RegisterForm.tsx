@@ -16,7 +16,7 @@ const RegisterForm: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   // Function to handle login
@@ -28,18 +28,21 @@ const RegisterForm: React.FC = () => {
       return;
     }
 
-    const response = await fetch("/api/register", {
+    // Prepare the data to send, excluding confirmPassword
+  const { confirmPassword, ...registrationData } = form;
+
+    const response = await fetch(`${api}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(form),
+      body: JSON.stringify(registrationData),
     });
 
     const data = await response.json();
-    if (data.token) {
+    if (data.access_token) {
       // Simpan token di localStorage
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("access_token", data.access_token);
       alert("Registration successful");
     } else {
       alert("Registration failed");
@@ -52,7 +55,9 @@ const RegisterForm: React.FC = () => {
         <p className="font-bold text-5xl mb-0 pb-4 bg-gradient-to-r from-[#05E5CB] to-[#014A42] bg-clip-text text-transparent">
           Register
         </p>
-        <span className="font-semibold text-sm">Create your profile and join the fun.</span>
+        <span className="font-semibold text-sm">
+          Create your profile and join the fun.
+        </span>
       </div>
 
       <div className="flex flex-col items-center justify-center w-full">
