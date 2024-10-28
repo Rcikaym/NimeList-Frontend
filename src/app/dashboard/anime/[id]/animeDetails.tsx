@@ -129,7 +129,7 @@ const PhotoGallery = memo(
           <MemoizedImage
             src={`${api}/${photo.file_path.replace(/\\/g, "/")}`}
             alt={`${title} - Photo ${index + 1}`}
-            className="rounded-lg shadow-md hover:shadow-xl transition-shadow"
+            className="rounded-sm shadow-xl hover:shadow-lg hover:shadow-gray-400 transition-shadow"
             height={160}
             width={260}
             loading="lazy"
@@ -184,7 +184,7 @@ export default function AnimeDetails({ id }: { id: string }) {
             {photo_cover && (
               <MemoizedImage
                 alt={title}
-                className="rounded-md shadow-md hover:shadow-xl transition-shadow"
+                className="rounded-md shadow-md hover:shadow-lg hover:shadow-gray-400 transition-shadow"
                 src={`${api}/${photo_cover.replace(/\\/g, "/")}`}
                 height={330}
                 width={200}
@@ -240,9 +240,9 @@ export default function AnimeDetails({ id }: { id: string }) {
 
       <div className="p-2 flex justify-end mt-3 rounded-lg bg-[#005B50]">
         <a href="/dashboard/anime">
-          <div className="flex gap-2 bg-white text-[#005B50] px-3 py-1 rounded-md items-center hover:text-blue-500">
-            <LeftCircleOutlined style={{ fontSize: 20 }} />
-            <span className="text-lg">Back</span>
+          <div className="flex gap-2 bg-white text-[#005B50] px-3 py-2 rounded-md items-center hover:text-blue-500">
+            <LeftCircleOutlined style={{ fontSize: 18 }} />
+            <span>Back</span>
           </div>
         </a>
       </div>

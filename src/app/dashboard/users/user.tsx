@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Input, message } from "antd";
+import { Input, message, Select } from "antd";
 import { TablePaginationConfig } from "antd/es/table";
 import type { TableColumnsType, TableProps } from "antd";
 import {
@@ -15,6 +15,7 @@ import { CustomTable, getColumnSearchProps } from "@/components/customTable";
 import renderDateTime from "@/components/formatDateTime";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
+import { Option } from "antd/es/mentions";
 
 interface DataType {
   username: string;
@@ -33,7 +34,7 @@ const UserList = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
+  const [filterStatus, setStatus] = useState<string>("all");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
   const api = process.env.NEXT_PUBLIC_API_URL;
@@ -52,15 +53,13 @@ const UserList = () => {
   };
 
   const fetchUsers = async () => {
+    const baseUrl = `${api}/user/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`;
+    const withFilterStatus =
+      filterStatus !== "all" ? `${baseUrl}&status=${filterStatus}` : baseUrl;
     try {
-      const response = await fetch(
-        `${api}/user/get-all?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await fetch(withFilterStatus, {
+        method: "GET",
+      });
       const { data, total } = await response.json();
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
@@ -78,22 +77,22 @@ const UserList = () => {
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
     fetchUsers(); // Panggil fungsi fetchUsers saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), filterStatus, debounceText]);
 
-  const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
-  ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
-    setPagination({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      total: pagination.total,
-    });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
-  };
+  // const handleTableChange: TableProps<DataType>["onChange"] = (
+  //   pagination: TablePaginationConfig,
+  //   filters,
+  //   sorter
+  // ) => {
+  //   const sortParsed = sorter as SorterResult<DataType>;
+  //   setPagination({
+  //     current: pagination.current,
+  //     pageSize: pagination.pageSize,
+  //     total: pagination.total,
+  //   });
+  //   setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
+  //   console.log(sortOrder);
+  // };
 
   // Kolom table
   const columns: TableColumnsType<DataType> = useMemo(
@@ -101,8 +100,6 @@ const UserList = () => {
       {
         title: "Username",
         dataIndex: "username",
-        sorter: true,
-        sortDirections: ["descend"],
       },
       {
         title: "Email",
@@ -195,8 +192,8 @@ const UserList = () => {
           </Link>
         </div>
       </div>
-      <div className="flex justify-between">
-        <div className="mb-3">
+      <div className="flex justify-between mb-3">
+        <div>
           <button
             type="button"
             onClick={handleRefreshUsers}
@@ -208,19 +205,30 @@ const UserList = () => {
             </div>
           </button>
         </div>
-        <div>
+        <div className="flex items-center gap-3">
           <Input
             addonBefore={<AiOutlineSearch />}
             placeholder="Search User"
             onChange={(e) => setSearchText(e.target.value)}
           />
+          <div>
+            <Select
+              defaultValue={filterStatus}
+              style={{ width: 120 }}
+              onChange={(value) => setStatus(value)}
+            >
+              <Option value="all">All</Option>
+              <Option value="active">Active</Option>
+              <Option value="inactive">Inactive</Option>
+            </Select>
+          </div>
         </div>
       </div>
       <CustomTable
         loading={loading}
         columns={columns}
         pagination={pagination} // Jumlah data yang ditampilkan
-        onChange={handleTableChange}
+        // onChange={handleTableChange}
         data={data} // Data dari state
       />
     </>
