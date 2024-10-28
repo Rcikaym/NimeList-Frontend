@@ -15,11 +15,9 @@ import { CustomTable, getColumnSearchProps } from "@/components/customTable";
 import renderDateTime from "@/components/formatDateTime";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
-import StatusFilter from "@/components/buttonFilterStatus";
 import { DataType, TransactionDetails } from "./types";
 import ModalDetailTransaction from "@/components/modalDetailTransaction";
-
-const { Search } = Input;
+import FilterModal from "@/components/modalFilterTransaction";
 
 const TransactionList = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
@@ -36,8 +34,8 @@ const TransactionList = () => {
   const [detailTransaction, setDetailTransaction] = useState(
     {} as TransactionDetails
   );
-  const [isVisible, setIsVisible] = useState(false);
-  const [filterStatus, setFilterStatus] = useState(null); // State untuk filter status
+  const [filterString, setFilterString] = useState("status=&premium=");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
 
   const showModalDetail = async (id: string) => {
@@ -51,11 +49,7 @@ const TransactionList = () => {
   const fetchTransaction = async () => {
     try {
       const response = await fetch(
-        `${api}/transactions/get-admin?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(
-          sortOrder
-        )}&status=${filterStatus || "all"}`,
+        `${api}/transactions/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&${filterString}`,
         {
           method: "GET",
         }
@@ -76,7 +70,7 @@ const TransactionList = () => {
 
   useEffect(() => {
     fetchTransaction(); // Panggil fungsi fetchTransaction saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText, filterStatus]);
+  }, [JSON.stringify(pagination), debounceText, filterString]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
     pagination: TablePaginationConfig,
@@ -99,8 +93,6 @@ const TransactionList = () => {
       {
         title: "Username",
         dataIndex: "username",
-        sorter: true,
-        sortDirections: ["descend"],
       },
       {
         title: "Order Id",
@@ -168,18 +160,9 @@ const TransactionList = () => {
     []
   );
 
-  function toTitleCase(str?: string): string {
-    // Jika input tidak valid, kembalikan string kosong
-    if (!str) {
-      return "";
-    }
-
-    return str
-      .toLowerCase() // Mengubah seluruh string menjadi huruf kecil
-      .split(" ") // Memisahkan string menjadi array kata
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Mengubah huruf pertama setiap kata menjadi huruf besar
-      .join(" "); // Menggabungkan kembali array kata menjadi string
-  }
+  const handleApplyFilter = (filterResult: string) => {
+    setFilterString(filterResult);
+  };
 
   return (
     <>
@@ -211,16 +194,27 @@ const TransactionList = () => {
           </Link>
         </div>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end mb-3">
         <div className="flex gap-3">
           <Input
             addonBefore={<SearchOutlined />}
             placeholder="Only user and order id"
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <StatusFilter onFilterChange={setFilterStatus} />
+          <button
+            type="button"
+            className="bg-emerald-700 text-white py-2 px-3 rounded-md hover:bg-emerald-800"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Filter
+          </button>
         </div>
       </div>
+      <FilterModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onApply={handleApplyFilter}
+      />
       <ModalDetailTransaction
         data={detailTransaction}
         modalVisible={modalVisible}

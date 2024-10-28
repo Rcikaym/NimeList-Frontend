@@ -4,8 +4,8 @@ import { AppstoreFilled } from "@ant-design/icons";
 import Link from "next/link";
 import BarChart from "@/components/barChartDashboard";
 import CardDashboard from "@/components/cardDashboard";
-import TableDashboard from "@/components/topAnimeDashboardTable";
 import PageTitle from "@/components/titlePage";
+import TableTop10Anime from "@/components/top10AnimeTable";
 
 const Dashboard = () => {
   return (
@@ -62,7 +62,7 @@ const Dashboard = () => {
 
         {/* List Top Anime */}
         <div className="shadow-md bg-white p-4 rounded-md">
-          <TableDashboard />
+          <TableTop10Anime />
         </div>
       </div>
     </>

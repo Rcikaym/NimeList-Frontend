@@ -1,7 +1,7 @@
 .additionalContent {
   max-height: 0;
   opacity: 0;
-  transition: max-height 0.4s ease, opacity 0.4s ease;
+  transition: max-height 0.45s ease, opacity 0.4s ease;
   overflow: hidden; /* Menyembunyikan konten ketika tidak terlihat */
 }
 

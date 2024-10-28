@@ -71,7 +71,7 @@ const ModalDetailTransaction: React.FC<ModalDetailTransactionProps> = ({
                 <span className="font-semibold">Product Details</span>
                 <AiFillCaretRight
                   size={14}
-                  className={`transition-transform duration-500 ${
+                  className={`transition-transform duration-400 ${
                     productVisible ? "rotate-90" : "rotate-0"
                   }`}
                 />

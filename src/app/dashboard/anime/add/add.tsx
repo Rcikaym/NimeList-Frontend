@@ -26,7 +26,7 @@ interface DataAnime {
   release_date: string;
   trailer_link: string;
   genres: [];
-  photos_anime: [];
+  photos_anime: string[];
   photo_cover: string[];
   type: string;
   episodes: number;
@@ -150,7 +150,7 @@ export default function AddAnime() {
     }
 
     // Tambahkan file foto anime (bisa lebih dari 1)
-    if (values.photos_anime && values.photo_cover.length > 0) {
+    if (values.photos_anime) {
       values.photos_anime.forEach((file: any) => {
         formData.append("photos_anime", file.originFileObj);
       });
@@ -316,7 +316,7 @@ export default function AddAnime() {
             label="Upload Photo Anime"
             getValueFromEvent={normFile}
           >
-            <Upload listType="picture" maxCount={4}>
+            <Upload listType="picture" maxCount={4} multiple>
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
           </Form.Item>

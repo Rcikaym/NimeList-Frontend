@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 
 interface animeTop {
   title: string;
-  totalReview: number;
-  rating: number;
+  total_review: number;
+  avg_rating: number;
+  weighted_rating: number;
 }
 
 // Komponen untuk mendefinisikan kolom
@@ -24,12 +25,22 @@ const columnsAnimeTop = [
   },
   {
     title: "Total Review",
-    dataIndex: "totalReview",
+    dataIndex: "total_reviews",
     render: (totalReview: number) => <span>{totalReview} Reviews</span>,
   },
   {
-    title: "Rating",
-    dataIndex: "rating",
+    title: "Average Rating",
+    dataIndex: "avg_rating",
+    render: (rating: number) => (
+      <span className="gap-1 flex items-center">
+        {rating}
+        <AiFillStar style={{ color: "#fadb14" }} />
+      </span>
+    ),
+  },
+  {
+    title: "Weighted Rating",
+    dataIndex: "weighted_rating",
     render: (rating: number) => (
       <span className="gap-1 flex items-center">
         {rating}
@@ -39,12 +50,12 @@ const columnsAnimeTop = [
   },
 ];
 
-const TableDashboard = () => {
+const TableTop10Anime = () => {
   const [data, setData] = useState<animeTop[]>([]);
 
   useEffect(() => {
     const fetchAnime = async () => {
-      const res = await fetch("http://localhost:4321/dashboard/anime-top");
+      const res = await fetch("http://localhost:4321/dashboard/top-10-anime");
       setData(await res.json());
     };
 
@@ -73,4 +84,4 @@ const TableDashboard = () => {
   );
 };
 
-export default TableDashboard;
+export default TableTop10Anime;

@@ -11,6 +11,14 @@ import {
 
 const api = process.env.NEXT_PUBLIC_API_URL;
 
+interface CardDashboardProps {
+  totalTopics: number;
+  totalMembers: number;
+  totalTransaction: number;
+  totalIncome: number;
+  loading: boolean;
+}
+
 export async function fetchDashboardData() {
   try {
     const [
@@ -44,16 +52,17 @@ export async function fetchDashboardData() {
 }
 
 const CardDashboard = () => {
-  const [data, setData] = useState<any>({});
+  const [data, setData] = useState({} as CardDashboardProps);
+  const sizeIcon = 37;
 
+  async function CardDashboard() {
+    setData(await fetchDashboardData());
+  }
+
+  // Panggil fungsi CardDashboard saat komponen di-mount
   useEffect(() => {
-    async function CardDashboard() {
-      setData(await fetchDashboardData());
-    }
-
     CardDashboard();
   }, []);
-  const sizeIcon = 37;
 
   return (
     <>
@@ -68,7 +77,7 @@ const CardDashboard = () => {
             </div>
             <div>
               <div className="mt-4 text-white">
-                <h3 className="text-lg mb-1">Members</h3>
+                <h3 className="text-lg mb-1">Total Members</h3>
                 {data.loading ? (
                   <LoadingOutlined />
                 ) : (
@@ -89,7 +98,7 @@ const CardDashboard = () => {
             </div>
             <div>
               <div className="mt-4 text-white">
-                <h3 className="text-lg mb-1">Topics</h3>
+                <h3 className="text-lg mb-1">Total Topics</h3>
                 {data.loading ? (
                   <LoadingOutlined />
                 ) : (
@@ -110,7 +119,7 @@ const CardDashboard = () => {
             </div>
             <div>
               <div className="mt-4 text-white">
-                <h3 className="text-lg mb-1">Transactions</h3>
+                <h3 className="text-lg mb-1">Total Transactions</h3>
                 {data.loading ? (
                   <LoadingOutlined />
                 ) : (
@@ -131,12 +140,12 @@ const CardDashboard = () => {
             </div>
             <div>
               <div className="mt-4 text-white">
-                <h3 className="text-lg mb-1">Income</h3>
+                <h3 className="text-lg mb-1">Total Income</h3>
                 {data.loading ? (
                   <LoadingOutlined />
                 ) : (
                   <p className="text-lg font-bold">
-                    {`Rp. ${new Intl.NumberFormat("id-ID").format(
+                    {`Rp${new Intl.NumberFormat("id-ID").format(
                       data.totalIncome
                     )}`}
                   </p>
