@@ -39,7 +39,6 @@ const AnimeList: React.FC = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1500);
 
@@ -47,11 +46,7 @@ const AnimeList: React.FC = () => {
   const fetchAnime = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4321/anime/get-admin?page=${
-          pagination.current
-        }&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`
+        `http://localhost:4321/anime/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
       const { data, total } = await response.json();
       setData(data); // Mengisi data dengan hasil dari API
@@ -69,21 +64,16 @@ const AnimeList: React.FC = () => {
 
   useEffect(() => {
     fetchAnime(); // Panggil fungsi fetchUsers saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), debounceText]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
+    pagination: TablePaginationConfig
   ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
       current: pagination.current,
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
   };
 
   // Fungsi untuk melakukan delete data genre
@@ -126,8 +116,6 @@ const AnimeList: React.FC = () => {
     {
       title: "Title",
       dataIndex: "title",
-      sorter: true,
-      sortDirections: ["descend"],
     },
     {
       title: "Rating",

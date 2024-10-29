@@ -38,7 +38,6 @@ const AnimeGenre: React.FC = () => {
     total: 0,
   });
   const [idGenre, setIdGenre] = useState<string>("");
-  const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
   const { confirm } = Modal;
@@ -224,8 +223,6 @@ const AnimeGenre: React.FC = () => {
     {
       title: "Name",
       dataIndex: "name",
-      sorter: true,
-      sortDirections: ["descend"],
     },
     {
       title: "Created At",
@@ -268,9 +265,7 @@ const AnimeGenre: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${api}/genre/get-all?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
+        `${api}/genre/get-all?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`,
         {
           method: "GET",
         }
@@ -292,20 +287,16 @@ const AnimeGenre: React.FC = () => {
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
     fetchGenre();
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), debounceText]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
+    pagination: TablePaginationConfig
   ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
       current: pagination.current,
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
   };
 
   return (

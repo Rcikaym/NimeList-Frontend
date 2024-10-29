@@ -40,7 +40,6 @@ const TopicList: React.FC = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1500);
   const api = process.env.NEXT_PUBLIC_API_URL;
@@ -48,11 +47,7 @@ const TopicList: React.FC = () => {
   const fetchTopic = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4321/topic/get-admin?page=${
-          pagination.current
-        }&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`
+        `http://localhost:4321/topic/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
       const { data, total } = await response.json();
       setData(data); // Mengisi data dengan hasil dari API
@@ -70,21 +65,16 @@ const TopicList: React.FC = () => {
 
   useEffect(() => {
     fetchTopic(); // Panggil fungsi fetchTopic saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), debounceText]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
+    pagination: TablePaginationConfig
   ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
       current: pagination.current,
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
   };
 
   // Fungsi untuk melakukan delete data topic
@@ -121,6 +111,7 @@ const TopicList: React.FC = () => {
     });
   };
 
+  // Fungsi untuk potong title jika panjangnya melebihi batas
   function truncateText(text: string, maxLength = 20) {
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   }
@@ -130,8 +121,6 @@ const TopicList: React.FC = () => {
     {
       title: "Title",
       dataIndex: "title",
-      sorter: true,
-      sortDirections: ["descend"],
       render: (text: string) => truncateText(text),
     },
     {

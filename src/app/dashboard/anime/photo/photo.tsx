@@ -64,7 +64,6 @@ const AnimePhotos: React.FC = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
 
@@ -150,9 +149,7 @@ const AnimePhotos: React.FC = () => {
   const fetchPhoto = async () => {
     try {
       const response = await fetch(
-        `${api}/photo-anime/get-all?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
+        `${api}/photo-anime/get-all?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`,
         {
           method: "GET",
         }
@@ -173,22 +170,7 @@ const AnimePhotos: React.FC = () => {
 
   useEffect(() => {
     fetchPhoto(); // Panggil fungsi fetchUsers saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
-
-  const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
-  ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
-    setPagination({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      total: pagination.total,
-    });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
-  };
+  }, [JSON.stringify(pagination), debounceText]);
 
   // Fungsi untuk melakukan delete data photo
   const handleDeleteAnime = async (id: string) => {
@@ -260,8 +242,6 @@ const AnimePhotos: React.FC = () => {
     {
       title: "Title",
       dataIndex: "anime",
-      sorter: true,
-      sortDirections: ["descend"],
     },
     {
       title: "Created At",
@@ -310,6 +290,16 @@ const AnimePhotos: React.FC = () => {
     },
   ];
 
+  const handleTableChange: TableProps<DataType>["onChange"] = (
+    pagination: TablePaginationConfig
+  ) => {
+    setPagination({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      total: pagination.total,
+    });
+  };
+
   return (
     <>
       <PageTitle title="Anime - PhotoList" />
@@ -349,10 +339,10 @@ const AnimePhotos: React.FC = () => {
         </div>
       </div>
       <CustomTable
+        onChange={handleTableChange}
         columns={columns}
         pagination={pagination} // Jumlah data yang ditampilkan
         data={data} // Data dari state
-        onChange={handleTableChange}
       />
       <Modal
         title={"Modal " + modalMode === "edit" ? "Edit Photo" : "Detail Photo"}

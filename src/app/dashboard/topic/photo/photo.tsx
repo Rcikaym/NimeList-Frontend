@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Form,
-  Image,
-  Input,
-  message,
-  Modal,
-  Space,
-  Upload,
-} from "antd";
+import { Button, Form, Input, message, Modal, Space, Upload } from "antd";
 import type {
   TableColumnsType,
   TablePaginationConfig,
@@ -35,6 +26,7 @@ import renderDateTime from "@/components/formatDateTime";
 import PageTitle from "@/components/titlePage";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
+import Image from "next/image";
 
 interface DataType {
   id: string;
@@ -67,7 +59,6 @@ const TopicPhotoList: React.FC = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1500);
 
@@ -151,7 +142,7 @@ const TopicPhotoList: React.FC = () => {
   const fetchPhoto = async () => {
     try {
       const response = await fetch(
-        `${api}/photo-topic/get-all?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&order=${sortOrder}`
+        `${api}/photo-topic/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
       const { data, total } = await response.json();
       setData(data); // Mengisi data dengan hasil dari API
@@ -168,23 +159,18 @@ const TopicPhotoList: React.FC = () => {
   };
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
+    pagination: TablePaginationConfig
   ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
       current: pagination.current,
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
   };
 
   useEffect(() => {
     fetchPhoto(); // Panggil fungsi fetchPhoto saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), debounceText]);
 
   // Fungsi untuk melakukan delete data photo
   const handleDeletePhoto = async (id: string) => {
@@ -246,13 +232,17 @@ const TopicPhotoList: React.FC = () => {
     },
   };
 
+  // Fungsi untuk potong title jika panjangnya melebihi batas
+  function truncateText(text: string, maxLength = 20) {
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  }
+
   // Kolom table
   const columns: TableColumnsType<DataType> = [
     {
       title: "Title Topic",
       dataIndex: "topic",
-      sorter: true,
-      sortDirections: ["descend"],
+      render: (text: string) => truncateText(text),
     },
     {
       title: "Created At",
@@ -399,8 +389,8 @@ const TopicPhotoList: React.FC = () => {
                 detailPhoto?.file_path.replace(/\\/g, "/")
               }
               alt="photo"
-              width="full"
-              height={200}
+              width={550}
+              height={350}
               className="rounded-sm"
             />
             <h1 className="mt-2">File path: {detailPhoto?.file_path}</h1>
