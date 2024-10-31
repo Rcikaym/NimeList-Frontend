@@ -16,8 +16,8 @@ import renderDateTime from "@/components/formatDateTime";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import { DataType, TransactionDetails } from "./types";
-import ModalDetailTransaction from "@/components/modalDetailTransaction";
-import FilterModal from "@/components/modalFilterTransaction";
+import ModalDetailTransaction from "@/app/dashboard/transaction/modalDetailTransaction";
+import FilterModal from "@/app/dashboard/transaction/modalFilterTransaction";
 
 const TransactionList = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api

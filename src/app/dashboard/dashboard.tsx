@@ -2,10 +2,10 @@
 import { AiOutlineBarChart } from "react-icons/ai";
 import { AppstoreFilled } from "@ant-design/icons";
 import Link from "next/link";
-import BarChart from "@/components/barChartDashboard";
-import CardDashboard from "@/components/cardDashboard";
+import BarChart from "@/app/dashboard/barChartDashboard";
+import CardDashboard from "@/app/dashboard/cardDashboard";
 import PageTitle from "@/components/titlePage";
-import TableTop10Anime from "@/components/top10AnimeTable";
+import TableTop10Anime from "@/app/dashboard/top10AnimeTable";
 
 const Dashboard = () => {
   return (
