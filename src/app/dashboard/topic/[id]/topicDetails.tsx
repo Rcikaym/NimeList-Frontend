@@ -20,7 +20,7 @@ import {
 import renderDateTime from "@/components/formatDateTime";
 import { TopicType } from "./types";
 import Image from "next/image";
-import TopicBody from "@/components/topicBody";
+import TopicBody from "@/app/dashboard/topic/topicBody";
 
 // Memoized components
 const MemoizedImage = memo(Image);

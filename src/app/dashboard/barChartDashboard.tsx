@@ -47,10 +47,6 @@ const IncomeData: React.FC = () => {
       const response = await fetch(
         `http://localhost:4321/dashboard/income-data?year=${year}`
       );
-      if (response.status !== 200) {
-        setLoading(true);
-        throw new Error("Network response was not ok");
-      }
       const data: IncomeItem[] = await response.json();
       setIncomeData(data);
       setLoading(false);

@@ -79,7 +79,6 @@ const TopicCommentList: React.FC = () => {
 
   const handleCancel = () => {
     setModalVisible(false);
-    form.resetFields();
   };
 
   const handleOk = () => {
@@ -329,35 +328,35 @@ const TopicCommentList: React.FC = () => {
       title: "Action",
       dataIndex: "action",
       render: (text: string, record: DataType) => (
-        <Space size="middle">
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+        <div className="flex gap-3">
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800"
             onClick={() => {
               showModal("detail");
               setDataDetail(record.id);
             }}
           >
             <AiOutlineEye style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+          </button>
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800"
             onClick={() => {
               showModal("edit");
               setDataEdit(record.id);
             }}
           >
             <AiOutlineEdit style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+          </button>
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800"
             onClick={() => showDeleteConfirm(record.id)}
           >
             <AiOutlineDelete style={{ fontSize: 20 }} />
-          </Button>
-        </Space>
+          </button>
+        </div>
       ),
     },
   ];
@@ -395,13 +394,14 @@ const TopicCommentList: React.FC = () => {
         </div>
       </div>
       <div className="mb-3">
-        <Button
-          type="text"
-          className="bg-emerald-700 text-white"
+        <button
+          type="button"
+          className="bg-emerald-700 text-white rounded-md flex items-center gap-2 p-2 hover:bg-emerald-800"
           onClick={() => showModal("post")}
         >
-          <AiOutlinePlus /> Add Comment
-        </Button>
+          <AiOutlinePlus />
+          <span>Add Comment</span>
+        </button>
       </div>
       <CustomTable
         columns={columns}

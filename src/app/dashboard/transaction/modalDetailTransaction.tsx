@@ -9,7 +9,7 @@ import {
   AiOutlineTool,
 } from "react-icons/ai";
 import styles from "@/styles/toggleProductDetails.module.css";
-import renderDateTime from "./formatDateTime";
+import renderDateTime from "../../../components/formatDateTime";
 
 interface ModalDetailTransactionProps {
   data: TransactionDetails;
