@@ -14,6 +14,7 @@ export default function MostPopular() {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0); // State to store the total number of items
   const searchParams = useSearchParams();
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const currentPage = searchParams?.get("page")
     ? parseInt(searchParams.get("page")!)
     : 1;
@@ -25,7 +26,7 @@ export default function MostPopular() {
       setLoading(true);
       try {
         const response = await fetch(
-          `http://localhost:4321/anime/get?_page=${currentPage}&_limit=${limit}`
+          `${api}/anime/get?_page=${currentPage}&_limit=${limit}`
         ); // Updated API URL
         const animeData: AnimeType[] = await response.json(); // Ensuring animeData is of type AnimeType[]
         const totalItems = parseInt(
