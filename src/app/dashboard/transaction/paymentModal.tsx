@@ -22,43 +22,6 @@ const PaymentModal = ({ show, handleClose }: any) => {
   const [loading, setLoading] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState<boolean>(false);
 
-  // Fungsi untuk memuat skrip Midtrans Snap secara dinamis
-  const loadMidtransScript = () => {
-    return new Promise<void>((resolve, reject) => {
-      if (typeof window === "undefined") {
-        reject(new Error("Window is undefined"));
-        return;
-      }
-
-      if (document.getElementById("midtrans-snap")) {
-        // Skrip sudah dimuat
-        setIsScriptLoaded(true);
-        resolve();
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.id = "midtrans-snap";
-      script.type = "text/javascript";
-      script.src = "https://app.sandbox.midtrans.com/snap/snap.js"; // Ganti dengan production jika perlu
-      script.setAttribute(
-        "data-client-key",
-        process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ""
-      );
-
-      script.onload = () => {
-        setIsScriptLoaded(true);
-        resolve();
-      };
-
-      script.onerror = () => {
-        reject(new Error("Midtrans Snap script failed to load"));
-      };
-
-      document.body.appendChild(script);
-    });
-  };
-
   // Fetch premium dan user saat komponen dimuat
   useEffect(() => {
     const fetchData = async () => {
@@ -83,7 +46,9 @@ const PaymentModal = ({ show, handleClose }: any) => {
   // Update total price ketika premium dipilih
   useEffect(() => {
     if (selectedMembership) {
-      const membership: any = memberships.find((m: any) => m.id);
+      const membership: any = memberships.find(
+        (m: any) => m.id === selectedMembership
+      );
       if (membership) {
         setTotalPrice(membership.price);
       } else {
@@ -95,7 +60,7 @@ const PaymentModal = ({ show, handleClose }: any) => {
   }, [selectedMembership, memberships]);
 
   const handleSubmit = async () => {
-    await loadMidtransScript();
+    // await loadMidtransScript();
     setError("");
     setLoading(true);
 
@@ -115,30 +80,16 @@ const PaymentModal = ({ show, handleClose }: any) => {
       const { token } = await response.json();
 
       // Redirect ke Midtrans
-      window.snap.pay(token, {
-        onSuccess: async function (result: any) {
-          const data = {
-            order_id: result.order_id,
-            total: Math.round(result.gross_amount),
-            id_user: selectedUser,
-            id_premium: selectedMembership,
-            payment_platform: result.payment_type,
-          };
-          if (result.payment_type === "bank_transfer") {
-            data.payment_platform = result.va_numbers[0].bank;
-          }
-          await fetch(`${api}/transactions/success`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });
-        },
-        onPending: async function (result: any) {
-          console.log("closed", result);
-        },
-      });
+      const script = document.createElement("script");
+      script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+      script.setAttribute(
+        "data-client-key",
+        process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ""
+      );
+      document.body.appendChild(script);
+      script.onload = () => {
+        window.snap.pay(token);
+      };
     } catch (err) {
       console.error("Error creating transaction:", err);
       setError("Gagal memproses pembayaran. Silakan coba lagi.");

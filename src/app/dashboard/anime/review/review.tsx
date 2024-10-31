@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Rate,
-  Select,
-  Space,
-  Typography,
-  message,
-} from "antd";
+import { Form, Input, Modal, Rate, Select, message } from "antd";
 import type { TableColumnsType, TablePaginationConfig, TableProps } from "antd";
 import {
   AiFillStar,
@@ -23,21 +13,17 @@ import {
   AiOutlineSmile,
   AiOutlineTool,
 } from "react-icons/ai";
-import axios from "axios";
 import {
   AppstoreFilled,
   ExclamationCircleFilled,
   UserOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { Option } from "antd/es/mentions";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
-import DisplayLongText from "@/components/DisplayLongText";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import renderDateTime from "@/components/formatDateTime";
+import DisplayLongText from "@/components/displayLongText";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
-
-const { Text } = Typography;
 
 interface DataType {
   id: string;
@@ -94,9 +80,9 @@ const ReviewList: React.FC = () => {
     }
     form
       .validateFields()
-      .then(async (values: DataType) => {
+      .then((values: DataType) => {
         if (modalMode === "post") {
-          await showPostConfirm(values);
+          showPostConfirm(values);
         } else if (modalMode === "edit") {
           showEditConfirm(values);
         }
@@ -389,35 +375,35 @@ const ReviewList: React.FC = () => {
         title: "Action",
         dataIndex: "action",
         render: (text: string, record: DataType) => (
-          <Space size="middle">
-            <Button
-              type="text"
-              className="bg-emerald-700 text-white"
+          <div className="flex gap-3">
+            <button
+              type="button"
               onClick={() => {
                 showModal("detail");
                 setDataDetail(record.id);
               }}
             >
-              <AiOutlineEye style={{ fontSize: 20 }} />
-            </Button>
-            <Button
-              type="text"
-              className="bg-emerald-700 text-white"
+              <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+                <AiOutlineEye style={{ fontSize: 20 }} />
+              </div>
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 showModal("edit");
                 setDataEdit(record.id);
               }}
             >
-              <AiOutlineEdit style={{ fontSize: 20 }} />
-            </Button>
-            <Button
-              type="text"
-              className="bg-emerald-700 text-white"
-              onClick={() => showDeleteConfirm(record.id)}
-            >
-              <AiOutlineDelete style={{ fontSize: 20 }} />
-            </Button>
-          </Space>
+              <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+                <AiOutlineEdit style={{ fontSize: 20 }} />
+              </div>
+            </button>
+            <button type="button" onClick={() => showDeleteConfirm(record.id)}>
+              <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+                <AiOutlineDelete style={{ fontSize: 20 }} />
+              </div>
+            </button>
+          </div>
         ),
       },
     ],
@@ -457,13 +443,12 @@ const ReviewList: React.FC = () => {
         </div>
       </div>
       <div className="mb-3">
-        <Button
-          type="text"
-          className="bg-emerald-700 text-white"
-          onClick={() => showModal("post")}
-        >
-          <AiOutlinePlus /> Add Review
-        </Button>
+        <button type="button" onClick={() => showModal("post")}>
+          <div className="flex items-center gap-2 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">
+            <AiOutlinePlus />
+            <span>Add Review</span>
+          </div>
+        </button>
       </div>
       <CustomTable
         loading={loading}
@@ -494,12 +479,12 @@ const ReviewList: React.FC = () => {
         }}
       >
         {modalMode === "detail" && detailReview ? (
-          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-            <Space direction="vertical">
-              <Space>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-1 items-center">
                 <UserOutlined />
-                <Text strong>{detailReview.username}</Text>
-              </Space>
+                <span>{detailReview.username}</span>
+              </div>
               <Rate
                 count={10}
                 disabled
@@ -507,25 +492,25 @@ const ReviewList: React.FC = () => {
                 defaultValue={0}
                 value={parseFloat(detailReview.rating)}
               />
-            </Space>
+            </div>
 
             <DisplayLongText text={detailReview.review} />
 
-            <Space size="small" direction="horizontal">
+            <div className="flex gap-2">
               <div className="flex gap-2 items-center">
                 <AiOutlineClockCircle size={15} />
-                <Text type="secondary">
+                <span className="text-gray-400">
                   {renderDateTime(detailReview.created_at)}
-                </Text>
+                </span>
               </div>
               <div className="flex gap-2 items-center">
                 <AiOutlineTool size={15} />
-                <Text type="secondary">
+                <span className="text-gray-400">
                   {renderDateTime(detailReview.updated_at)}
-                </Text>
+                </span>
               </div>
-            </Space>
-          </Space>
+            </div>
+          </div>
         ) : (
           ""
         )}
@@ -549,9 +534,9 @@ const ReviewList: React.FC = () => {
                 }
               >
                 {dataUser.map((user) => (
-                  <Option key={user.id} value={user.id}>
+                  <option key={user.id} value={user.id}>
                     {user.username}
-                  </Option>
+                  </option>
                 ))}
               </Select>
             </Form.Item>
@@ -574,9 +559,9 @@ const ReviewList: React.FC = () => {
                 {dataAnime
                   .filter((anime) => !reviewedAnime.includes(anime.id)) // Filter anime yang belum direview
                   .map((anime) => (
-                    <Option key={anime.id} value={anime.id}>
+                    <option key={anime.id} value={anime.id}>
                       {anime.title}
-                    </Option>
+                    </option>
                   ))}
               </Select>
             </Form.Item>

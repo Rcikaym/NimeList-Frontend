@@ -1,6 +1,8 @@
+"use client";
+
 // File: components/SalesData.tsx
 import React, { useState, useEffect } from "react";
-import { DatePicker, message, Spin } from "antd";
+import { DatePicker, message } from "antd";
 import dayjs from "dayjs";
 import "antd/dist/reset.css";
 import { Bar } from "react-chartjs-2";
@@ -15,7 +17,7 @@ import {
   ChartOptions,
   ChartData,
 } from "chart.js";
-import axios from "axios";
+import { LoadingOutlined } from "@ant-design/icons";
 
 // Register Chart.js components
 ChartJS.register(
@@ -45,10 +47,6 @@ const IncomeData: React.FC = () => {
       const response = await fetch(
         `http://localhost:4321/dashboard/income-data?year=${year}`
       );
-      if (response.status !== 200) {
-        setLoading(true);
-        throw new Error("Network response was not ok");
-      }
       const data: IncomeItem[] = await response.json();
       setIncomeData(data);
       setLoading(false);
@@ -104,13 +102,14 @@ const IncomeData: React.FC = () => {
       <h2>Select the Year for the Income Report</h2>
       <DatePicker
         picker="year"
+        value={dayjs(selectedYear, "YYYY")}
         onChange={handleYearChange}
         style={{ marginBottom: "20px" }}
       />
 
       {loading ? (
         <div className="h-[460px] w-full flex justify-center items-center">
-          <Spin tip="Loading..." />
+          <LoadingOutlined />
         </div>
       ) : incomeData.length > 0 ? (
         <div className="h-[460px] w-full">

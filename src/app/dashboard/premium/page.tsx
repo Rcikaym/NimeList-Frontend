@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button, Row, Col, Typography } from "antd";
-import PaymentModal from "@/components/paymentModal";
+import PaymentModal from "@/app/dashboard/transaction/paymentModal";
 
 const { Title } = Typography;
 

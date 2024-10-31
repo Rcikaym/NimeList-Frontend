@@ -5,7 +5,7 @@ interface DynamicContentProps {
   content: string; // Prop untuk menerima konten HTML
 }
 
-const DynamicContent: React.FC<DynamicContentProps> = ({ content }) => {
+const TopicBody: React.FC<DynamicContentProps> = ({ content }) => {
   // Fungsi untuk memperbarui src gambar
   const htmlParser = (htmlString: string): string => {
     const parser = new DOMParser();
@@ -55,4 +55,4 @@ const DynamicContent: React.FC<DynamicContentProps> = ({ content }) => {
   );
 };
 
-export default DynamicContent;
+export default TopicBody;

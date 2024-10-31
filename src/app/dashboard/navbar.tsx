@@ -1,7 +1,7 @@
 import React from "react";
-import { Button, Dropdown, Layout, Menu } from "antd";
-import { MenuProps } from "@nextui-org/react";
+import { Dropdown, Layout } from "antd";
 import { AiOutlineLogout, AiOutlineProfile } from "react-icons/ai";
+import Image from "next/image";
 
 const { Header } = Layout;
 
@@ -35,10 +35,12 @@ const Navbar: React.FC = () => (
     <span className="mr-3 text-white">Barr77</span>
     <Dropdown menu={{ items }} placement="bottomRight">
       <div className="flex items-center mr-3">
-        <img
+        <Image
           src="/images/logo-admin.jpeg"
           alt="User Profile"
           className="w-8 h-8 rounded-full cursor-pointer"
+          width={32}
+          height={32}
         />
       </div>
     </Dropdown>

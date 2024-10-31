@@ -7,8 +7,10 @@ import {
   AiOutlineUser,
   AiOutlineVideoCamera,
   AiOutlineAlignCenter,
+  AiOutlineShoppingCart,
 } from "react-icons/ai";
 import styles from "@/styles/sidebar.module.css";
+import Image from "next/image";
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;
@@ -30,6 +32,7 @@ const SidebarMenu = () => {
       if (pathname === "/dashboard/topic/photo") return ["8"];
       if (pathname === "/dashboard/topic/comment") return ["9"];
     }
+    if (pathname === "/dashboard/transaction") return ["10"];
     return [];
   };
 
@@ -53,7 +56,7 @@ const SidebarMenu = () => {
       <div className="flex items-center justify-between p-5">
         <Link href="/dashboard" className="flex items-center space-x-2">
           <div className="flex items-center rounded-md bg-[#005B50] p-2">
-            <img
+            <Image
               src="/images/logo.png"
               alt="logo"
               width={40}
@@ -121,6 +124,13 @@ const SidebarMenu = () => {
             <Link href="/dashboard/topic/comment">Comment Topic</Link>
           </Menu.Item>
         </SubMenu>
+        <Menu.Item
+          key="10"
+          icon={<AiOutlineShoppingCart size={22} />}
+          className={styles.menuItem}
+        >
+          <Link href="/dashboard/transaction">Transaction</Link>
+        </Menu.Item>
       </Menu>
     </Sider>
   );

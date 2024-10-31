@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback, memo } from "react";
 import { LeftCircleOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Button, Image } from "antd";
+import { Button } from "antd";
 import axios from "axios";
 import {
   AiOutlineClockCircle,
@@ -17,9 +17,10 @@ import {
 } from "react-icons/ai";
 
 // Types moved to a separate file to reduce bundle size
-import renderDateTime from "@/components/FormatDateTime";
+import renderDateTime from "@/components/formatDateTime";
 import { TopicType } from "./types";
-import DynamicContent from "@/components/dynamicContent";
+import Image from "next/image";
+import TopicBody from "@/app/dashboard/topic/topicBody";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -161,7 +162,7 @@ export default function TopicDetails({ id }: { id: string }) {
         <div className="p-6">
           <h2 className="text-2xl font-semibold mb-4 text-gray-800">Body</h2>
           <div className="text-gray-600">
-            <DynamicContent content={body} />
+            <TopicBody content={body} />
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import PageTitle from "@/components/TitlePage";
-import AddAnime from "./clientAdd";
+import PageTitle from "@/components/titlePage";
+import AddAnime from "./add";
 
 export default async function Page() {
   return (

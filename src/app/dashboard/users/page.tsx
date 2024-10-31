@@ -1,5 +1,5 @@
-import PageTitle from "@/components/TitlePage";
-import UserList from "./clientUser";
+import PageTitle from "@/components/titlePage";
+import UserList from "./user";
 
 export default async function Page() {
   return (

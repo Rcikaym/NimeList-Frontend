@@ -1,18 +1,21 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Space } from "antd";
+import { Input, message, Select } from "antd";
 import { TablePaginationConfig } from "antd/es/table";
 import type { TableColumnsType, TableProps } from "antd";
-import { AiOutlineUser } from "react-icons/ai";
-import axios from "axios";
+import {
+  AiOutlineReload,
+  AiOutlineSearch,
+  AiOutlineUser,
+} from "react-icons/ai";
 import { AppstoreFilled, EyeOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import PageTitle from "@/components/TitlePage";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import renderDateTime from "@/components/formatDateTime";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
+import { Option } from "antd/es/mentions";
 
 interface DataType {
   username: string;
@@ -31,21 +34,32 @@ const UserList = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
+  const [filterStatus, setStatus] = useState<string>("all");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
   const api = process.env.NEXT_PUBLIC_API_URL;
 
-  const fetchUsers = async () => {
+  const handleRefreshUsers = async () => {
     try {
-      const response = await fetch(
-        `${api}/user/get-all?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
-        {
-          method: "GET",
-        }
-      );
+      const res = await fetch(`${api}/user/refresh-users`, {
+        method: "PUT",
+      });
+
+      message.success("Users refreshed successfully!");
+      fetchUsers();
+    } catch (error) {
+      message.error("Failed to refresh users");
+    }
+  };
+
+  const fetchUsers = async () => {
+    const baseUrl = `${api}/user/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`;
+    const withFilterStatus =
+      filterStatus !== "all" ? `${baseUrl}&status=${filterStatus}` : baseUrl;
+    try {
+      const response = await fetch(withFilterStatus, {
+        method: "GET",
+      });
       const { data, total } = await response.json();
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
@@ -63,22 +77,22 @@ const UserList = () => {
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
     fetchUsers(); // Panggil fungsi fetchUsers saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), filterStatus, debounceText]);
 
-  const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
-  ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
-    setPagination({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-      total: pagination.total,
-    });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
-  };
+  // const handleTableChange: TableProps<DataType>["onChange"] = (
+  //   pagination: TablePaginationConfig,
+  //   filters,
+  //   sorter
+  // ) => {
+  //   const sortParsed = sorter as SorterResult<DataType>;
+  //   setPagination({
+  //     current: pagination.current,
+  //     pageSize: pagination.pageSize,
+  //     total: pagination.total,
+  //   });
+  //   setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
+  //   console.log(sortOrder);
+  // };
 
   // Kolom table
   const columns: TableColumnsType<DataType> = useMemo(
@@ -86,9 +100,6 @@ const UserList = () => {
       {
         title: "Username",
         dataIndex: "username",
-        sorter: true,
-        sortDirections: ["descend"],
-        ...getColumnSearchProps("username", setSearchText),
       },
       {
         title: "Email",
@@ -137,11 +148,14 @@ const UserList = () => {
         title: "Action",
         dataIndex: "action",
         render: (text: string, record: DataType) => (
-          <Space size="middle">
-            <Button type="text" className="bg-emerald-700 text-white">
-              <EyeOutlined style={{ fontSize: 20 }} />
-            </Button>
-          </Space>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="bg-emerald-700 text-white items-center w-fit rounded-md px-4 py-2 flex hover:bg-emerald-800"
+            >
+              <EyeOutlined style={{ fontSize: 18 }} />
+            </button>
+          </div>
         ),
       },
     ],
@@ -150,7 +164,6 @@ const UserList = () => {
 
   return (
     <>
-      <PageTitle title="NimeList - UserList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
@@ -179,11 +192,43 @@ const UserList = () => {
           </Link>
         </div>
       </div>
+      <div className="flex justify-between mb-3">
+        <div>
+          <button
+            type="button"
+            onClick={handleRefreshUsers}
+            className="bg-emerald-700 text-white rounded-md hover:bg-emerald-800"
+          >
+            <div className="flex p-2 gap-2 items-center">
+              <AiOutlineReload size={20} />
+              <span>Refresh Users</span>
+            </div>
+          </button>
+        </div>
+        <div className="flex items-center gap-3">
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Search User"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+          <div>
+            <Select
+              defaultValue={filterStatus}
+              style={{ width: 120 }}
+              onChange={(value) => setStatus(value)}
+            >
+              <Option value="all">All</Option>
+              <Option value="active">Active</Option>
+              <Option value="inactive">Inactive</Option>
+            </Select>
+          </div>
+        </div>
+      </div>
       <CustomTable
         loading={loading}
         columns={columns}
         pagination={pagination} // Jumlah data yang ditampilkan
-        onChange={handleTableChange}
+        // onChange={handleTableChange}
         data={data} // Data dari state
       />
     </>

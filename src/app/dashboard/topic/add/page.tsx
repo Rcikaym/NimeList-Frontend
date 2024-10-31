@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
-import PageTitle from "@/components/TitlePage";
+import PageTitle from "@/components/titlePage";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { formats, modules } from "@/components/moduleAndFormatTextArea";
@@ -130,7 +130,7 @@ const CreateTopic: React.FC = () => {
       if (!response.ok) {
         throw new Error("Failed to add topic");
       }
-      
+
       // Tampilkan pesan sukses jika request berhasil
       message.success("Topic added successfully!");
       setLoading(false);
