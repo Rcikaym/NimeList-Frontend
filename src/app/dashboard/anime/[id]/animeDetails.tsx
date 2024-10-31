@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState, useCallback, memo } from "react";
 import { LeftCircleOutlined } from "@ant-design/icons";
-import { Button, Image } from "antd";
-import axios from "axios";
 import {
   AiOutlineCalendar,
   AiOutlineClockCircle,
@@ -13,15 +11,13 @@ import {
   AiOutlineTags,
   AiOutlineTool,
 } from "react-icons/ai";
-
-// Types moved to a separate file to reduce bundle size
 import { AnimeType, PhotosType } from "./types";
-import renderDateTime from "@/components/FormatDateTime";
-import DisplayLongText from "@/components/DisplayLongText";
+import renderDateTime from "@/components/formatDateTime";
+import DisplayLongText from "@/components/displayLongText";
+import Image from "next/image";
 
 // Memoized components
 const MemoizedImage = memo(Image);
-const MemoizedButton = memo(Button);
 const api = process.env.NEXT_PUBLIC_API_URL;
 
 const AnimeMetadata = memo(
@@ -133,7 +129,7 @@ const PhotoGallery = memo(
           <MemoizedImage
             src={`${api}/${photo.file_path.replace(/\\/g, "/")}`}
             alt={`${title} - Photo ${index + 1}`}
-            className="rounded-lg shadow-md hover:shadow-xl transition-shadow"
+            className="rounded-sm shadow-xl hover:shadow-lg hover:shadow-gray-400 transition-shadow"
             height={160}
             width={260}
             loading="lazy"
@@ -188,16 +184,17 @@ export default function AnimeDetails({ id }: { id: string }) {
             {photo_cover && (
               <MemoizedImage
                 alt={title}
-                className="w-full h-auto object-cover rounded-md shadow-md hover:shadow-xl transition-shadow"
+                className="rounded-md shadow-md hover:shadow-lg hover:shadow-gray-400 transition-shadow"
                 src={`${api}/${photo_cover.replace(/\\/g, "/")}`}
-                loading="lazy"
                 height={330}
-                width="full"
+                width={200}
               />
             )}
             <div className="grid justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+              <div className="flex gap-1">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+                </div>
               </div>
               <AnimeMetadata
                 anime={anime.anime}
@@ -241,10 +238,13 @@ export default function AnimeDetails({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="p-2 flex justify-end text-lg font-semibold mt-3 rounded-lg bg-[#005B50]">
-        <MemoizedButton icon={<LeftCircleOutlined />} href="/dashboard/anime">
-          Back
-        </MemoizedButton>
+      <div className="p-2 flex justify-end mt-3 rounded-lg bg-[#005B50]">
+        <a href="/dashboard/anime">
+          <div className="flex gap-2 bg-white text-[#005B50] px-3 py-2 rounded-md items-center hover:text-blue-500">
+            <LeftCircleOutlined style={{ fontSize: 18 }} />
+            <span>Back</span>
+          </div>
+        </a>
       </div>
     </>
   );

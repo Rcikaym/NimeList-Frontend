@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Form,
-  Image,
-  Input,
-  message,
-  Modal,
-  Space,
-  Table,
-  Upload,
-} from "antd";
+import { Button, Form, Input, message, Modal, Space, Upload } from "antd";
 import type {
   TableColumnsType,
   TablePaginationConfig,
@@ -23,28 +13,24 @@ import {
   AiOutlineEdit,
   AiOutlineEye,
   AiOutlineFileImage,
+  AiOutlineSearch,
 } from "react-icons/ai";
-import axios from "axios";
 import {
   AppstoreFilled,
   ExclamationCircleFilled,
   UploadOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
-import PageTitle from "@/components/TitlePage";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import renderDateTime from "@/components/formatDateTime";
+import PageTitle from "@/components/titlePage";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
-
-interface PhotosType {
-  photos: string[];
-}
+import Image from "next/image";
 
 interface DataType {
   id: string;
-  anime: string;
-  photos: PhotosType[];
+  topic: string;
   file_path: string;
   created_at: string;
   updated_at: string;
@@ -58,12 +44,12 @@ const normFile = (e: any) => {
   return e?.fileList ? e.fileList : [];
 };
 
-const AnimePhotos: React.FC = () => {
+const TopicPhotoList: React.FC = () => {
   const api = process.env.NEXT_PUBLIC_API_URL;
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [idPhoto, setId] = useState<string>(""); // Menyimpan anime yang sedang diedit
-  const [detailPhoto, setDetailPhoto] = useState<any>();
+  const [idPhoto, setIdPhoto] = useState<string>(""); // Menyimpan id photo yang sedang diedit
+  const [detailPhoto, setDetailPhoto] = useState<any>(null);
   const [modalMode, setMode] = useState<"edit" | "detail">();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { confirm } = Modal;
@@ -73,9 +59,8 @@ const AnimePhotos: React.FC = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
-  const debounceText = useDebounce(searchText, 1000);
+  const debounceText = useDebounce(searchText, 1500);
 
   const showModal = (modalMode: "edit" | "detail") => {
     setMode(modalMode);
@@ -94,7 +79,7 @@ const AnimePhotos: React.FC = () => {
     }
     form
       .validateFields()
-      .then((values: PhotosType) => {
+      .then((values: any) => {
         if (modalMode === "edit") {
           showEditConfirm(values);
         }
@@ -107,44 +92,40 @@ const AnimePhotos: React.FC = () => {
 
   // Modal detail photo
   const setDataDetail = async (id: string) => {
-    const data = await fetch(`${api}/photo-anime/get/${id}`, { method: "GET" });
+    const data = await fetch(`${api}/photo-topic/get/${id}`);
     setDetailPhoto(await data.json());
-    console.log(detailPhoto);
   };
 
-  const handleUpdatePhoto = async (values: PhotosType) => {
+  const handleEditPhoto = async (values: any) => {
     const formData = new FormData();
-    const file: any = values.photos[0];
 
+    const file = values.photos[0];
     formData.append("photos", file.originFileObj);
 
     try {
-      await fetch(`${api}/photo-anime/update/${idPhoto}`, {
+      await fetch(`${api}/photo-topic/update/${idPhoto}`, {
         method: "PUT",
         body: formData,
       }); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
-      const response = await fetch(`${api}/photo-anime/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Perbarui data foto anime
+      fetchPhoto();
     } catch (error) {
       message.error("Failed to update photo");
     }
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showEditConfirm = (values: PhotosType) => {
+  const showEditConfirm = (values: any) => {
     confirm({
       centered: true,
-      title: "Do you want to update this Photo?",
+      title: "Do you want to update this photo?",
       icon: <ExclamationCircleFilled />,
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handleUpdatePhoto(values)
+        return handleEditPhoto(values)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -153,21 +134,15 @@ const AnimePhotos: React.FC = () => {
           });
       },
       onCancel() {
-        showModal("edit"); // Jika dibatalkan, buka kembali modal
+        setMode("edit"); // Jika dibatalkan, buka kembali modal
       },
     });
   };
 
-  // Fetch data dari API
   const fetchPhoto = async () => {
     try {
       const response = await fetch(
-        `${api}/photo-anime/get-all?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
-        {
-          method: "GET",
-        }
+        `${api}/photo-topic/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
       const { data, total } = await response.json();
       setData(data); // Mengisi data dengan hasil dari API
@@ -183,38 +158,32 @@ const AnimePhotos: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchPhoto(); // Panggil fungsi fetchUsers saat komponen dimuat
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
-
   const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
+    pagination: TablePaginationConfig
   ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
       current: pagination.current,
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
   };
 
-  // Fungsi untuk melakukan delete data genre
-  const handleDeleteAnime = async (id: string) => {
+  useEffect(() => {
+    fetchPhoto(); // Panggil fungsi fetchPhoto saat komponen dimuat
+  }, [JSON.stringify(pagination), debounceText]);
+
+  // Fungsi untuk melakukan delete data photo
+  const handleDeletePhoto = async (id: string) => {
     try {
-      await fetch(`${api}/photo-anime/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
-      message.success("Anime deleted successfully!");
+      await fetch(`${api}/photo-topic/delete/${id}`, {
+        method: "DELETE",
+      }); // Melakukan DELETE ke server
+      message.success("Photo deleted successfully!");
 
       // Fetch ulang data setelah post
-      const response = await fetch(`${api}/photo-anime/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data genre
+      fetchPhoto();
     } catch (error) {
-      message.error("Failed to delete anime");
+      message.error("Failed to delete photo");
     }
   };
 
@@ -227,7 +196,7 @@ const AnimePhotos: React.FC = () => {
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
-        return handleDeleteAnime(id)
+        return handleDeletePhoto(id)
           .then(() => {
             setLoading(false); // Set loading ke false setelah selesai
           })
@@ -238,20 +207,13 @@ const AnimePhotos: React.FC = () => {
     });
   };
 
-  const handleUpload = async (info: any, fieldName: string) => {
-    const { file, fileList } = info;
+  const handleUpload = async (info: any) => {
+    const { file } = info;
 
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
-      // Update form values
-      form.setFieldsValue({ [fieldName]: fileList });
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
-    }
-
-    // If you need to perform any action when the overall status changes
-    if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
     }
   };
 
@@ -270,14 +232,17 @@ const AnimePhotos: React.FC = () => {
     },
   };
 
+  // Fungsi untuk potong title jika panjangnya melebihi batas
+  function truncateText(text: string, maxLength = 20) {
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  }
+
   // Kolom table
   const columns: TableColumnsType<DataType> = [
     {
-      title: "Title",
-      dataIndex: "anime",
-      sorter: true,
-      sortDirections: ["descend"],
-      ...getColumnSearchProps("anime", setSearchText),
+      title: "Title Topic",
+      dataIndex: "topic",
+      render: (text: string) => truncateText(text),
     },
     {
       title: "Created At",
@@ -293,42 +258,41 @@ const AnimePhotos: React.FC = () => {
       title: "Action",
       dataIndex: "action",
       render: (text: string, record: DataType) => (
-        <Space size="middle">
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+        <div className="flex gap-3">
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800"
             onClick={() => {
-              showModal("detail");
+              showModal("detail"); // Panggil fungsi untuk membuka modal
               setDataDetail(record.id);
             }}
           >
             <AiOutlineEye style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+          </button>
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800"
             onClick={() => {
-              showModal("edit");
-              setId(record.id);
+              showModal("edit"); // Panggil fungsi untuk membuka modal
+              setIdPhoto(record.id);
             }}
           >
             <AiOutlineEdit style={{ fontSize: 20 }} />
-          </Button>
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+          </button>
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800"
             onClick={() => showDeleteConfirm(record.id)}
           >
             <AiOutlineDelete style={{ fontSize: 20 }} />
-          </Button>
-        </Space>
+          </button>
+        </div>
       ),
     },
   ];
 
   return (
     <>
-      <PageTitle title="Anime - PhotoList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
@@ -336,10 +300,10 @@ const AnimePhotos: React.FC = () => {
           </div>
           <div>
             <h2 className="text-black text-lg font-regular">
-              Anime Photos Information
+              Topic Photos Information
             </h2>
             <span className="text-black text-sm">
-              Displays anime photo information
+              Displays topic photo information
             </span>
           </div>
         </div>
@@ -350,21 +314,32 @@ const AnimePhotos: React.FC = () => {
             </div>
           </Link>
           <span className="text-black"> / </span>
-          <h2 className="text-black text-lg mt-2"> Manage Anime </h2>
+          <h2 className="text-black text-lg mt-2"> Manage Topic </h2>
           <span className="text-black"> / </span>
           <Link href="/dashboard/anime/photo">
             <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
-              Anime Photo
+              Topic Photo
             </h2>
           </Link>
         </div>
       </div>
+      <div className="flex justify-end mb-3">
+        <div>
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Only title anime"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </div>
+      </div>
       <CustomTable
         columns={columns}
+        onChange={handleTableChange}
         pagination={pagination} // Jumlah data yang ditampilkan
         data={data} // Data dari state
-        onChange={handleTableChange}
       />
+
+      {/* Dynamic modal */}
       <Modal
         title={
           "Modal " + modalMode === "post"
@@ -396,7 +371,7 @@ const AnimePhotos: React.FC = () => {
                 {...uploadProps}
                 listType="picture"
                 maxCount={1}
-                onChange={(info) => handleUpload(info, "photos")}
+                onChange={(info) => handleUpload(info)}
               >
                 <Button icon={<UploadOutlined />}>Upload</Button>
               </Upload>
@@ -414,8 +389,9 @@ const AnimePhotos: React.FC = () => {
                 detailPhoto?.file_path.replace(/\\/g, "/")
               }
               alt="photo"
-              width={250}
-              height={150}
+              width={550}
+              height={350}
+              className="rounded-sm"
             />
             <h1 className="mt-2">File path: {detailPhoto?.file_path}</h1>
           </div>
@@ -427,4 +403,4 @@ const AnimePhotos: React.FC = () => {
   );
 };
 
-export default AnimePhotos;
+export default TopicPhotoList;

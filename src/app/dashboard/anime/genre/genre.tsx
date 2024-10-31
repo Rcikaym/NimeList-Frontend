@@ -3,12 +3,18 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Modal, Space, Table, message } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
-import { AiOutlineDelete, AiOutlinePlus, AiOutlineTags } from "react-icons/ai";
+import {
+  AiOutlineDelete,
+  AiOutlineEdit,
+  AiOutlinePlus,
+  AiOutlineSearch,
+  AiOutlineTags,
+} from "react-icons/ai";
 import axios from "axios";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
-import renderDateTime from "@/components/FormatDateTime";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import renderDateTime from "@/components/formatDateTime";
+import { CustomTable, getColumnSearchProps } from "@/components/customTable";
 import { TablePaginationConfig } from "antd/es/table";
 import { SorterResult } from "antd/es/table/interface";
 import useDebounce from "@/hooks/useDebounce";
@@ -23,18 +29,45 @@ interface DataType {
 const AnimeGenre: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [modalGenre, setModalGenre] = useState<boolean>(false); // Untuk status modal genre
   const [form] = Form.useForm();
+  const [modalMode, setMode] = useState<"edit" | "post">();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
+  const [idGenre, setIdGenre] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
   const { confirm } = Modal;
   const api = process.env.NEXT_PUBLIC_API_URL;
+
+  const showModal = (modalMode: "edit" | "post") => {
+    setMode(modalMode);
+    setModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+    form.resetFields();
+  };
+
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values: DataType) => {
+        if (modalMode === "post") {
+          showPostConfirm(values);
+        } else if (modalMode === "edit") {
+          showEditConfirm(values);
+        }
+        setModalVisible(false);
+      })
+      .catch(() => {
+        message.error("Please complete the form before submitting!");
+      });
+  };
 
   // Fungsi untuk melakukan post data genre
   const handlePostGenre = async (values: DataType) => {
@@ -56,6 +89,36 @@ const AnimeGenre: React.FC = () => {
     }
   };
 
+  const setDataEdit = async (id: string) => {
+    setIdGenre(id);
+    const data = await fetch(`${api}/genre/get/${id}`);
+    const res = await data.json();
+    // Set data ke dalam form
+    form.setFieldsValue({
+      name: res.name,
+    });
+  };
+
+  // Fungsi untuk melakukan edit data genre
+  const handleEditGenre = async (values: DataType) => {
+    try {
+      await fetch(`${api}/genre/update/${idGenre}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      }); // Melakukan PUT ke server
+      message.success("Genre edited successfully!");
+
+      // Fetch ulang data setelah post
+      fetchGenre();
+      form.resetFields(); // Reset form setelah submit
+    } catch (error) {
+      message.error("Failed to edit genre");
+    }
+  };
+
   // Fungsi untuk melakukan delete data genre
   const handleDeleteGenre = async (id: string) => {
     try {
@@ -72,11 +135,11 @@ const AnimeGenre: React.FC = () => {
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showPostConfirm = () => {
+  const showPostConfirm = (values: DataType) => {
     form
       .validateFields() // Validasi input form terlebih dahulu
-      .then((values: DataType) => {
-        setModalGenre(false); // Tutup modal genre
+      .then(() => {
+        setModalVisible(false); // Tutup modal genre
 
         confirm({
           centered: true,
@@ -94,7 +157,39 @@ const AnimeGenre: React.FC = () => {
               });
           },
           onCancel() {
-            setModalGenre(true); // Jika dibatalkan, buka kembali modal
+            showModal("post"); // Jika dibatalkan, buka kembali modal
+          },
+        });
+      })
+      .catch((info) => {
+        message.error("Please complete the form before submitting!");
+      });
+  };
+
+  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
+  const showEditConfirm = (values: DataType) => {
+    form
+      .validateFields() // Validasi input form terlebih dahulu
+      .then(() => {
+        setModalVisible(false); // Tutup modal genre
+
+        confirm({
+          centered: true,
+          title: "Do you want to update this genre?",
+          icon: <ExclamationCircleFilled />,
+          onOk() {
+            setLoading(true); // Set status loading pada tombol OK
+
+            return handleEditGenre(values)
+              .then(() => {
+                setLoading(false); // Set loading ke false setelah selesai
+              })
+              .catch(() => {
+                setLoading(false); // Set loading ke false jika terjadi error
+              });
+          },
+          onCancel() {
+            showModal("edit"); // Jika dibatalkan, buka kembali modal
           },
         });
       })
@@ -128,9 +223,6 @@ const AnimeGenre: React.FC = () => {
     {
       title: "Name",
       dataIndex: "name",
-      sorter: true,
-      sortDirections: ["descend"],
-      ...getColumnSearchProps("name", setSearchText),
     },
     {
       title: "Created At",
@@ -146,15 +238,25 @@ const AnimeGenre: React.FC = () => {
       title: "Action",
       dataIndex: "action",
       render: (text: string, record: DataType) => (
-        <Space size="middle">
-          <Button
-            type="text"
-            className="bg-emerald-700 text-white"
+        <div className="flex gap-3">
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 flex items-center rounded-md hover:bg-emerald-800"
             onClick={() => showDeleteConfirm(record.id, record.name)}
           >
             <AiOutlineDelete style={{ fontSize: 20 }} />
-          </Button>
-        </Space>
+          </button>
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 flex items-center rounded-md hover:bg-emerald-800"
+            onClick={() => {
+              showModal("edit");
+              setDataEdit(record.id);
+            }}
+          >
+            <AiOutlineEdit style={{ fontSize: 20 }} />
+          </button>
+        </div>
       ),
     },
   ];
@@ -163,9 +265,7 @@ const AnimeGenre: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${api}/genre/get-all?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
+        `${api}/genre/get-all?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`,
         {
           method: "GET",
         }
@@ -187,21 +287,16 @@ const AnimeGenre: React.FC = () => {
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
     fetchGenre();
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), debounceText]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
+    pagination: TablePaginationConfig
   ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
       current: pagination.current,
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
   };
 
   return (
@@ -236,14 +331,24 @@ const AnimeGenre: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="mb-3">
-        <Button
-          type="text"
-          className="bg-emerald-700 text-white"
-          onClick={() => setModalGenre(true)}
-        >
-          <AiOutlinePlus /> Add Genre
-        </Button>
+      <div className="mb-3 flex justify-between">
+        <div>
+          <button
+            type="button"
+            className="bg-emerald-700 text-white p-2 rounded-md flex items-center gap-2 hover:bg-emerald-800"
+            onClick={() => showModal("post")}
+          >
+            <AiOutlinePlus />
+            <span>Add Genre</span>
+          </button>
+        </div>
+        <div>
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Search Genre Name"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </div>
       </div>
       <CustomTable
         columns={columns as any}
@@ -253,24 +358,39 @@ const AnimeGenre: React.FC = () => {
         data={data} // Data dari state
       />
       <Modal
-        title="Modal add genre"
+        title={"Modal " + modalMode === "post" ? "Add New Genre" : "Edit Genre"}
         centered
-        onClose={() => setModalGenre(false)}
-        open={modalGenre}
-        onOk={showPostConfirm}
-        onCancel={() => {
-          setModalGenre(false), form.resetFields();
-        }}
+        open={modalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
       >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            label="Name"
-            name="name"
-            rules={[{ required: true, message: "Please input name" }]}
-          >
-            <Input placeholder="Input name" />
-          </Form.Item>
-        </Form>
+        {modalMode === "edit" ? (
+          <Form form={form} layout="vertical" className="mt-3">
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[{ required: true, message: "Please input genre name!" }]}
+            >
+              <Input type="text"></Input>
+            </Form.Item>
+          </Form>
+        ) : (
+          ""
+        )}
+
+        {modalMode === "post" ? (
+          <Form form={form} layout="vertical" className="mt-3">
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[{ required: true, message: "Please input genre name!" }]}
+            >
+              <Input type="text"></Input>
+            </Form.Item>
+          </Form>
+        ) : (
+          ""
+        )}
       </Modal>
     </>
   );
