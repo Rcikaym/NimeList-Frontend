@@ -9,11 +9,14 @@ export interface PhotosType {
 }
 
 export interface AnimeType {
-    anime_id: string;
-    anime_title: string;
-    anime_photo_cover: string;
-    anime_type: string;
-    anime_created_at: string;
-    anime_updated_at: string;
-    avg_rating: number;
+  id: string;
+  title: string;
+  synopsis: string;
+  release_date: string;
+  trailer_link: string;
+  photo_cover: string;
+  type: string;
+  genres: string[];
+  avgRating: number;
+  weighted_rating: number;
 }

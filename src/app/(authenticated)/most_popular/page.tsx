@@ -26,7 +26,7 @@ export default function MostPopular() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${api}/anime/get?_page=${currentPage}&_limit=${limit}`
+          `${api}/anime/get-most-popular?_page=${currentPage}&_limit=${limit}`
         ); // Updated API URL
         const animeData: AnimeType[] = await response.json(); // Ensuring animeData is of type AnimeType[]
         const totalItems = parseInt(
@@ -53,50 +53,48 @@ export default function MostPopular() {
       </h1>
       <ul className="place-items-center grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {/* Sort the anime list by rating in descending order */}
-        {anime
-          .sort((a: AnimeType, b: AnimeType) => b.avg_rating - a.avg_rating) // Sort by rating from highest to lowest
-          .map((anime: AnimeType) => (
-            <li
-              key={anime.anime_id}
-              className="w-full max-w-[208px] h-auto shadow mb-6"
+        {anime.map((anime: AnimeType) => (
+          <li
+            key={anime.id}
+            className="w-full max-w-[208px] h-auto shadow mb-6"
+          >
+            <Link
+              href={`/anime/${anime.id}/${anime.title
+                .replace(/\s+/g, "-")
+                .toLowerCase()}`}
             >
+              <Image
+                className="select-none justify-center w-full h-[247px] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
+                // src="/images/the-wind-rise.jpg" // Temporary image, you may want to use anime.photo_cover
+                src={`http://localhost:4321/${anime.photo_cover.replace(
+                  /\\/g,
+                  "/"
+                )}`}
+                alt={anime.title}
+                width={208}
+                height={247}
+              />
+            </Link>
+            <div className="mt-3 mb-3 mr-3">
               <Link
-                href={`/anime/${anime.anime_id}/${anime.anime_title
+                href={`/anime/${anime.id}/${anime.title
                   .replace(/\s+/g, "-")
                   .toLowerCase()}`}
               >
-                <Image
-                  className="select-none justify-center w-full h-[247px] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
-                  // src="/images/the-wind-rise.jpg" // Temporary image, you may want to use anime.photo_cover
-                  src={`http://localhost:4321/${anime.anime_photo_cover.replace(
-                    /\\/g,
-                    "/"
-                  )}`}
-                  alt={anime.anime_title}
-                  width={208}
-                  height={247}
-                />
+                <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white ">
+                  {anime.title}
+                </h5>
               </Link>
-              <div className="mt-3 mb-3 mr-3">
-                <Link
-                  href={`/anime/${anime.anime_id}/${anime.anime_title
-                    .replace(/\s+/g, "-")
-                    .toLowerCase()}`}
-                >
-                  <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white ">
-                    {anime.anime_title}
-                  </h5>
-                </Link>
-                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">
-                  {anime.anime_type}
-                </p>
-                <p className="flex items-center font-semibold">
-                  <StarFilled className="text-yellow-500 mr-1" />{" "}
-                  {anime.avg_rating}
-                </p>
-              </div>
-            </li>
-          ))}
+              <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">
+                {anime.type}
+              </p>
+              <p className="flex items-center font-semibold">
+                <StarFilled className="text-yellow-500 mr-1" />{" "}
+                {anime.weighted_rating}
+              </p>
+            </div>
+          </li>
+        ))}
       </ul>
 
       <div className="justify-center">

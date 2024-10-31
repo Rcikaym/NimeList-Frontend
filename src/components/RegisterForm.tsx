@@ -43,7 +43,7 @@ const RegisterForm: React.FC = () => {
     if (data.access_token) {
       // Simpan token di localStorage
       localStorage.setItem("access_token", data.access_token);
-      alert("Registration successful");
+      router.push("/login");
     } else {
       alert("Registration failed");
     }
