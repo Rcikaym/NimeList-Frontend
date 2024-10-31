@@ -24,6 +24,7 @@ import {
   AccordionItem,
 } from "@nextui-org/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 const url =
@@ -145,11 +146,11 @@ const menuItems = [
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [username, setUsername] = useState("Guest");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState("guest@gmail.com");
+  const router = useRouter();
 
   // Ensure dynamic content only renders on the client
   useEffect(() => {
-
     const token = localStorage.getItem("access_token");
     // console.log("Token:", token);
 
@@ -158,9 +159,15 @@ const AuthNavbar = () => {
       setUsername(decodedToken.username);
       setDescription(decodedToken.email);
     }
-
   }, []);
-
+ 
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    router.push("/home")
+    setTimeout(() => {
+      window.location.reload();
+  }, 100); // Refresh after 100 milliseconds
+  }
 
   return (
     <>
@@ -295,7 +302,7 @@ const AuthNavbar = () => {
                     description={description}
                     classNames={{
                       name: "text-white",
-                      description: "text-white",
+                      description: "text-white opacity-50",
                     }}
                     avatarProps={{
                       size: "sm",
@@ -321,6 +328,7 @@ const AuthNavbar = () => {
                 </DropdownItem>
                 <DropdownItem
                   key="logout"
+                  onClick={handleLogout}
                   className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
                 >
                   <p className=" flex items-center font-semibold">
