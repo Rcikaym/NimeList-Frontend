@@ -5,6 +5,8 @@ import { Input, Button } from "@nextui-org/react";
 import { BorderBeam } from "@/components/magicui/Borderbeam";
 import { BiHide, BiShow, BiRightArrowAlt } from "react-icons/bi";
 import { useRouter } from "next/navigation";
+import { setAccessToken } from "@/hooks/auth";
+import { jwtDecode } from "jwt-decode";
 
 const RegisterForm: React.FC = () => {
   const [form, setForm] = useState({
@@ -40,9 +42,12 @@ const RegisterForm: React.FC = () => {
     });
 
     const data = await response.json();
+    const decodedToken: any = jwtDecode(data.access_token);
+
     if (data.access_token) {
       // Simpan token di localStorage
-      localStorage.setItem("access_token", data.access_token);
+      setAccessToken(data.access_token, decodedToken.exp * 1000);
+      router.push("/home");
       alert("Registration successful");
     } else {
       alert("Registration failed");

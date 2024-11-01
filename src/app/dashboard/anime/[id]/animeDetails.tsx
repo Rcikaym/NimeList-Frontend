@@ -13,7 +13,7 @@ import {
 } from "react-icons/ai";
 import { AnimeType, PhotosType } from "./types";
 import renderDateTime from "@/components/formatDateTime";
-import DisplayLongText from "@/components/displayLongText";
+import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
 
 // Memoized components

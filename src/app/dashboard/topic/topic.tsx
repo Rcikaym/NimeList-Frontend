@@ -21,6 +21,7 @@ import renderDateTime from "@/components/formatDateTime";
 import { CustomTable, getColumnSearchProps } from "@/components/customTable";
 import useDebounce from "@/hooks/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
+import api from "@/hooks/api";
 
 interface DataType {
   id: string;
@@ -42,14 +43,14 @@ const TopicList: React.FC = () => {
   });
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1500);
-  const api = process.env.NEXT_PUBLIC_API_URL;
+  // const api = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchTopic = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:4321/topic/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
+      const response = await api.get(
+        `/topic/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
