@@ -1,11 +1,30 @@
+"use client";
 
-import { Button,} from "@nextui-org/react";
-import React from "react";
+import { Button } from "@nextui-org/react";
+import React, { useEffect } from "react";
 import BoxReveal from "@/components/magicui/BoxReveal";
 import NumberTicker from "@/components/magicui/NumberTicker";
 import LoginForm from "@/components/LoginForm";
+import {
+  getAccessToken,
+  isAccessTokenExpired,
+  refreshAccessToken,
+} from "@/hooks/auth";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = getAccessToken();
+
+    // Periksa apakah token ada dan belum kadaluarsa
+    if (token === undefined || token) {
+      // Arahkan pengguna ke halaman utama jika token masih berlaku
+      router.push("/home");
+    }
+  }, [router]);
+
   return (
     <>
       <div className="container flex mx-auto min-h-screen items-center justify-center">
@@ -65,7 +84,10 @@ export default function Login() {
             </BoxReveal>
 
             <BoxReveal boxColor={"#014A42"} duration={0.5}>
-              <Button href="/home" className="mt-[1.6rem] bg-[#014A42] text-[#f5f5f5]">
+              <Button
+                href="/home"
+                className="mt-[1.6rem] bg-[#014A42] text-[#f5f5f5]"
+              >
                 Explore
               </Button>
             </BoxReveal>
@@ -73,7 +95,7 @@ export default function Login() {
 
           {/* <div className="w-[447px] h-[574px] relative rounded-[32px] p-[2px] bg-[#fff6f628]"> */}
           <BoxReveal boxColor="#014A42" duration={0.5}>
-            <LoginForm/>
+            <LoginForm />
           </BoxReveal>
           {/* </div> */}
         </div>

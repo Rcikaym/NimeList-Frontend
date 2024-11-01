@@ -1,9 +1,10 @@
 // components/PaymentModal.js
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Alert, Button, Form, InputNumber, Modal, Select, Spin } from "antd";
 import { Option } from "antd/es/mentions";
+import { getAccessToken, setAccessToken } from "@/hooks/auth";
+import { jwtDecode } from "jwt-decode";
 
 declare global {
   interface Window {
@@ -13,35 +14,38 @@ declare global {
 
 const PaymentModal = ({ show, handleClose }: any) => {
   const api = process.env.NEXT_PUBLIC_API_URL;
-  const [users, setUsers] = useState([]);
   const [memberships, setMemberships] = useState([]);
-  const [selectedUser, setSelectedUser] = useState<any>("");
   const [selectedMembership, setSelectedMembership] = useState<any>("");
   const [totalPrice, setTotalPrice] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isScriptLoaded, setIsScriptLoaded] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string>("");
+  const token = getAccessToken();
 
-  // Fetch premium dan user saat komponen dimuat
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [membershipsRes, usersRes]: any = await Promise.all([
-          await fetch(`${api}/premium/get-all`),
-          await fetch(`${api}/user/get-user-for-pay`),
-        ]);
-        setMemberships(await membershipsRes.json());
-        setUsers(await usersRes.json());
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Gagal memuat data. Silakan coba lagi.");
-      }
-    };
-
-    if (show) {
-      fetchData();
+  const setUserIdFromToken = () => {
+    if (token) {
+      const decodedToken: { userId: string } = jwtDecode(token);
+      setUserId(decodedToken.userId);
     }
-  }, [show]);
+  };
+
+  const fetchData = async () => {
+    try {
+      const [membershipsRes, usersRes]: any = await Promise.all([
+        await fetch(`${api}/premium/get-all`),
+      ]);
+      setMemberships(await membershipsRes.json());
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError("Gagal memuat data. Silakan coba lagi.");
+    }
+  };
+
+  // Fetch premium dan set user id dari token local storage
+  useEffect(() => {
+    fetchData();
+    setUserIdFromToken();
+  }, []);
 
   // Update total price ketika premium dipilih
   useEffect(() => {
@@ -66,7 +70,7 @@ const PaymentModal = ({ show, handleClose }: any) => {
 
     try {
       const payload = {
-        id_user: selectedUser,
+        id_user: userId,
         id_premium: selectedMembership,
       };
 
@@ -127,22 +131,6 @@ const PaymentModal = ({ show, handleClose }: any) => {
         />
       )}
       <Form layout="vertical">
-        <Form.Item label="User">
-          <Select
-            placeholder="Pilih User"
-            onChange={(value: string) => setSelectedUser(value)}
-            value={selectedUser}
-            loading={!users}
-          >
-            {users &&
-              users.map((user: any) => (
-                <Option key={user.id} value={user.id}>
-                  {user.username}
-                </Option>
-              ))}
-          </Select>
-        </Form.Item>
-
         <Form.Item label="Jenis Membership">
           <Select
             placeholder="Pilih Membership"

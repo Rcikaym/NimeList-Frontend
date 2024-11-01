@@ -4,14 +4,11 @@ import React from "react";
 import { Layout } from "antd";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
+import withAdmin from "@/hooks/withAdmin";
 
 const { Content } = Layout;
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sidebar />
@@ -28,4 +25,6 @@ export default function DashboardLayout({
       </Layout>
     </Layout>
   );
-}
+};
+
+export default withAdmin(DashboardLayout);
