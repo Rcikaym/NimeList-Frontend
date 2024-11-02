@@ -17,10 +17,10 @@ import {
 } from "react-icons/ai";
 
 // Types moved to a separate file to reduce bundle size
-import renderDateTime from "@/components/formatDateTime";
+import renderDateTime from "@/components/FormatDateTime";
 import { TopicType } from "./types";
 import Image from "next/image";
-import TopicBody from "@/app/dashboard/topic/topicBody";
+import TopicBody from "./topicBody";
 
 // Memoized components
 const MemoizedImage = memo(Image);

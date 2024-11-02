@@ -1,4 +1,4 @@
-import PageTitle from "@/components/titlePage";
+import PageTitle from "@/components/TitlePage";
 import ReviewList from "./review";
 
 export default async function Page() {

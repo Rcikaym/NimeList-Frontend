@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
-import renderDateTime from "@/components/formatDateTime";
+import renderDateTime from "@/components/FormatDateTime";
 import { CustomTable, getColumnSearchProps } from "@/components/customTable";
 import { TablePaginationConfig } from "antd/es/table";
 import { SorterResult } from "antd/es/table/interface";

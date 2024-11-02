@@ -18,7 +18,7 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
-import renderDateTime from "@/components/formatDateTime";
+import renderDateTime from "@/components/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 
 interface DataType {

@@ -12,7 +12,7 @@ import {
 import { AppstoreFilled, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/customTable";
-import renderDateTime from "@/components/formatDateTime";
+import renderDateTime from "@/components/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import { DataType, TransactionDetails } from "./types";
