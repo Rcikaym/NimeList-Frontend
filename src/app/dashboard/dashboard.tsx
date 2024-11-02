@@ -4,7 +4,7 @@ import { AppstoreFilled } from "@ant-design/icons";
 import Link from "next/link";
 import BarChart from "@/app/dashboard/barChartDashboard";
 import CardDashboard from "@/app/dashboard/cardDashboard";
-import PageTitle from "@/components/titlePage";
+import PageTitle from "@/components/TitlePage";
 import TableTop10Anime from "@/app/dashboard/top10AnimeTable";
 
 const Dashboard = () => {

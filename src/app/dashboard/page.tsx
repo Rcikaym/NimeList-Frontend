@@ -1,4 +1,4 @@
-import PageTitle from "@/components/titlePage";
+import PageTitle from "@/components/TitlePage";
 import Dashboard from "./dashboard";
 
 export default function Page() {

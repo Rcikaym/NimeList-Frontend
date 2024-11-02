@@ -10,10 +10,13 @@ import {
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
-import PageTitle from "@/components/titlePage";
+import PageTitle from "@/components/TitlePage";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-import { formats, modules } from "@/components/moduleAndFormatTextArea";
+import {
+  formats,
+  modules,
+} from "./moduleAndFormatTextArea";
 
 interface DataType {
   title: string;

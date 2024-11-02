@@ -1,4 +1,4 @@
-import PageTitle from "@/components/titlePage";
+import PageTitle from "@/components/TitlePage";
 import AnimeEdit from "./formEdit";
 
 export default async function Page({ params }: { params: { id: string } }) {

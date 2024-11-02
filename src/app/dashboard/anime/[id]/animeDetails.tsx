@@ -12,7 +12,7 @@ import {
   AiOutlineTool,
 } from "react-icons/ai";
 import { AnimeType, PhotosType } from "./types";
-import renderDateTime from "@/components/formatDateTime";
+import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
 

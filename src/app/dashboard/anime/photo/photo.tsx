@@ -22,8 +22,8 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/customTable";
-import renderDateTime from "@/components/formatDateTime";
-import PageTitle from "@/components/titlePage";
+import renderDateTime from "@/components/FormatDateTime";
+import PageTitle from "@/components/TitlePage";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import Image from "next/image";

@@ -16,8 +16,8 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import PageTitle from "@/components/titlePage";
-import renderDateTime from "@/components/formatDateTime";
+import PageTitle from "@/components/TitlePage";
+import renderDateTime from "@/components/FormatDateTime";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";

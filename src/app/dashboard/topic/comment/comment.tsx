@@ -26,7 +26,7 @@ import {
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable } from "@/components/customTable";
-import renderDateTime from "@/components/formatDateTime";
+import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/displayLongText";
 import { Option } from "antd/es/mentions";
 import useDebounce from "@/utils/useDebounce";
