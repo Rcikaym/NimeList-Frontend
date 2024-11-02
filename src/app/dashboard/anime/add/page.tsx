@@ -1,5 +1,5 @@
 import PageTitle from "@/components/TitlePage";
-import AddAnime from "./add";
+import AddAnime from "./FormAddComponent";
 
 export default async function Page() {
   return (

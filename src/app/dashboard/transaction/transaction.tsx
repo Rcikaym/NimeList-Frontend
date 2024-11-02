@@ -11,13 +11,13 @@ import {
 } from "react-icons/ai";
 import { AppstoreFilled, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import { DataType, TransactionDetails } from "./types";
-import ModalDetailTransaction from "@/app/dashboard/transaction/modalDetailTransaction";
-import FilterModal from "@/app/dashboard/transaction/modalFilterTransaction";
+import ModalDetailTransaction from "@/app/dashboard/transaction/ModalDetailTransactionComponent";
+import FilterModal from "@/app/dashboard/transaction/ModalFilterTransactionComponent";
 
 const TransactionList = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api

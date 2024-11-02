@@ -20,10 +20,7 @@ import {
 import { useRouter } from "next/navigation";
 import { AnimeType, PhotosType, TopicType } from "./types";
 import "react-quill/dist/quill.snow.css";
-import {
-  formats,
-  modules,
-} from "@/app/dashboard/topic/add/moduleAndFormatTextArea";
+import { formats, modules } from "@/app/dashboard/topic/add/TextAreaUtils";
 import dynamic from "next/dynamic";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });

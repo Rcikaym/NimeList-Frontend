@@ -1,5 +1,5 @@
 import PageTitle from "@/components/TitlePage";
-import AnimeEdit from "./formEdit";
+import AnimeEdit from "./FormEditComponent";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const api = process.env.NEXT_PUBLIC_API_URL;
