@@ -25,8 +25,6 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { removeAccessToken } from "@/utils/auth";
-import { message } from "antd";
 
 const inter = Inter({ subsets: ["latin"] });
 const url =
@@ -162,20 +160,14 @@ const AuthNavbar = () => {
       setDescription(decodedToken.email);
     }
   }, []);
-
-  const handleLogout = async () => {
-    const res = await removeAccessToken();
-
-    if (res.status === 200) {
-      message.success(res.message);
-      router.push("/home");
-      setTimeout(() => {
-        window.location.reload();
-      }, 100); // Refresh after 100 milliseconds
-    } else {
-      message.error(res.message);
-    }
-  };
+ 
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    router.push("/home")
+    setTimeout(() => {
+      window.location.reload();
+  }, 100); // Refresh after 100 milliseconds
+  }
 
   return (
     <>
