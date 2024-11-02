@@ -5,6 +5,8 @@ import { Input, Button } from "@nextui-org/react";
 import { BorderBeam } from "@/components/magicui/Borderbeam";
 import { BiHide, BiShow, BiRightArrowAlt } from "react-icons/bi";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+import { setAccessToken } from "@/utils/auth";
 
 const RegisterForm: React.FC = () => {
   const [form, setForm] = useState({
@@ -29,7 +31,7 @@ const RegisterForm: React.FC = () => {
     }
 
     // Prepare the data to send, excluding confirmPassword
-  const { confirmPassword, ...registrationData } = form;
+    const { confirmPassword, ...registrationData } = form;
 
     const response = await fetch(`${api}/auth/register`, {
       method: "POST",
@@ -42,7 +44,8 @@ const RegisterForm: React.FC = () => {
     const data = await response.json();
     if (data.access_token) {
       // Simpan token di localStorage
-      localStorage.setItem("access_token", data.access_token);
+      const { exp } = jwtDecode(data.access_token);
+      setAccessToken(data.access_token, exp);
       router.push("/login");
     } else {
       alert("Registration failed");

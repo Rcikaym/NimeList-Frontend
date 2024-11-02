@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
+import apiUrl from "@/hooks/api";
 
 interface DataAnime {
   title: string;
@@ -165,10 +166,7 @@ export default function AddAnime() {
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
       // Kirim data menggunakan axios
-      const response = await fetch(`${api}/anime/post`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = apiUrl.post(`${api}/anime/post`, formData);
 
       // Tampilkan pesan sukses jika request berhasil
       message.success("Anime added successfully!");

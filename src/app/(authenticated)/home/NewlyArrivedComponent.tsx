@@ -6,32 +6,32 @@ import { StarFilled } from "@ant-design/icons";
 import { Image } from "@nextui-org/react";
 import { AnimeType } from "./types";
 
-export default function Recommended() {
+export default function NewlyArrived() {
   const [animes, setAnimes] = useState<AnimeType[]>([]);
-  const [total, setTotal] = useState(0); // State to store the total number of items
+//   const [total, setTotal] = useState(0);
   const api = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
-    const fetchRecommended = async () => {
+    const fetchNewlyArrived = async () => {
       try {
-        const response = await fetch(`${api}/anime/recommended`);
+        const response = await fetch(`${api}/anime/get-newest?limit=10`);
         const animeData = await response.json();
-        const totalItems = parseInt(
-          response.headers.get("X-Total-Count") || "0"
-        ); // Get total items from headers
+        // const totalItems = parseInt(
+        //   response.headers.get("X-Total-Count") || "0"
+        // ); // Get total items from headers
         setAnimes(animeData);
-        setTotal(totalItems);
+        // setTotal(totalItems);
       } catch (error) {
         console.error("Error fetching animes:", error);
       }
     };
-    fetchRecommended();
+    fetchNewlyArrived();
   }, []);
 
   return (
     <>
       <ul className="flex gap-6 ml-20 scrollbar-hide">
-        {animes.map((anime: AnimeType) => (
+        {animes.map((anime: any) => (
           <li
             key={anime.id}
             className="w-full max-w-[220px] h-auto shadow mb-6"

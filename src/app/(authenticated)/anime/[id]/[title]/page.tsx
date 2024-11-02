@@ -48,7 +48,6 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
         if (id) {
           // Fetch anime details using the ID
           const animeResponse = await fetch(
-            
             // `http://localhost:3001/animes/${id}`
             `${api}/anime/get/${id}`
           );
@@ -142,7 +141,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
             </div>
             <ScrollShadow className="w-[900px] max-h-[150px]" hideScrollBar>
               <p className="text-[#f5f5f5] opacity-100 font-medium scroll-smooth tracking-wider">
-                <DisplayLongText text={anime.anime.synopsis}/>
+                <DisplayLongText text={anime.anime.synopsis} />
               </p>
             </ScrollShadow>
           </div>

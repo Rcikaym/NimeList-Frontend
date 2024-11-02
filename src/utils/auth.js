@@ -1,3 +1,4 @@
+import apiUrl from "@/hooks/api";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
@@ -8,16 +9,16 @@ export const setAccessToken = (token, expiresIn) => {
 };
 
 export const getAccessToken = () => {
-  return localStorage.getItem("accessToken");
+  return localStorage.getItem("access_token");
 };
 
 export const isAccessTokenExpired = () => {
-  const expirationTime = localStorage.getItem("accessTokenExpiry");
+  const expirationTime = localStorage.getItem("access_token_expiry");
   return expirationTime && Date.now() > expirationTime - 5 * 60 * 1000;
 };
 
 export const refreshAccessToken = async () => {
-  const refreshToken = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("access_token");
   const data_user = jwtDecode(refreshToken);
 
   try {
@@ -40,7 +41,16 @@ export const refreshAccessToken = async () => {
   }
 };
 
-export const removeAccessToken = () => {
+export const removeAccessToken = async () => {
+  const token = localStorage.getItem("access_token");
+  const response = await apiUrl.post("/auth/logout", { token: token });
+  const { data } = response;
+
+  if (data.status !== 200) {
+    throw new Error("Failed to logout");
+  }
+
   localStorage.removeItem("access_token");
   localStorage.removeItem("access_token_expiry");
+  return await data;
 };

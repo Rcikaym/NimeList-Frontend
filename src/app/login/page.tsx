@@ -9,7 +9,7 @@ import {
   getAccessToken,
   isAccessTokenExpired,
   refreshAccessToken,
-} from "@/hooks/auth";
+} from "@/utils/auth";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
@@ -19,7 +19,7 @@ export default function Login() {
     const token = getAccessToken();
 
     // Periksa apakah token ada dan belum kadaluarsa
-    if (token === undefined || token) {
+    if (token && !isAccessTokenExpired()) {
       // Arahkan pengguna ke halaman utama jika token masih berlaku
       router.push("/home");
     }

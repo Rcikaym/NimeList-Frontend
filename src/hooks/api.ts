@@ -6,11 +6,11 @@ import {
   refreshAccessToken,
 } from "@/utils/auth";
 
-const api = axios.create({
+const apiUrl = axios.create({
   baseURL: "http://localhost:4321",
 });
 
-api.interceptors.request.use((config) => {
+apiUrl.interceptors.request.use((config) => {
   if (isAccessTokenExpired()) {
     refreshAccessToken();
   }
@@ -21,4 +21,4 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export default api;
+export default apiUrl;

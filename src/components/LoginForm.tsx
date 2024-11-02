@@ -5,6 +5,8 @@ import { Input, Button } from "@nextui-org/react";
 import { BorderBeam } from "@/components/magicui/Borderbeam";
 import { BiHide, BiShow, BiRightArrowAlt } from "react-icons/bi";
 import { useRouter } from "next/navigation";
+import { setAccessToken } from "@/utils/auth";
+import { jwtDecode } from "jwt-decode";
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -33,7 +35,8 @@ const LoginForm: React.FC = () => {
 
       if (response.ok) {
         // Store the JWT token (you can choose localStorage, cookie, or other storage)
-        localStorage.setItem("access_token", data.access_token);
+        const { exp } = jwtDecode(data.access_token);
+        setAccessToken(data.access_token, exp);
         // Redirect to the dashboard or protected page after successful login
         router.push("/home");
       } else {
