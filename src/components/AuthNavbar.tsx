@@ -311,6 +311,7 @@ const AuthNavbar = () => {
                     classNames={{
                       name: "text-white",
                       description: "text-white opacity-50",
+
                     }}
                     avatarProps={{
                       size: "sm",
