@@ -17,10 +17,9 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/formatDateTime";
-import useDebounce from "@/hooks/useDebounce";
-import { SorterResult } from "antd/es/table/interface";
+import useDebounce from "@/utils/useDebounce";
 
 interface DataType {
   id: string;

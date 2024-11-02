@@ -17,7 +17,7 @@ import renderDateTime from "@/components/formatDateTime";
 import { CustomTable, getColumnSearchProps } from "@/components/customTable";
 import { TablePaginationConfig } from "antd/es/table";
 import { SorterResult } from "antd/es/table/interface";
-import useDebounce from "@/hooks/useDebounce";
+import useDebounce from "@/utils/useDebounce";
 
 interface DataType {
   id: string;

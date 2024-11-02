@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Inter } from "next/font/google";
 import Image from "next/image";
 import React from "react";
-import { BiChevronDown, BiLogIn, BiLogOut } from "react-icons/bi";
+import { BiChevronDown, BiLogOut } from "react-icons/bi";
 import {
   Dropdown,
   DropdownTrigger,
@@ -24,13 +24,7 @@ import {
   AccordionItem,
 } from "@nextui-org/react";
 import Link from "next/link";
-import {
-  getAccessToken,
-  isAccessTokenExpired,
-  refreshAccessToken,
-  removeAccessToken,
-} from "@/hooks/auth";
-import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 const url =
@@ -152,31 +146,27 @@ const menuItems = [
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [username, setUsername] = useState("Guest");
-  const [description, setDescription] = useState("guest@example.com");
-  const [isLogin, setIsLogin] = useState(false);
+  const [description, setDescription] = useState("guest@gmail.com");
+  const router = useRouter();
 
   // Ensure dynamic content only renders on the client
   useEffect(() => {
-    if (isAccessTokenExpired()) {
-      refreshAccessToken();
-    }
-    const token = getAccessToken();
+    const token = localStorage.getItem("access_token");
+    // console.log("Token:", token);
 
     if (token) {
-      setIsLogin(true);
-      const decodedToken: { email: string; username: string } =
-        jwtDecode(token);
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
       setUsername(decodedToken.username);
-      console.log("Decoded Token:", decodedToken);
       setDescription(decodedToken.email);
     }
   }, []);
 
   const handleLogout = () => {
-    removeAccessToken();
+    localStorage.removeItem("access_token");
+    router.push("/home");
     setTimeout(() => {
       window.location.reload();
-    }, 100);
+    }, 100); // Refresh after 100 milliseconds
   };
 
   return (
@@ -312,7 +302,7 @@ const AuthNavbar = () => {
                     description={description}
                     classNames={{
                       name: "text-white",
-                      description: "text-white",
+                      description: "text-white opacity-50",
                     }}
                     avatarProps={{
                       size: "sm",
@@ -336,29 +326,16 @@ const AuthNavbar = () => {
                   My Favorites
                   <Divider orientation="horizontal" className="mt-2" />
                 </DropdownItem>
-                {isLogin ? (
-                  <DropdownItem
-                    key="logout"
-                    onClick={handleLogout}
-                    className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
-                  >
-                    <p className=" flex items-center font-semibold">
-                      <BiLogOut className="w-5 h-5 mr-2" />
-                      Log Out
-                    </p>
-                  </DropdownItem>
-                ) : (
-                  <DropdownItem
-                    href="/login"
-                    key="login"
-                    className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
-                  >
-                    <p className=" flex items-center font-semibold">
-                      <BiLogIn className="w-5 h-5 mr-2" />
-                      Login
-                    </p>
-                  </DropdownItem>
-                )}
+                <DropdownItem
+                  key="logout"
+                  onClick={handleLogout}
+                  className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
+                >
+                  <p className=" flex items-center font-semibold">
+                    <BiLogOut className="w-5 h-5 mr-2" />
+                    Log Out
+                  </p>
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>

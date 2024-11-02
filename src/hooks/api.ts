@@ -4,7 +4,7 @@ import {
   getAccessToken,
   isAccessTokenExpired,
   refreshAccessToken,
-} from "./auth";
+} from "@/utils/auth";
 
 const api = axios.create({
   baseURL: "http://localhost:4321",

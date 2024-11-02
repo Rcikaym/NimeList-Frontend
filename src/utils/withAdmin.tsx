@@ -23,29 +23,28 @@ const withAdmin = (WrappedComponent: React.ComponentType<WithAdminProps>) => {
       if (isAccessTokenExpired()) {
         refreshAccessToken();
       }
+
       const accessToken = getAccessToken();
-      console.log(accessToken);
 
       if (!accessToken) {
         // Jika tidak ada token, redirect ke login
-        router.replace("/login");
+        router.push("/login");
         return;
       }
 
       try {
         const decodedToken: { role: string } = jwtDecode(accessToken);
-        console.log(decodedToken);
         const { role } = decodedToken;
 
         // Periksa apakah role adalah 'admin'
         if (role !== "admin") {
           // Jika bukan admin, redirect ke halaman akses ditolak
-          router.replace("/403");
+          router.push("/403");
         }
       } catch (error) {
         console.error("Invalid token:", error);
         // Jika token tidak valid, redirect ke login
-        router.replace("/login");
+        router.push("/login");
       }
     }, [router]);
 

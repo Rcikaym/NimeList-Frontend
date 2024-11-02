@@ -24,7 +24,7 @@ import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/customTable";
 import renderDateTime from "@/components/formatDateTime";
 import PageTitle from "@/components/titlePage";
-import useDebounce from "@/hooks/useDebounce";
+import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import Image from "next/image";
 

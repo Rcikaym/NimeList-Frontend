@@ -18,8 +18,8 @@ import {
 import Link from "next/link";
 import PageTitle from "@/components/titlePage";
 import renderDateTime from "@/components/formatDateTime";
-import { CustomTable, getColumnSearchProps } from "@/components/customTable";
-import useDebounce from "@/hooks/useDebounce";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import api from "@/hooks/api";
 

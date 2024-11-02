@@ -1,7 +1,15 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Dropdown, Layout } from "antd";
 import { AiOutlineLogout, AiOutlineProfile } from "react-icons/ai";
 import Image from "next/image";
+import {
+  getAccessToken,
+  isAccessTokenExpired,
+  refreshAccessToken,
+} from "@/utils/auth";
+import { jwtDecode } from "jwt-decode";
 
 const { Header } = Layout;
 
@@ -21,10 +29,13 @@ const items = [
 const Navbar: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    if (isAccessTokenExpired()) {
+      refreshAccessToken();
+    }
+    const token = getAccessToken();
 
     if (token) {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const decodedToken: { username: string } = jwtDecode(token);
 
       setUsername(decodedToken.username);
     }
