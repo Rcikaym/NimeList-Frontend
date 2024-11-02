@@ -30,7 +30,7 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
     // Fetch anime data from the API
     const fetchAnimeData = async () => {
       try {
-        const response = await fetch(`${api}/anime/get-newest`);
+        const response = await fetch(`${api}/anime/get-newest?limit=3`);
         const { data } = await response.json();
         setAnimeData(data);
       } catch (error) {

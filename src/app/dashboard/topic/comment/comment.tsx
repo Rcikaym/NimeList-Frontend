@@ -29,7 +29,7 @@ import { CustomTable } from "@/components/customTable";
 import renderDateTime from "@/components/formatDateTime";
 import DisplayLongText from "@/components/displayLongText";
 import { Option } from "antd/es/mentions";
-import useDebounce from "@/hooks/useDebounce";
+import useDebounce from "@/utils/useDebounce";
 
 const { Text } = Typography;
 
