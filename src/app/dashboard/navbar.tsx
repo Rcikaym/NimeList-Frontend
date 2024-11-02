@@ -1,33 +1,22 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { Dropdown, Layout } from "antd";
+import { Dropdown, Layout, message } from "antd";
 import { AiOutlineLogout, AiOutlineProfile } from "react-icons/ai";
 import Image from "next/image";
 import {
   getAccessToken,
   isAccessTokenExpired,
   refreshAccessToken,
+  removeAccessToken,
 } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 const { Header } = Layout;
 
-const items = [
-  {
-    key: "1",
-    label: <a href="/dashboard/profile">Profile</a>,
-    icon: <AiOutlineProfile size={17} />,
-  },
-  {
-    key: "2",
-    label: <a href="http://localhost:4321/auth/logout">Logout</a>,
-    icon: <AiOutlineLogout size={17} />,
-  },
-];
-
 const Navbar: React.FC = () => {
   const [username, setUsername] = useState<string>("");
+  const router = useRouter();
+
   useEffect(() => {
     if (isAccessTokenExpired()) {
       refreshAccessToken();
@@ -40,6 +29,29 @@ const Navbar: React.FC = () => {
       setUsername(decodedToken.username);
     }
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      const response = await removeAccessToken();
+      message.success(response.message);
+      router.push("/home");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const items = [
+    {
+      key: "1",
+      label: <a href="/dashboard/profile">Profile</a>,
+      icon: <AiOutlineProfile size={17} />,
+    },
+    {
+      key: "2",
+      label: <button onClick={handleLogout}>Logout</button>,
+      icon: <AiOutlineLogout size={17} />,
+    },
+  ];
 
   return (
     <Header

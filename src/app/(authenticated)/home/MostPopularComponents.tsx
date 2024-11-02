@@ -34,7 +34,7 @@ export default function MostPopular() {
         {animes.map((anime: AnimeType) => (
           <li
             key={anime.id}
-            className="w-full max-w-[208px] h-auto shadow mb-6"
+            className="w-full max-w-[220px] h-auto shadow mb-6"
           >
             <Link
               href={`/anime/${anime.id}/${anime.title
@@ -42,15 +42,15 @@ export default function MostPopular() {
                 .toLowerCase()}`}
             >
               <Image
-                className="select-none justify-center w-full h-[247px] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
+                className="select-none justify-center w-full h-[300px] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
                 // src="/images/the-wind-rise.jpg" // Temporary image, you may want to use anime.photo_cover
                 src={`http://localhost:4321/${anime.photo_cover.replace(
                   /\\/g,
                   "/"
                 )}`}
                 alt={anime.title}
-                width={208}
-                height={247}
+                width={220}
+                height={300}
               />
             </Link>
             <div className="mt-3 mb-3 mr-3">
@@ -68,7 +68,7 @@ export default function MostPopular() {
               </p>
               <p className="flex items-center font-semibold">
                 <StarFilled className="text-yellow-500 mr-1" />{" "}
-                {anime.avgRating}
+                {anime.weighted_rating}
               </p>
             </div>
           </li>
