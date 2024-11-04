@@ -18,6 +18,7 @@ import {
   ChartData,
 } from "chart.js";
 import { LoadingOutlined } from "@ant-design/icons";
+import apiUrl from "@/hooks/api";
 
 // Register Chart.js components
 ChartJS.register(
@@ -44,10 +45,10 @@ const IncomeData: React.FC = () => {
   const fetchIncomeData = async (year: number) => {
     setLoading(true);
     try {
-      const response = await fetch(
+      const response = await apiUrl.get(
         `http://localhost:4321/dashboard/income-data?year=${year}`
       );
-      const data: IncomeItem[] = await response.json();
+      const data: IncomeItem[] = await response.data;
       setIncomeData(data);
       setLoading(false);
     } catch (error) {

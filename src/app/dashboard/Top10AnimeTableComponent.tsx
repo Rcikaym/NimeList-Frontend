@@ -2,6 +2,7 @@
 import { AiFillStar, AiOutlineTrophy } from "react-icons/ai";
 import { Table } from "antd";
 import { useEffect, useState } from "react";
+import apiUrl from "@/hooks/api";
 
 interface animeTop {
   title: string;
@@ -55,8 +56,8 @@ const TableTop10Anime = () => {
 
   useEffect(() => {
     const fetchAnime = async () => {
-      const res = await fetch("http://localhost:4321/dashboard/top-10-anime");
-      setData(await res.json());
+      const res = await apiUrl.get("http://localhost:4321/dashboard/top-10-anime");
+      setData(await res.data);
     };
 
     fetchAnime();

@@ -11,9 +11,6 @@ const apiUrl = axios.create({
 });
 
 apiUrl.interceptors.request.use((config) => {
-  if (isAccessTokenExpired()) {
-    refreshAccessToken();
-  }
   const accessToken = getAccessToken();
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
