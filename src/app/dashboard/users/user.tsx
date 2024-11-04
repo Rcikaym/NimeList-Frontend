@@ -11,11 +11,12 @@ import {
 } from "react-icons/ai";
 import { AppstoreFilled, EyeOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import { Option } from "antd/es/mentions";
+import apiUrl from "@/hooks/api";
 
 interface DataType {
   username: string;
@@ -41,10 +42,7 @@ const UserList = () => {
 
   const handleRefreshUsers = async () => {
     try {
-      const res = await fetch(`${api}/user/refresh-users`, {
-        method: "PUT",
-      });
-
+      const res = await apiUrl.put(`${api}/user/refresh-users`);
       message.success("Users refreshed successfully!");
       fetchUsers();
     } catch (error) {
@@ -57,10 +55,8 @@ const UserList = () => {
     const withFilterStatus =
       filterStatus !== "all" ? `${baseUrl}&status=${filterStatus}` : baseUrl;
     try {
-      const response = await fetch(withFilterStatus, {
-        method: "GET",
-      });
-      const { data, total } = await response.json();
+      const response = await apiUrl.get(withFilterStatus);
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
@@ -78,21 +74,6 @@ const UserList = () => {
   useEffect(() => {
     fetchUsers(); // Panggil fungsi fetchUsers saat komponen dimuat
   }, [JSON.stringify(pagination), filterStatus, debounceText]);
-
-  // const handleTableChange: TableProps<DataType>["onChange"] = (
-  //   pagination: TablePaginationConfig,
-  //   filters,
-  //   sorter
-  // ) => {
-  //   const sortParsed = sorter as SorterResult<DataType>;
-  //   setPagination({
-  //     current: pagination.current,
-  //     pageSize: pagination.pageSize,
-  //     total: pagination.total,
-  //   });
-  //   setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-  //   console.log(sortOrder);
-  // };
 
   // Kolom table
   const columns: TableColumnsType<DataType> = useMemo(

@@ -21,6 +21,7 @@ import {
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
 import { DataAnime, GenreType, PhotosType } from "./types";
+import apiUrl from "@/hooks/api";
 
 export default function AnimeEdit({ id }: { id: string }) {
   const router = useRouter();
@@ -171,12 +172,10 @@ export default function AnimeEdit({ id }: { id: string }) {
 
     setLoading(true);
     try {
-      const response = await fetch(`${api}/anime/update/${id}`, {
-        method: "PUT",
-        body: formData,
-      });
+      const update = await apiUrl.put(`${api}/anime/update/${id}`, formData);
+      const res = await update.data;
       router.push("/dashboard/anime");
-      message.success("Anime updated successfully!");
+      message.success(res.message);
       setLoading(false);
     } catch (error) {
       message.error(`Failed to update anime: ${error}`);

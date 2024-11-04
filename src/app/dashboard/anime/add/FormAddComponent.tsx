@@ -166,10 +166,10 @@ export default function AddAnime() {
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
       // Kirim data menggunakan axios
-      const response = apiUrl.post(`${api}/anime/post`, formData);
-
+      const createData = await apiUrl.post(`${api}/anime/post`, formData);
+      const res = await createData.data;
       // Tampilkan pesan sukses jika request berhasil
-      message.success("Anime added successfully!");
+      message.success(res.message);
       setLoading(false);
       router.push("/dashboard/anime");
     } catch (error) {

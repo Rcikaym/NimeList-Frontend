@@ -20,6 +20,7 @@ import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
+import apiUrl from "@/hooks/api";
 
 interface DataType {
   id: string;
@@ -44,10 +45,10 @@ const AnimeList: React.FC = () => {
   // Fetch data dari API ketika komponen dimuat
   const fetchAnime = async () => {
     try {
-      const response = await fetch(
+      const response = await apiUrl.get(
         `http://localhost:4321/anime/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
@@ -78,9 +79,7 @@ const AnimeList: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
     try {
-      await fetch(`http://localhost:4321/anime/delete/${id}`, {
-        method: "DELETE",
-      }); // Melakukan DELETE ke server
+      await apiUrl.delete(`http://localhost:4321/anime/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post

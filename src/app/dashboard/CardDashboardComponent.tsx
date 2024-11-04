@@ -1,5 +1,6 @@
 "use client";
 
+import apiUrl from "@/hooks/api";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import {
@@ -27,11 +28,11 @@ export async function fetchDashboardData() {
       transactionResponse,
       incomeResponse,
     ] = await Promise.all([
-      fetch(`${api}/dashboard/total-topic`, { method: "GET" }),
-      fetch(`${api}/dashboard/total-premium`, { method: "GET" }),
-      fetch(`${api}/dashboard/total-transaction`, { method: "GET" }),
-      fetch(`${api}/dashboard/total-income`, { method: "GET" }),
-    ]).then((responses) => Promise.all(responses.map((r) => r.json())));
+      apiUrl.get(`${api}/dashboard/total-topic`, { method: "GET" }),
+      apiUrl.get(`${api}/dashboard/total-premium`, { method: "GET" }),
+      apiUrl.get(`${api}/dashboard/total-transaction`, { method: "GET" }),
+      apiUrl.get(`${api}/dashboard/total-income`, { method: "GET" }),
+    ]).then((responses) => Promise.all(responses.map((r) => r.data)));
 
     return {
       totalTopics: topicsResponse.totalTopic,
