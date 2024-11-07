@@ -21,6 +21,7 @@ import renderDateTime from "@/components/FormatDateTime";
 import { TopicType } from "./types";
 import Image from "next/image";
 import TopicBody from "./TopicBodyComponent";
+import apiUrl from "@/hooks/api";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -113,15 +114,13 @@ export default function TopicDetails({ id }: { id: string }) {
     const fetchTopic = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${api}/topic/get/${id}`, {
-          method: "GET",
-        });
+        const response = await apiUrl.get(`${api}/topic/get/${id}`);
 
-        if (!response.ok) {
+        if (!response) {
           throw new Error("Failed to fetch topic data");
         }
 
-        setTopic(await response.json());
+        setTopic(await response.data);
         setError(null);
         setLoading(false);
       } catch (error) {

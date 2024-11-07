@@ -18,6 +18,7 @@ import { SorterResult } from "antd/es/table/interface";
 import { DataType, TransactionDetails } from "./types";
 import ModalDetailTransaction from "@/app/dashboard/transaction/ModalDetailTransactionComponent";
 import FilterModal from "@/app/dashboard/transaction/ModalFilterTransactionComponent";
+import apiUrl from "@/hooks/api";
 
 const TransactionList = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
@@ -40,21 +41,16 @@ const TransactionList = () => {
 
   const showModalDetail = async (id: string) => {
     setModalVisible(true);
-    const res = await fetch(`${api}/transactions/get-admin/${id}`, {
-      method: "GET",
-    });
-    setDetailTransaction(await res.json());
+    const res = await apiUrl.get(`${api}/transactions/get-admin/${id}`);
+    setDetailTransaction(await res.data);
   };
 
   const fetchTransaction = async () => {
     try {
-      const response = await fetch(
-        `${api}/transactions/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&${filterString}`,
-        {
-          method: "GET",
-        }
+      const response = await apiUrl.get(
+        `${api}/transactions/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&${filterString}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
