@@ -18,12 +18,12 @@ const TopicBody: React.FC<DynamicContentProps> = ({ content }) => {
       if (originalSrc && !originalSrc.startsWith("http")) {
         img.setAttribute("src", `http://localhost:4321${originalSrc}`); // Ganti dengan URL yang diinginkan
         img.setAttribute("height", "full");
-        img.setAttribute("width", "800");
+        img.setAttribute("width", "300");
         img.setAttribute("alt", "image");
         img.setAttribute("loading", "lazy");
       } else {
         img.setAttribute("height", "full");
-        img.setAttribute("width", "800");
+        img.setAttribute("width", "300");
         img.setAttribute("alt", "image");
         img.setAttribute("loading", "lazy");
       }

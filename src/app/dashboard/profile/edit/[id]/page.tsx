@@ -186,9 +186,23 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
         <Form.Item name="bio" label="Bio">
           <Input.TextArea autoSize placeholder="Input bio" />
         </Form.Item>
-        <Button type="primary" className="mt-6" htmlType="submit">
-          Save Changes
-        </Button>
+        <div className="flex justify-between">
+          <Button
+            href={`/dashboard/profile/${idUser}`}
+            color="default"
+            className="mt-6"
+          >
+            Back
+          </Button>
+          <Button
+            color="primary"
+            variant="solid"
+            className="mt-6"
+            htmlType="submit"
+          >
+            Save Changes
+          </Button>
+        </div>
       </Form>
     </>
   );

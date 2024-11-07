@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { Alert, Button, Form, InputNumber, Modal, Select, Spin } from "antd";
 import { Option } from "antd/es/mentions";
-import { getAccessToken, setAccessToken } from "@/hooks/auth";
+import { getAccessToken, setAccessToken } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
+import apiUrl from "@/hooks/api";
 
 declare global {
   interface Window {
@@ -74,14 +75,8 @@ const PaymentModal = ({ show, handleClose }: any) => {
         id_premium: selectedMembership,
       };
 
-      const response = await fetch(`${api}/transactions/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      const { token } = await response.json();
+      const response = await apiUrl.post(`${api}/transactions/create`, payload);
+      const { token } = await response.data;
 
       // Redirect ke Midtrans
       const script = document.createElement("script");

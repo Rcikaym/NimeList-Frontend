@@ -14,6 +14,7 @@ import PageTitle from "@/components/TitlePage";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { formats, modules } from "./TextAreaUtils";
+import apiUrl from "@/hooks/api";
 
 interface DataType {
   title: string;
@@ -121,13 +122,9 @@ const CreateTopic: React.FC = () => {
 
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
-      // Kirim data menggunakan swr
-      const response = await fetch(`${api}/topic/post`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await apiUrl.post(`${api}/topic/post`, formData);
 
-      if (!response.ok) {
+      if (!response) {
         throw new Error("Failed to add topic");
       }
 

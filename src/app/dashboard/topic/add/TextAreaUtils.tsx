@@ -1,3 +1,4 @@
+import apiUrl from "@/hooks/api";
 import React from "react";
 
 const imageHandler = () => {
@@ -14,14 +15,11 @@ const imageHandler = () => {
 
       try {
         // Ganti URL ini dengan endpoint upload gambar Anda
-        const response = await fetch(
+        const response = await apiUrl.post(
           "http://localhost:4321/topic/upload-image",
-          {
-            method: "POST",
-            body: formData,
-          }
+          formData
         );
-        const data = await response.json();
+        const data = await response.data;
         resolve(data.imageUrl);
       } catch (error) {
         console.error("Error uploading image: ", error);
