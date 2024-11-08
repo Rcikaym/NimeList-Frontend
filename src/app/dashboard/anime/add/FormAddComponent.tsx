@@ -232,7 +232,7 @@ export default function AddAnime() {
             label="Synopsis"
             rules={[{ required: true, message: "Please input synopsis" }]}
           >
-            <Input.TextArea showCount maxLength={9999} autoSize />
+            <Input.TextArea showCount maxLength={9999} autoSize placeholder="Input synopsis" />
           </Form.Item>
 
           {/* Select genre */}
@@ -240,7 +240,10 @@ export default function AddAnime() {
             label="Genre (Select More Than One)"
             name="genres"
             rules={[
-              { required: true, message: "Please select genre minimal 1" },
+              {
+                required: true,
+                message: "Please select genre minimal 2",
+              },
             ]}
           >
             <Select

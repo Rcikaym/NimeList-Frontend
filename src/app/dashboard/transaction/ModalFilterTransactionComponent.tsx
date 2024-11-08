@@ -33,7 +33,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   return (
     <Modal
-      title="Filter Transaksi dan Premium Type"
+      title="Transaction and Premium Filter"
       visible={isOpen}
       onCancel={onClose}
       footer={
