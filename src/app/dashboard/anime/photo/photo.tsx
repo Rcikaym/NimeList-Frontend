@@ -21,12 +21,12 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import { CustomTable } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import PageTitle from "@/components/TitlePage";
 import useDebounce from "@/utils/useDebounce";
-import { SorterResult } from "antd/es/table/interface";
 import Image from "next/image";
+import apiUrl from "@/hooks/api";
 
 interface PhotosType {
   photos: string[];
@@ -50,7 +50,6 @@ const normFile = (e: any) => {
 };
 
 const AnimePhotos: React.FC = () => {
-  const api = process.env.NEXT_PUBLIC_API_URL;
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [idPhoto, setId] = useState<string>(""); // Menyimpan anime yang sedang diedit
@@ -97,8 +96,8 @@ const AnimePhotos: React.FC = () => {
 
   // Modal detail photo
   const setDataDetail = async (id: string) => {
-    const data = await fetch(`${api}/photo-anime/get/${id}`, { method: "GET" });
-    setDetailPhoto(await data.json());
+    const data = await apiUrl.get(`/photo-anime/get/${id}`);
+    setDetailPhoto(await data.data);
     console.log(detailPhoto);
   };
 
@@ -109,10 +108,7 @@ const AnimePhotos: React.FC = () => {
     formData.append("photos", file.originFileObj);
 
     try {
-      await fetch(`${api}/photo-anime/update/${idPhoto}`, {
-        method: "PUT",
-        body: formData,
-      }); // Update foto di server
+      await apiUrl.put(`/photo-anime/update/${idPhoto}`, formData); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
@@ -148,13 +144,10 @@ const AnimePhotos: React.FC = () => {
   // Fetch data dari API
   const fetchPhoto = async () => {
     try {
-      const response = await fetch(
-        `${api}/photo-anime/get-all?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`,
-        {
-          method: "GET",
-        }
+      const response = await apiUrl.get(
+        `/photo-anime/get-all?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
@@ -175,7 +168,7 @@ const AnimePhotos: React.FC = () => {
   // Fungsi untuk melakukan delete data photo
   const handleDeleteAnime = async (id: string) => {
     try {
-      await fetch(`${api}/photo-anime/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
+      await apiUrl.delete(`/photo-anime/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah data didelete
@@ -302,28 +295,27 @@ const AnimePhotos: React.FC = () => {
 
   return (
     <>
-      <PageTitle title="Anime - PhotoList" />
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineFileImage style={{ fontSize: 20 }} />
           </div>
-          <div>
+          <div className="flex flex-col">
             <h2 className="text-lg">Anime Photos Information</h2>
-            <span className="text-sm">Displays anime photo information</span>
+            <span>Displays anime photo information</span>
           </div>
         </div>
         <div className="items-center flex gap-3">
           <Link href="/dashboard">
-            <div className="text-black hover:text-emerald-700">
+            <div className="hover:text-emerald-700">
               <AppstoreFilled style={{ fontSize: 18 }} />
             </div>
           </Link>
-          <span className="text-black"> / </span>
-          <h2 className="text-black text-lg mt-2"> Manage Anime </h2>
-          <span className="text-black"> / </span>
+          <span> / </span>
+          <h2 className="text-lg mt-2"> Manage Anime </h2>
+          <span> / </span>
           <Link href="/dashboard/anime/photo">
-            <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
+            <h2 className="text-lg hover:text-emerald-700 mt-2">
               Anime Photo
             </h2>
           </Link>
@@ -362,7 +354,6 @@ const AnimePhotos: React.FC = () => {
             <Form.Item
               name="photos"
               label="Update Photo"
-              getValueFromEvent={normFile}
               rules={[{ required: true, message: "Please select file!" }]}
             >
               <Upload

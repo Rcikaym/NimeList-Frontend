@@ -145,17 +145,17 @@ const AnimeList: React.FC = () => {
       render: (text: string, record: DataType) => (
         <div className="flex gap-3">
           <a href={`anime/${record.id}`}>
-            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <EyeOutlined style={{ fontSize: 20 }} />
             </div>
           </a>
           <a href={`anime/edit/${record.id}`}>
-            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <AiOutlineEdit style={{ fontSize: 20 }} />
             </div>
           </a>
           <a onClick={() => showDeleteConfirm(record.id, record.title)}>
-            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
+            <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <AiOutlineDelete style={{ fontSize: 20 }} />
             </div>
           </a>
@@ -166,37 +166,31 @@ const AnimeList: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center mb-10 mt-3 justify-between">
+      <div className="flex items-center mt-3 mb-10 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <VideoCameraOutlined style={{ fontSize: 20 }} />
           </div>
-          <div>
-            <h2 className="text-black text-lg font-regular">
-              Anime Information
-            </h2>
-            <span className="text-black text-sm">
-              Displays anime short information and anime details
-            </span>
+          <div className="flex flex-col">
+            <h2 className="text-lg">Anime Information</h2>
+            <span>Displays anime short information and anime details</span>
           </div>
         </div>
         <div className="items-center flex gap-3">
           <Link href="/dashboard">
-            <div className="text-black hover:text-emerald-700">
+            <div className="hover:text-emerald-700">
               <AppstoreFilled style={{ fontSize: 18 }} />
             </div>
           </Link>
-          <span className="text-black"> / </span>
-          <h2 className="text-black text-lg mt-2"> Manage Anime </h2>
-          <span className="text-black"> / </span>
+          <span> / </span>
+          <h2 className="text-lg mt-2"> Manage Anime </h2>
+          <span> / </span>
           <Link href="/dashboard/anime">
-            <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
-              Anime
-            </h2>
+            <h2 className="text-lg hover:text-emerald-700 mt-2">Anime</h2>
           </Link>
         </div>
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between mb-3">
         <div className="mb-3">
           <a href="/dashboard/anime/add">
             <div className="flex items-center gap-1 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">

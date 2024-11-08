@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button, Row, Col, Typography } from "antd";
+import { useState } from "react";
+import { Button } from "antd";
 import PaymentModal from "@/app/dashboard/transaction/paymentModal";
-
-const { Title } = Typography;
 
 const Home: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -18,19 +16,17 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <Row justify="center">
-        <Col>
-          <Title level={2} className="text-center mb-6">
-            Test Sistem Pembayaran Menggunakan Midtrans
-          </Title>
-          <div className="flex justify-center">
-            <Button type="primary" onClick={showModal}>
-              Buka Modal Pembayaran
-            </Button>
-          </div>
-        </Col>
-      </Row>
+    <div className="my-10 flex items-center justify-center">
+      <div className="flex flex-col">
+        <h1 className="text-center mb-6 text-white">
+          Test Sistem Pembayaran Menggunakan Midtrans
+        </h1>
+        <div className="flex justify-center">
+          <Button type="primary" onClick={showModal}>
+            Buka Modal Pembayaran
+          </Button>
+        </div>
+      </div>
 
       <PaymentModal show={isModalVisible} handleClose={handleClose} />
     </div>

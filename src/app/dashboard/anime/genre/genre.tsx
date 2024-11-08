@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Modal, Space, Table, message } from "antd";
-import type { TableColumnsType, TableProps } from "antd";
+import { Form, Input, Modal, message } from "antd";
+import type { TableProps } from "antd";
 import {
   AiOutlineDelete,
   AiOutlineEdit,
@@ -10,14 +10,13 @@ import {
   AiOutlineSearch,
   AiOutlineTags,
 } from "react-icons/ai";
-import axios from "axios";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 import renderDateTime from "@/components/FormatDateTime";
-import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import { CustomTable } from "@/components/CustomTable";
 import { TablePaginationConfig } from "antd/es/table";
-import { SorterResult } from "antd/es/table/interface";
 import useDebounce from "@/utils/useDebounce";
+import apiUrl from "@/hooks/api";
 
 interface DataType {
   id: string;
@@ -72,13 +71,7 @@ const AnimeGenre: React.FC = () => {
   // Fungsi untuk melakukan post data genre
   const handlePostGenre = async (values: DataType) => {
     try {
-      await fetch(`${api}/genre/post`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      }); // Melakukan POST ke server
+      await apiUrl.post(`/genre/post`, values); // Melakukan POST ke server
       message.success("Genre added successfully!");
 
       // Fetch ulang data setelah post
@@ -102,13 +95,7 @@ const AnimeGenre: React.FC = () => {
   // Fungsi untuk melakukan edit data genre
   const handleEditGenre = async (values: DataType) => {
     try {
-      await fetch(`${api}/genre/update/${idGenre}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      }); // Melakukan PUT ke server
+      await apiUrl.put(`/genre/update/${idGenre}`, values); // Melakukan PUT ke server
       message.success("Genre edited successfully!");
 
       // Fetch ulang data setelah post
@@ -122,9 +109,7 @@ const AnimeGenre: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteGenre = async (id: string) => {
     try {
-      await fetch(`${api}/genre/delete/${id}`, {
-        method: "DELETE",
-      }); // Melakukan DELETE ke server
+      await apiUrl.delete(`/genre/delete/${id}`); // Melakukan DELETE ke server
       message.success("Genre deleted successfully!");
 
       // Fetch ulang data setelah post
@@ -264,13 +249,10 @@ const AnimeGenre: React.FC = () => {
   const fetchGenre = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${api}/genre/get-all?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`,
-        {
-          method: "GET",
-        }
+      const response = await apiUrl.get(
+        `/genre/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
@@ -306,26 +288,22 @@ const AnimeGenre: React.FC = () => {
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineTags style={{ fontSize: 20 }} />
           </div>
-          <div>
-            <h2 className="text-black text-lg font-regular">
-              Genre Information
-            </h2>
-            <span className="text-black text-sm">
-              Display genre information
-            </span>
+          <div className="flex flex-col">
+            <h2 className="text-lg">Genre Information</h2>
+            <span>Display genre information</span>
           </div>
         </div>
         <div className="items-center flex gap-3">
           <Link href="/dashboard">
-            <div className="text-black hover:text-emerald-700">
+            <div className="hover:text-emerald-700">
               <AppstoreFilled style={{ fontSize: 18 }} />
             </div>
           </Link>
-          <span className="text-black"> / </span>
-          <h2 className="text-black text-lg mt-2"> Manage Anime </h2>
-          <span className="text-black"> / </span>
+          <span> / </span>
+          <h2 className="text-lg mt-2"> Manage Anime </h2>
+          <span> / </span>
           <Link href="/dashboard/anime/genre">
-            <h2 className="text-black mt-2 text-lg font-regular hover:text-emerald-700">
+            <h2 className="mt-2 text-lg hover:text-emerald-700">
               Anime Genre
             </h2>
           </Link>

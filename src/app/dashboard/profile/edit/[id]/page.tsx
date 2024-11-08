@@ -135,7 +135,7 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
   return (
     <>
       <Form layout="vertical" form={form} onFinish={showUpdateConfirm}>
-        <Form.Item name="photo_cover" label="Update Photo">
+        <Form.Item name="photo_profile" label="Update Photo">
           <Upload
             {...uploadProps}
             maxCount={1}

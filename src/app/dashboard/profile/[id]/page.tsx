@@ -3,7 +3,7 @@
 import DisplayLongText from "@/components/DisplayLongText";
 import apiUrl from "@/hooks/api";
 import { useEffect, useState } from "react";
-import { BiCrown, BiShield, BiSolidShield } from "react-icons/bi";
+import { BiCrown, BiDiamond, BiShield, BiSolidShield } from "react-icons/bi";
 
 interface ProfileAdminDetail {
   id: string;
@@ -45,7 +45,7 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
     <>
       {profile && (
         <>
-          <div className="flex justify-start items-center gap-3 w-full">
+          <div className="flex justify-start items-center w-full">
             <div className="w-28 h-28">
               <img
                 src={
@@ -57,27 +57,18 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
                 className="w-full h-full object-cover rounded-full border-2 border-gray-300 m-0"
               />
             </div>
-            <div className="flex flex-col gap-2">
-              {profile && profile.badge === "NimeList Citizens" ? (
-                <div className="flex w-fit items-center gap-1 bg-emerald-700 rounded-md px-3 py-1 text-white">
-                  <span className="text-lg font-sans font-semibold">
-                    {profile.username}
-                  </span>
-                  <BiShield size={20} />
-                </div>
-              ) : (
-                <div className="flex w-fit items-center gap-1 bg-yellow-600 rounded-md px-3 py-1 text-white">
-                  <span className="text-lg font-sans font-semibold">
-                    {profile.username}
-                  </span>
-                  <BiCrown size={20} />
-                </div>
-              )}
+            <div className="flex flex-col gap-2 ml-5">
+              <div className="flex w-fit items-center gap-2 bg-[#005B50] rounded-md px-3 py-1 text-white">
+                <span className="text-lg font-sans font-semibold">
+                  {profile.username}
+                </span>
+                <BiDiamond size={20} />
+              </div>
               <div>
                 <span className="text-black text-sm">{profile.email}</span>
               </div>
             </div>
-            <div className="ml-20">
+            <div className="ml-24">
               <a
                 href={`/dashboard/profile/edit/${params.id}`}
                 className="border border-emerald-600 rounded-md hover:bg-emerald-50 flex items-center justify-center px-7 py-2"
