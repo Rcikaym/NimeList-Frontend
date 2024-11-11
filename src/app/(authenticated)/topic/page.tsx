@@ -1,5 +1,6 @@
 "use client";
 
+import { checkAdminRole } from "@/utils/adminRole";
 import { checkPremium } from "@/utils/premiumStatus";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -7,16 +8,23 @@ import { useEffect } from "react";
 export default function TopicPage() {
   const router = useRouter();
 
-  const handleCheckPremium = async () => {
+  const handleCheckEnableAccess = async () => {
     try {
-      await checkPremium();
+      const isPremium = await checkPremium();
+      const isAdmin = checkAdminRole();
+
+      if (!isPremium && !isAdmin) {
+        router.push("/payment");
+      }
+
+      return;
     } catch (error) {
       router.push("/payment");
     }
   };
 
   useEffect(() => {
-    handleCheckPremium();
+    handleCheckEnableAccess();
   }, []);
 
   return (

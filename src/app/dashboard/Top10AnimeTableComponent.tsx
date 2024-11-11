@@ -70,7 +70,7 @@ const TableTop10Anime = () => {
         columns={columnsAnimeTop}
         pagination={{ position: ["none"] }}
         title={() => (
-          <h3 className="text-black font-regular font-semibold text-lg flex items-center gap-2">
+          <h3 className="font-semibold text-lg flex items-center gap-2">
             Top 10 Anime of All Time{" "}
             <div className="shadow-sm shadow-gray-400 rounded-md p-1">
               <AiOutlineTrophy

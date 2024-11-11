@@ -2,16 +2,11 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { TablePaginationConfig } from "antd/es/table";
-import { Input, Modal, type TableColumnsType, type TableProps } from "antd";
-import {
-  AiFillCaretDown,
-  AiOutlineClockCircle,
-  AiOutlineShoppingCart,
-  AiOutlineTool,
-} from "react-icons/ai";
+import { Input, type TableColumnsType, type TableProps } from "antd";
+import { AiOutlineShoppingCart } from "react-icons/ai";
 import { AppstoreFilled, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import { CustomTable } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
@@ -167,26 +162,22 @@ const TransactionList = () => {
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineShoppingCart style={{ fontSize: 20 }} />
           </div>
-          <div>
-            <h2 className="text-black text-lg font-regular">
-              Transaction Information
-            </h2>
-            <span className="text-black text-sm">
+          <div className="flex flex-col">
+            <h2 className="text-lg">Transaction Information</h2>
+            <span>
               Displays transaction short information and transaction details
             </span>
           </div>
         </div>
         <div className="items-center flex gap-3">
           <Link href="/dashboard">
-            <div className="text-black hover:text-emerald-700">
+            <div className="hover:text-emerald-700">
               <AppstoreFilled style={{ fontSize: 18 }} />
             </div>
           </Link>
-          <span className="text-black"> / </span>
+          <span> / </span>
           <Link href="/dashboard/users">
-            <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
-              Transaction
-            </h2>
+            <h2 className="text-lg hover:text-emerald-700 mt-2">Transaction</h2>
           </Link>
         </div>
       </div>
