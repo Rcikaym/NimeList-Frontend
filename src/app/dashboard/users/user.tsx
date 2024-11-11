@@ -150,26 +150,20 @@ const UserList = () => {
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineUser style={{ fontSize: 20 }} />
           </div>
-          <div>
-            <h2 className="text-black text-lg font-regular">
-              User Information
-            </h2>
-            <span className="text-black text-sm">
-              Displays user short information and user details
-            </span>
+          <div className="flex flex-col">
+            <h2 className="text-lg">User Information</h2>
+            <span>Displays user short information and user details</span>
           </div>
         </div>
         <div className="items-center flex gap-3">
           <Link href="/dashboard">
-            <div className="text-black hover:text-emerald-700">
+            <div className="hover:text-emerald-700">
               <AppstoreFilled style={{ fontSize: 18 }} />
             </div>
           </Link>
-          <span className="text-black"> / </span>
+          <span> / </span>
           <Link href="/dashboard/users">
-            <h2 className="text-black text-lg font-regular hover:text-emerald-700 mt-2">
-              Users
-            </h2>
+            <h2 className="text-lg hover:text-emerald-700 mt-2">Users</h2>
           </Link>
         </div>
       </div>

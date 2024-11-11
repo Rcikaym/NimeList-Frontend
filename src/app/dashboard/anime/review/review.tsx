@@ -10,6 +10,7 @@ import {
   AiOutlineEdit,
   AiOutlineEye,
   AiOutlinePlus,
+  AiOutlineSearch,
   AiOutlineSmile,
   AiOutlineTool,
 } from "react-icons/ai";
@@ -24,6 +25,7 @@ import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
+import apiUrl from "@/hooks/api";
 
 interface DataType {
   id: string;
@@ -152,10 +154,7 @@ const ReviewList: React.FC = () => {
       message.success("Review deleted successfully!");
 
       // Fetch ulang data setelah di delete
-      const response = await fetch(`${api}/review/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data review
+      fetchReview();
     } catch (error) {
       message.error("Failed to delete review");
     }
@@ -204,10 +203,7 @@ const ReviewList: React.FC = () => {
       setModalVisible(false);
 
       // Fetch ulang data setelah update
-      const response = await fetch(`${api}/review/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data review
+      fetchReview();
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
       message.error("Failed to update review");
@@ -241,15 +237,10 @@ const ReviewList: React.FC = () => {
   const fetchReview = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${api}/review/get-all-admin?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
-        {
-          method: "GET",
-        }
+      const response = await apiUrl.get(
+        `${api}/review/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
@@ -264,23 +255,18 @@ const ReviewList: React.FC = () => {
   };
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
+    pagination: TablePaginationConfig
   ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
       current: pagination.current,
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
   };
 
   useEffect(() => {
     fetchReview();
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), debounceText]);
 
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
@@ -338,14 +324,10 @@ const ReviewList: React.FC = () => {
       {
         title: "Created By",
         dataIndex: "username",
-        sorter: true,
-        sortDirections: ["descend"],
-        ...getColumnSearchProps("username", setSearchText),
       },
       {
         title: "Title Anime",
         dataIndex: "title_anime",
-        ...getColumnSearchProps("title_anime", setSearchText),
       },
       {
         title: "Rating",
@@ -438,13 +420,20 @@ const ReviewList: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="mb-3">
+      <div className="mb-3 flex justify-between">
         <button type="button" onClick={() => showModal("post")}>
           <div className="flex items-center gap-2 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">
             <AiOutlinePlus />
             <span>Add Review</span>
           </div>
         </button>
+        <div>
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Search Username and Title Anime"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </div>
       </div>
       <CustomTable
         loading={loading}
