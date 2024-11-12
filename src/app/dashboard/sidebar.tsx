@@ -8,6 +8,7 @@ import {
   AiOutlineVideoCamera,
   AiOutlineAlignCenter,
   AiOutlineShoppingCart,
+  AiOutlineRuby,
 } from "react-icons/ai";
 import styles from "@/styles/sidebar.module.css";
 import Image from "next/image";
@@ -33,6 +34,7 @@ const SidebarMenu = () => {
       if (pathname === "/dashboard/topic/comment") return ["9"];
     }
     if (pathname === "/dashboard/transaction") return ["10"];
+    if (pathname === "/dashboard/premium") return ["11"];
     return [];
   };
 
@@ -130,6 +132,13 @@ const SidebarMenu = () => {
           className={styles.menuItem}
         >
           <Link href="/dashboard/transaction">Transaction</Link>
+        </Menu.Item>
+        <Menu.Item
+          key="11"
+          icon={<AiOutlineRuby size={22} />}
+          className={styles.menuItem}
+        >
+          <Link href="/dashboard/premium">Premium</Link>
         </Menu.Item>
       </Menu>
     </Sider>

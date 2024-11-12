@@ -100,7 +100,6 @@ const AnimeGenre: React.FC = () => {
 
       // Fetch ulang data setelah post
       fetchGenre();
-      form.resetFields(); // Reset form setelah submit
     } catch (error) {
       message.error("Failed to edit genre");
     }
