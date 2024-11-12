@@ -10,6 +10,7 @@ import {
   Modal,
   Select,
   Upload,
+  UploadProps,
 } from "antd";
 import {
   ExclamationCircleFilled,
@@ -54,6 +55,8 @@ export default function AddAnime() {
   const [loading, setLoading] = useState<boolean>(true);
   const [type, setType] = useState<string | null>(null);
   const [episodes, setEpisodes] = useState<number | null>(null);
+  const [fileList, setFileList] = useState([]);
+  const [fileCover, setFileCover] = useState([]);
   const { confirm } = Modal;
   const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -178,6 +181,43 @@ export default function AddAnime() {
     }
   };
 
+  const handlePhotosUpload = (info: any) => {
+    const { file, fileList } = info;
+
+    setFileList(fileList);
+    if (file.status === "done") {
+      message.success(`${file.name} file uploaded successfully`);
+    } else if (file.status === "error") {
+      message.error(`${file.name} file upload failed.`);
+    }
+  };
+
+  const handleCoverUpload = (info: any) => {
+    const { file, fileList } = info;
+
+    setFileCover(fileList);
+    if (file.status === "done") {
+      message.success(`${file.name} file uploaded successfully`);
+    } else if (file.status === "error") {
+      message.error(`${file.name} file upload failed.`);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    beforeUpload: (file) => {
+      const isJpgOrPng =
+        file.type === "image/jpeg" || file.type === "image/png";
+      if (!isJpgOrPng) {
+        message.error("You can only upload JPG/PNG file!");
+      }
+      const isLt2M = file.size / 1024 / 1024 < 5;
+      if (!isLt2M) {
+        message.error("Image must smaller than 5MB!");
+      }
+      return isJpgOrPng && isLt2M;
+    },
+  };
+
   return (
     <>
       <div className="mb-2 bg-[#005B50] p-2 rounded-md font-semibold text-lg text-white">
@@ -232,7 +272,12 @@ export default function AddAnime() {
             label="Synopsis"
             rules={[{ required: true, message: "Please input synopsis" }]}
           >
-            <Input.TextArea showCount maxLength={9999} autoSize placeholder="Input synopsis" />
+            <Input.TextArea
+              showCount
+              maxLength={9999}
+              autoSize
+              placeholder="Input synopsis"
+            />
           </Form.Item>
 
           {/* Select genre */}
@@ -304,20 +349,28 @@ export default function AddAnime() {
             name="photo_cover"
             rules={[{ required: true, message: "Please input image cover" }]}
             label="Upload Cover Image"
-            getValueFromEvent={normFile}
           >
-            <Upload listType="picture" maxCount={1}>
+            <Upload
+              listType="picture"
+              maxCount={1}
+              fileList={fileCover}
+              onChange={(info) => handleCoverUpload(info)}
+              {...uploadProps}
+            >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
           </Form.Item>
 
           {/* Upload Image */}
-          <Form.Item
-            name="photos_anime"
-            label="Upload Photo Anime"
-            getValueFromEvent={normFile}
-          >
-            <Upload listType="picture" maxCount={4} multiple>
+          <Form.Item name="photos_anime" label="Upload Photo Anime">
+            <Upload
+              listType="picture"
+              maxCount={4}
+              multiple
+              fileList={fileList}
+              onChange={(info) => handlePhotosUpload(info)}
+              {...uploadProps}
+            >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
           </Form.Item>

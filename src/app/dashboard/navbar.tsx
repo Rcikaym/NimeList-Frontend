@@ -20,11 +20,14 @@ const Navbar: React.FC = () => {
     const token = getAccessToken();
 
     if (token) {
-      const decodedToken: { username: string; userId: string } =
+      const decodedToken: { username: string; userId: string; role: string } =
         jwtDecode(token);
-      setUsername(decodedToken.username);
-      setIdUser(decodedToken.userId);
-      getPhotoUrl(decodedToken.userId);
+
+      if (decodedToken.role === "admin") {
+        setUsername(decodedToken.username);
+        setIdUser(decodedToken.userId);
+        getPhotoUrl(decodedToken.userId);
+      }
     }
   }, []);
 
