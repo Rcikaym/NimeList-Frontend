@@ -19,7 +19,6 @@ import Link from "next/link";
 import renderDateTime from "@/components/FormatDateTime";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import useDebounce from "@/utils/useDebounce";
-import api from "@/hooks/api";
 import apiUrl from "@/hooks/api";
 
 interface DataType {
@@ -46,7 +45,7 @@ const TopicList: React.FC = () => {
 
   const fetchTopic = async () => {
     try {
-      const response = await api.get(
+      const response = await apiUrl.get(
         `/topic/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
       const { data, total } = await response.data;
@@ -80,7 +79,7 @@ const TopicList: React.FC = () => {
   // Fungsi untuk melakukan delete data topic
   const handleDeleteTopic = async (id: string) => {
     try {
-      await apiUrl.delete(`${api}/topic/delete/${id}`);
+      await apiUrl.delete(`/topic/delete/${id}`);
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah data didelete

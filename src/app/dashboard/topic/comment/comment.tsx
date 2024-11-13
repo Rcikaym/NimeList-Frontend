@@ -25,9 +25,9 @@ import {
 } from "react-icons/ai";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable } from "@/components/customTable";
+import { CustomTable } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
-import DisplayLongText from "@/components/displayLongText";
+import DisplayLongText from "@/components/DisplayLongText";
 import { Option } from "antd/es/mentions";
 import useDebounce from "@/utils/useDebounce";
 
