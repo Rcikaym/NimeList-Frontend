@@ -54,6 +54,10 @@ const PremiumList: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    fetchPremium(); // Panggil fungsi fetchPremium saat komponen dimuat
+  }, []);
+
   const showModal = (modalMode: "edit" | "post") => {
     setMode(modalMode);
     setModalVisible(true);
@@ -111,10 +115,6 @@ const PremiumList: React.FC = () => {
       message.error("Failed to edit premium");
     }
   };
-
-  useEffect(() => {
-    fetchPremium(); // Panggil fungsi fetchPremium saat komponen dimuat
-  }, []);
 
   // Fungsi untuk melakukan delete data premium
   const handleDeletePremium = async (id: string) => {

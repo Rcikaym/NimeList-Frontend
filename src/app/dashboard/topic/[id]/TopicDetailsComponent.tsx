@@ -114,7 +114,7 @@ export default function TopicDetails({ id }: { id: string }) {
     const fetchTopic = async () => {
       setLoading(true);
       try {
-        const response = await apiUrl.get(`${api}/topic/get/${id}`);
+        const response = await apiUrl.get(`/topic/get/${id}`);
 
         if (!response) {
           throw new Error("Failed to fetch topic data");
