@@ -9,7 +9,7 @@ import ClientPagination from "@/components/ClientPagination";
 import { useSearchParams } from "next/navigation"; // Next.js hook to manage query params
 import { AnimeType } from "./types";
 
-export default function MostPopular() {
+export default function NewlyArrived() {
   const [anime, setAnime] = useState<AnimeType[]>([]); // Using AnimeType[] for anime list
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0); // State to store the total number of items
@@ -19,20 +19,16 @@ export default function MostPopular() {
     ? parseInt(searchParams.get("page")!)
     : 1;
 
-  const limit = 25;
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `${api}/anime/get-most-popular?_page=${currentPage}&_limit=${limit}`
-        ); // Updated API URL
-        const animeData: AnimeType[] = await response.json(); // Ensuring animeData is of type AnimeType[]
+        const response = await fetch(`${api}/anime/get-newest?limit=25`);
+        const animeData = await response.json(); // Ensuring animeData is of type AnimeType[]
         const totalItems = parseInt(
           response.headers.get("X-Total-Count") || "0"
         ); // Get total items from headers
-        setAnime(animeData);
+        setAnime(animeData.data);
         setTotal(totalItems); // Set total number of items
         setLoading(false);
       } catch (error) {
@@ -48,8 +44,8 @@ export default function MostPopular() {
 
   return (
     <div className="container mx-auto">
-      <h1 className="w-fit font-jakarta text-3xl font-black p-8 bg-gradient-to-r from-[#05E1C6] to-[#008576b7] bg-clip-text text-transparent">
-        Most Popular
+      <h1 className="w-fit font-jakarta text-3xl font-black p-8 bg-gradient-to-r from-[#05E1C6] to-[#009e10] bg-clip-text text-transparent">
+        Newly Arrived
       </h1>
       <ul className="place-items-center grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {/* Sort the anime list by rating in descending order */}
@@ -90,7 +86,7 @@ export default function MostPopular() {
               </p>
               <p className="flex items-center font-semibold">
                 <StarFilled className="text-yellow-500 mr-1" />{" "}
-                {anime.weighted_rating}
+                {anime.avgRating}
               </p>
             </div>
           </li>

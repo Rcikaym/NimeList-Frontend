@@ -4,12 +4,11 @@ import { useState, useEffect } from "react";
 import { BiBookmarkPlus } from "react-icons/bi";
 import { TiChevronRight, TiChevronLeft } from "react-icons/ti";
 import { AnimeType } from "./types";
+import { GenreType } from "./types";
 import {
   Modal,
   ModalContent,
-  ModalHeader,
   ModalBody,
-  ModalFooter,
   Button,
   Chip,
   useDisclosure,
@@ -17,7 +16,7 @@ import {
 import { HeroVideoDialog } from "@/components/magicui/HeroVideoPlayer";
 
 interface CarouselProps {
-  interval: number; // interval in milliseconds
+  interval: number;
 }
 
 const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
@@ -27,7 +26,6 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
   const api = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
-    // Fetch anime data from the API
     const fetchAnimeData = async () => {
       try {
         const response = await fetch(`${api}/anime/get-newest?limit=3`);
@@ -46,9 +44,7 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
       setCurrentIndex((currentIndex + 1) % animeData.length);
     }, interval);
 
-    return () => {
-      clearInterval(timer);
-    };
+    return () => clearInterval(timer);
   }, [currentIndex, animeData.length, interval]);
 
   const handleNext = () => {
@@ -64,32 +60,38 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
   const currentAnime = animeData[currentIndex];
 
   return (
-    <>
+    <div className="flex flex-col lg:flex-row items-center justify-center relative w-full h-auto overflow-hidden">
       {/* Left content (carousel) */}
-      <div className="w-[52.625rem] h-[57.934rem] lg:w-1/2 lg:h-auto relative overflow-hidden">
+      <div className="w-full lg:w-1/2 h-[350px] lg:h-[57.934rem] relative overflow-hidden shadow-lg rounded-lg">
         <div className="flex justify-center items-center h-full">
           {animeData.map((data, index) => (
             <img
               key={index}
               src={`${api}/${data.photo_cover.replace(/\\/g, "/")}`}
               alt={`Carousel item ${index}`}
-              className={`absolute w-auto h-full object-contain transition-opacity duration-1000 ease-in-out ${
-                index === currentIndex ? "opacity-100" : "opacity-0"
-              }`}
+              className={`absolute w-full h-full object-cover transition-opacity duration-1000 ease-in-out transform ${
+                index === currentIndex
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-90"
+              } shadow-lg rounded-lg`}
+              style={{
+                transform: index === currentIndex ? "scale(1.05)" : "scale(1)",
+                transition: "transform 0.3s ease, opacity 0.3s ease",
+              }}
             />
           ))}
         </div>
       </div>
 
       {/* Right content */}
-      <div className="flex flex-col justify-center w-full lg:w-1/2 p-6 lg:p-10">
-        <h1 className="text-3xl lg:text-5xl font-bold mb-2 select-none">
+      <div className="flex flex-col items-start justify-center w-full lg:w-1/2 p-4 md:p-6 lg:p-10 text-center lg:text-left">
+        <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-white mb-2 select-none">
           {currentAnime.title}
         </h1>
-        <div className="flex gap-2">
-          {currentAnime.genres.map((genre: any) => (
+        <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
+          {currentAnime.genres.map((genre) => (
             <Chip
-              key={genre.id}
+              key={genre}
               classNames={{
                 base: "bg-[#008576b7] text-white font-medium m-0",
               }}
@@ -97,14 +99,14 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
               variant="flat"
               size="sm"
             >
-              {genre.name}
+              {genre}
             </Chip>
           ))}
         </div>
-        <p className="text-gray-300 mb-6 text-sm lg:text-base line-clamp-4">
+        <p className="text-gray-300 mb-6 text-sm lg:text-base px-4 lg:px-0 line-clamp-4">
           {currentAnime.synopsis}
         </p>
-        <div className="flex items-center mb-6">
+        <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
           <Button
             onPress={onOpen}
             className="bg-[#1ecab6] text-black font-semibold py-2 px-4 rounded-lg hover:bg-[#00BFA3] transition duration-300"
@@ -112,51 +114,37 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
           >
             WATCH THE TRAILER
           </Button>
-          <span className="lg:inline-block mx-4 text-gray-400 select-none">
-            |
-          </span>
-          <a>
-            <BiBookmarkPlus className="text-2xl mt-0 lg:mt-0" />
-          </a>
+          <BiBookmarkPlus className="text-2xl text-gray-400 cursor-pointer" />
         </div>
       </div>
-      {/* Navigation buttons (prev and next) */}
+
+      {/* Navigation buttons */}
       <button
-        className="absolute h-full top-0 left-0 p-4 text-white bg-black bg-opacity-0 hover:bg-opacity-100 "
+        className="absolute top-1/2 transform -translate-y-1/2 left-1 text-white bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full p-2"
         onClick={handlePrev}
       >
-        <TiChevronLeft className="text-2xl" />
+        <TiChevronLeft className="w-6 h-6" />
       </button>
       <button
-        className="absolute h-full top-0 right-0 p-4 text-white bg-black bg-opacity-0 hover:bg-opacity-100 "
+        className="absolute top-1/2 transform -translate-y-1/2 right-1 text-white bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full p-2"
         onClick={handleNext}
       >
-        <TiChevronRight className="text-2xl" />
+        <TiChevronRight className="w-6 h-6" />
       </button>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      {/* Modal */}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
         <ModalContent>
-          <>
-            <ModalBody>
-              <div className="w-full h-full">
-                <HeroVideoDialog
-                  className="hidden dark:block"
-                  animationStyle="from-center"
-                  videoSrc={currentAnime.trailer_link}
-                  thumbnailSrc="https://startup-template-sage.vercel.app/hero-light.png"
-                />
-                <HeroVideoDialog
-                  className="dark:hidden block"
-                  animationStyle="from-center"
-                  videoSrc={currentAnime.trailer_link}
-                  thumbnailSrc="https://startup-template-sage.vercel.app/hero-dark.png"
-                />
-              </div>
-            </ModalBody>
-          </>
+          <ModalBody>
+            <HeroVideoDialog
+              animationStyle="from-center"
+              videoSrc={currentAnime.trailer_link}
+              thumbnailSrc="https://startup-template-sage.vercel.app/hero-light.png"
+            />
+          </ModalBody>
         </ModalContent>
       </Modal>
-    </>
+    </div>
   );
 };
 
