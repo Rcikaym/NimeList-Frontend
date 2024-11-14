@@ -27,7 +27,6 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-
 }
 
 @layer utilities {
@@ -39,4 +38,10 @@ body {
 .custom-dropdown-item:hover {
   background-color: #00554bc3; /* Hover background color */
   color: white; /* Optional: Hover text color */
+}
+.slick-slide {
+  width: 2rem;
+}
+.slick-list{
+  height : 
 }
