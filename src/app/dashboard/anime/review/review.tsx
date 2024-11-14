@@ -26,6 +26,7 @@ import DisplayLongText from "@/components/DisplayLongText";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import apiUrl from "@/hooks/api";
+import { a } from "framer-motion/client";
 
 interface DataType {
   id: string;
@@ -63,7 +64,6 @@ const ReviewList: React.FC = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
 
@@ -104,18 +104,14 @@ const ReviewList: React.FC = () => {
   // Fungsi untuk melakukan post data genre
   const handlePostReview = async (values: DataType) => {
     try {
-      const res = await fetch(`${api}/review/post`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      }); // Melakukan POST ke server
+      const res = await apiUrl.post(`/review/post`, values); // Melakukan POST ke server
 
       if (res.status === 201) {
         message.success("Review added successfully!");
         fetchReview();
         form.resetFields(); // Reset form setelah submit
       } else {
-        const err = await res.json();
+        const err = await res.data;
         message.error(err.message);
         setMode("post");
       }
@@ -150,7 +146,7 @@ const ReviewList: React.FC = () => {
   // Fungsi untuk melakukan delete data review
   const handleDeleteReview = async (id: string) => {
     try {
-      await fetch(`${api}/review/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
+      await apiUrl.delete(`/review/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
       message.success("Review deleted successfully!");
 
       // Fetch ulang data setelah di delete
@@ -194,11 +190,7 @@ const ReviewList: React.FC = () => {
 
   const handleEditReview = async (values: DataType) => {
     try {
-      await fetch(`${api}/review/update/${idReview}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+      await apiUrl.put(`/review/update/${idReview}`, values); // Melakukan PUT ke server
       message.success("Review updated successfully!");
       setModalVisible(false);
 
@@ -238,7 +230,7 @@ const ReviewList: React.FC = () => {
     setLoading(true);
     try {
       const response = await apiUrl.get(
-        `${api}/review/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
+        `/review/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
       const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
@@ -283,10 +275,8 @@ const ReviewList: React.FC = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${api}/review/get-all-user`, {
-          method: "GET",
-        });
-        setDataUser(await response.json()); // Mengisi data dengan user dari API
+        const response = await apiUrl.get(`/review/get-all-user`);
+        setDataUser(await response.data); // Mengisi data dengan user dari API
       } catch (error) {
         console.error("Error fetching users:", error);
       }

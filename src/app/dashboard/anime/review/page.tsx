@@ -4,7 +4,7 @@ import ReviewList from "./review";
 export default async function Page() {
   return (
     <>
-      <PageTitle title={`Anime Reviews`} />
+      <PageTitle title={`Anime Reviews List`} />
       <ReviewList />
     </>
   );
