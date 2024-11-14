@@ -9,6 +9,9 @@ export const setAccessToken = (token, expiresIn) => {
 };
 
 export const getAccessToken = () => {
+  if (isAccessTokenExpired()) {
+    refreshAccessToken();
+  }
   return localStorage.getItem("access_token");
 };
 

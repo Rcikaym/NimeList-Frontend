@@ -25,11 +25,12 @@ import {
 } from "react-icons/ai";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable } from "@/components/customTable";
+import { CustomTable } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
-import DisplayLongText from "@/components/displayLongText";
+import DisplayLongText from "@/components/DisplayLongText";
 import { Option } from "antd/es/mentions";
 import useDebounce from "@/utils/useDebounce";
+import apiUrl from "@/hooks/api";
 
 const { Text } = Typography;
 
@@ -79,6 +80,7 @@ const TopicCommentList: React.FC = () => {
 
   const handleCancel = () => {
     setModalVisible(false);
+    form.resetFields();
   };
 
   const handleOk = () => {
@@ -104,18 +106,14 @@ const TopicCommentList: React.FC = () => {
 
   // Set data detail comment
   const setDataDetail = async (id: string) => {
-    const data = await fetch(`${api}/comment/get/${id}`);
-    setDetailComment(await data.json());
+    const res = await apiUrl.get(`/comment/get/${id}`);
+    setDetailComment(await res.data);
   };
 
   // Fungsi untuk melakukan post data genre
   const handlePostComment = async (values: DataPost) => {
     try {
-      const post = await fetch(`${api}/comment/post`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      }); // Melakukan POST ke server
+      const post = await apiUrl.post(`/comment/post`, values); // Melakukan POST ke server
 
       message.success("Comment added successfully!");
       // Fetch ulang data setelah post
@@ -151,21 +149,17 @@ const TopicCommentList: React.FC = () => {
 
   const setDataEdit = async (id: string) => {
     setId(id);
-    const data = await fetch(`${api}/comment/get/${id}`);
-    const res = await data.json();
+    const res = await apiUrl.get(`/comment/get/${id}`);
+    const { comment } = await res.data;
     // Set data ke dalam form
     form.setFieldsValue({
-      comment: res.comment,
+      comment: comment,
     });
   };
 
   const handleEditComment = async (values: DataEdit) => {
     try {
-      await fetch(`${api}/comment/update/${idComment}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+      await apiUrl.put(`/comment/update/${idComment}`, values); // Melakukan PUT ke server
       message.success("Comment updated successfully!");
       setModalVisible(false);
 
@@ -198,10 +192,10 @@ const TopicCommentList: React.FC = () => {
 
   const fetchComment = async () => {
     try {
-      const response = await fetch(
-        `${api}/comment/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
+      const response = await apiUrl.get(
+        `/comment/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
@@ -219,8 +213,8 @@ const TopicCommentList: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${api}/comment/get-all-user`);
-        setUser(await response.json()); // Mengisi data dengan hasil dari API
+        const response = await apiUrl.get(`/comment/get-all-user`);
+        setUser(await response.data); // Mengisi data dengan hasil dari API
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -228,8 +222,8 @@ const TopicCommentList: React.FC = () => {
 
     const fetchTopic = async () => {
       try {
-        const response = await fetch(`${api}/comment/get-all-topic`);
-        setTopic(await response.json()); // Mengisi data dengan isi dari API
+        const response = await apiUrl.get(`/comment/get-all-topic`);
+        setTopic(await response.data); // Mengisi data dengan isi dari API
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -256,7 +250,7 @@ const TopicCommentList: React.FC = () => {
   // Fungsi untuk melakukan delete data comment
   const handleDeleteComment = async (id: string) => {
     try {
-      await fetch(`${api}/comment/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
+      await apiUrl.delete(`/comment/delete/${id}`); // Melakukan DELETE ke server
       message.success("Comment deleted successfully!");
 
       // Fetch ulang data setelah di delete
@@ -412,13 +406,13 @@ const TopicCommentList: React.FC = () => {
 
       {/* Modal dynamic mode */}
       <Modal
-        title={
-          "Modal " + modalMode === "post"
-            ? "Add New Comment"
-            : modalMode === "edit"
-            ? "Edit Comment"
-            : "Detail Comment"
-        }
+        title={`${
+          modalMode === "post"
+            ? "Post"
+            : modalMode === "detail"
+            ? "Detail"
+            : "Edit"
+        } Comment Topic`}
         centered
         open={modalVisible}
         onOk={handleOk}
@@ -429,7 +423,8 @@ const TopicCommentList: React.FC = () => {
         okButtonProps={{
           style: modalMode === "detail" ? { display: "none" } : {},
         }}
-        width="fit"
+        width={700}
+        height={500}
       >
         {modalMode === "detail" && detailComment ? (
           <div className="flex flex-col w-fit">
@@ -470,7 +465,7 @@ const TopicCommentList: React.FC = () => {
         )}
 
         {modalMode === "post" ? (
-          <Form form={form} layout="vertical" className="w-[28rem]">
+          <Form form={form} layout="vertical" className="w-full p-3">
             {/* Select user */}
             <Form.Item
               label="User"
@@ -531,7 +526,7 @@ const TopicCommentList: React.FC = () => {
         )}
 
         {modalMode === "edit" ? (
-          <Form form={form} layout="vertical" className="w-[28rem]">
+          <Form form={form} layout="vertical" className="w-full p-3">
             {/* Input review */}
             <Form.Item
               label="Comment"

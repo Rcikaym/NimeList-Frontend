@@ -20,11 +20,9 @@ import {
 import { useRouter } from "next/navigation";
 import { AnimeType, PhotosType, TopicType } from "./types";
 import "react-quill/dist/quill.snow.css";
-import {
-  formats,
-  modules,
-} from "@/app/dashboard/topic/add/moduleAndFormatTextArea";
+import { formats, modules } from "@/app/dashboard/topic/add/TextAreaUtils";
 import dynamic from "next/dynamic";
+import apiUrl from "@/hooks/api";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -70,11 +68,11 @@ export default function TopicEdit({ id }: { id: string }) {
 
   // Fetch topic edit data
   useEffect(() => {
-    const fetchAnime = async () => {
+    const fetchDetailTopic = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${api}/topic/get/${id}`);
-        const topicData = await response.json();
+        const response = await apiUrl.get(`/topic/get/${id}`);
+        const topicData = await response.data;
 
         const updatedContent = htmlParser(topicData.body);
 
@@ -107,16 +105,16 @@ export default function TopicEdit({ id }: { id: string }) {
       }
     };
 
-    fetchAnime();
+    fetchDetailTopic();
   }, [id, form]);
 
   // Fetch animes
   useEffect(() => {
     const fetchAnime = async () => {
-      const response = await fetch(`${api}/topic/get-all-anime`);
+      const response = await apiUrl.get(`/topic/get-all-anime`);
       setLoading(true);
       try {
-        setAnimes(await response.json());
+        setAnimes(await response.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching animes:", error);
@@ -179,18 +177,11 @@ export default function TopicEdit({ id }: { id: string }) {
 
     setLoading(true);
     try {
-      const response = await fetch(`${api}/topic/update/${id}`, {
-        method: "PUT",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update topic");
-      }
+      const response = await apiUrl.put(`/topic/update/${id}`, formData);
 
       message.success("Topic updated successfully!");
-      router.push("/dashboard/topic");
       setLoading(false);
+      router.push("/dashboard/topic");
     } catch (error) {
       message.error("Failed to update topic");
     }
@@ -203,7 +194,7 @@ export default function TopicEdit({ id }: { id: string }) {
       .then((values: TopicType) => {
         confirm({
           centered: true,
-          title: "Do you want to update an " + topic + " ?",
+          title: "Do you want to update this topic ?",
           icon: <ExclamationCircleFilled />,
           onOk() {
             setLoading(true); // Set status loading pada tombol OK
@@ -252,7 +243,7 @@ export default function TopicEdit({ id }: { id: string }) {
   return (
     <>
       <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg text-white">
-        Form Edit Topic {topic}
+        Form Edit Topic
       </div>
       <Form form={form} layout="vertical" onFinish={showUpdateConfirm}>
         <div className="rounded-sm shadow-md p-4">
@@ -272,10 +263,8 @@ export default function TopicEdit({ id }: { id: string }) {
           >
             <ReactQuill
               theme="snow"
-              modules={modules}
               value={content}
               onChange={(value) => setContent(value)}
-              formats={formats}
             />
           </Form.Item>
 

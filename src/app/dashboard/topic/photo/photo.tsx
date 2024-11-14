@@ -21,12 +21,13 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import PageTitle from "@/components/TitlePage";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import Image from "next/image";
+import apiUrl from "@/hooks/api";
 
 interface DataType {
   id: string;
@@ -45,7 +46,6 @@ const normFile = (e: any) => {
 };
 
 const TopicPhotoList: React.FC = () => {
-  const api = process.env.NEXT_PUBLIC_API_URL;
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [idPhoto, setIdPhoto] = useState<string>(""); // Menyimpan id photo yang sedang diedit
@@ -92,8 +92,8 @@ const TopicPhotoList: React.FC = () => {
 
   // Modal detail photo
   const setDataDetail = async (id: string) => {
-    const data = await fetch(`${api}/photo-topic/get/${id}`);
-    setDetailPhoto(await data.json());
+    const res = await apiUrl.get(`/photo-topic/get/${id}`);
+    setDetailPhoto(await res.data);
   };
 
   const handleEditPhoto = async (values: any) => {
@@ -103,10 +103,7 @@ const TopicPhotoList: React.FC = () => {
     formData.append("photos", file.originFileObj);
 
     try {
-      await fetch(`${api}/photo-topic/update/${idPhoto}`, {
-        method: "PUT",
-        body: formData,
-      }); // Update foto di server
+      await apiUrl.put(`/photo-topic/update/${idPhoto}`, formData); // Update foto di server
       message.success("Photo updated successfully!");
 
       // Fetch ulang data setelah update
@@ -141,10 +138,10 @@ const TopicPhotoList: React.FC = () => {
 
   const fetchPhoto = async () => {
     try {
-      const response = await fetch(
-        `${api}/photo-topic/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
+      const response = await apiUrl.get(
+        `/photo-topic/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
@@ -175,9 +172,7 @@ const TopicPhotoList: React.FC = () => {
   // Fungsi untuk melakukan delete data photo
   const handleDeletePhoto = async (id: string) => {
     try {
-      await fetch(`${api}/photo-topic/delete/${id}`, {
-        method: "DELETE",
-      }); // Melakukan DELETE ke server
+      await apiUrl.delete(`/photo-topic/delete/${id}`); // Melakukan DELETE ke server
       message.success("Photo deleted successfully!");
 
       // Fetch ulang data setelah post
@@ -341,13 +336,7 @@ const TopicPhotoList: React.FC = () => {
 
       {/* Dynamic modal */}
       <Modal
-        title={
-          "Modal " + modalMode === "post"
-            ? "Add New Comment"
-            : modalMode === "edit"
-            ? "Edit Comment"
-            : "Detail Comment"
-        }
+        title={modalMode === "edit" ? "Edit Photo" : "Detail Photo"}
         centered
         open={modalVisible}
         onOk={handleOk}

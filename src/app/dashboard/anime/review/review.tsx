@@ -10,6 +10,7 @@ import {
   AiOutlineEdit,
   AiOutlineEye,
   AiOutlinePlus,
+  AiOutlineSearch,
   AiOutlineSmile,
   AiOutlineTool,
 } from "react-icons/ai";
@@ -19,11 +20,13 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/customTable";
+import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
-import DisplayLongText from "@/components/displayLongText";
+import DisplayLongText from "@/components/DisplayLongText";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
+import apiUrl from "@/hooks/api";
+import { a } from "framer-motion/client";
 
 interface DataType {
   id: string;
@@ -61,7 +64,6 @@ const ReviewList: React.FC = () => {
     pageSize: 10,
     total: 0,
   });
-  const [sortOrder, setOrder] = useState<string>("ASC");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
 
@@ -102,18 +104,14 @@ const ReviewList: React.FC = () => {
   // Fungsi untuk melakukan post data genre
   const handlePostReview = async (values: DataType) => {
     try {
-      const res = await fetch(`${api}/review/post`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      }); // Melakukan POST ke server
+      const res = await apiUrl.post(`/review/post`, values); // Melakukan POST ke server
 
       if (res.status === 201) {
         message.success("Review added successfully!");
         fetchReview();
         form.resetFields(); // Reset form setelah submit
       } else {
-        const err = await res.json();
+        const err = await res.data;
         message.error(err.message);
         setMode("post");
       }
@@ -148,14 +146,11 @@ const ReviewList: React.FC = () => {
   // Fungsi untuk melakukan delete data review
   const handleDeleteReview = async (id: string) => {
     try {
-      await fetch(`${api}/review/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
+      await apiUrl.delete(`/review/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
       message.success("Review deleted successfully!");
 
       // Fetch ulang data setelah di delete
-      const response = await fetch(`${api}/review/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data review
+      fetchReview();
     } catch (error) {
       message.error("Failed to delete review");
     }
@@ -195,19 +190,12 @@ const ReviewList: React.FC = () => {
 
   const handleEditReview = async (values: DataType) => {
     try {
-      await fetch(`${api}/review/update/${idReview}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
+      await apiUrl.put(`/review/update/${idReview}`, values); // Melakukan PUT ke server
       message.success("Review updated successfully!");
       setModalVisible(false);
 
       // Fetch ulang data setelah update
-      const response = await fetch(`${api}/review/get-all`, {
-        method: "GET",
-      });
-      setData(await response.json()); // Memperbarui data review
+      fetchReview();
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
       message.error("Failed to update review");
@@ -241,15 +229,10 @@ const ReviewList: React.FC = () => {
   const fetchReview = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${api}/review/get-all-admin?page=${pagination.current}&limit=${
-          pagination.pageSize
-        }&search=${debounceText}&order=${encodeURIComponent(sortOrder)}`,
-        {
-          method: "GET",
-        }
+      const response = await apiUrl.get(
+        `/review/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
-      const { data, total } = await response.json();
+      const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
       setPagination({
         current: pagination.current,
@@ -264,23 +247,18 @@ const ReviewList: React.FC = () => {
   };
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
-    pagination: TablePaginationConfig,
-    filters,
-    sorter
+    pagination: TablePaginationConfig
   ) => {
-    const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
       current: pagination.current,
       pageSize: pagination.pageSize,
       total: pagination.total,
     });
-    setOrder(sortParsed.order === "descend" ? "DESC" : "ASC");
-    console.log(sortOrder);
   };
 
   useEffect(() => {
     fetchReview();
-  }, [JSON.stringify(pagination), sortOrder, debounceText]);
+  }, [JSON.stringify(pagination), debounceText]);
 
   // Fetch data dari API ketika komponen dimuat
   useEffect(() => {
@@ -297,10 +275,8 @@ const ReviewList: React.FC = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${api}/review/get-all-user`, {
-          method: "GET",
-        });
-        setDataUser(await response.json()); // Mengisi data dengan user dari API
+        const response = await apiUrl.get(`/review/get-all-user`);
+        setDataUser(await response.data); // Mengisi data dengan user dari API
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -338,14 +314,10 @@ const ReviewList: React.FC = () => {
       {
         title: "Created By",
         dataIndex: "username",
-        sorter: true,
-        sortDirections: ["descend"],
-        ...getColumnSearchProps("username", setSearchText),
       },
       {
         title: "Title Anime",
         dataIndex: "title_anime",
-        ...getColumnSearchProps("title_anime", setSearchText),
       },
       {
         title: "Rating",
@@ -417,38 +389,41 @@ const ReviewList: React.FC = () => {
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineSmile style={{ fontSize: 20 }} />
           </div>
-          <div>
-            <h2 className="text-black text-lg font-regular">
-              Review Information
-            </h2>
-            <span className="text-black text-sm">
-              Display review information
-            </span>
+          <div className="flex flex-col">
+            <h2 className="text-lg">Review Information</h2>
+            <span>Display review information</span>
           </div>
         </div>
         <div className="items-center flex gap-3">
           <Link href="/dashboard">
-            <div className="text-black hover:text-emerald-700">
+            <div className="hover:text-emerald-700">
               <AppstoreFilled style={{ fontSize: 18 }} />
             </div>
           </Link>
-          <span className="text-black"> / </span>
-          <h2 className="text-black text-lg mt-2"> Manage Anime </h2>
-          <span className="text-black"> / </span>
+          <span> / </span>
+          <h2 className="text-lg mt-2"> Manage Anime </h2>
+          <span> / </span>
           <Link href="/dashboard/anime/review">
-            <h2 className="text-black mt-2 text-lg font-regular hover:text-emerald-700">
+            <h2 className="mt-2 text-lg hover:text-emerald-700">
               Anime Review
             </h2>
           </Link>
         </div>
       </div>
-      <div className="mb-3">
+      <div className="mb-3 flex justify-between">
         <button type="button" onClick={() => showModal("post")}>
           <div className="flex items-center gap-2 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">
             <AiOutlinePlus />
             <span>Add Review</span>
           </div>
         </button>
+        <div>
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Search Username and Title Anime"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </div>
       </div>
       <CustomTable
         loading={loading}
