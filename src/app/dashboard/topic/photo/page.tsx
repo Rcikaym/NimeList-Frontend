@@ -4,7 +4,7 @@ import TopicPhotoList from "./photo";
 export default async function Page() {
   return (
     <>
-      <PageTitle title={`Topic - Photo Topic List`} />
+      <PageTitle title={`Photo Topic List`} />
       <TopicPhotoList />
     </>
   );

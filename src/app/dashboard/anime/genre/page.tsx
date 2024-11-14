@@ -4,7 +4,7 @@ import AnimeGenre from "./genre";
 export default async function Page() {
   return (
     <>
-      <PageTitle title={`Anime Genre`} />
+      <PageTitle title={`Anime Genres List`} />
       <AnimeGenre />
     </>
   );
