@@ -1,32 +1,33 @@
 import { useEffect, useState } from "react";
 import { Dropdown, Layout, message } from "antd";
-import { AiOutlineLogout, AiOutlineProfile } from "react-icons/ai";
+import type { MenuProps } from "antd";
 import Image from "next/image";
-import {
-  getAccessToken,
-  isAccessTokenExpired,
-  refreshAccessToken,
-  removeAccessToken,
-} from "@/utils/auth";
+import { getAccessToken, removeAccessToken } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
+import { BiHomeAlt, BiLogOut, BiSolidUserDetail } from "react-icons/bi";
+import apiUrl from "@/hooks/api";
 
 const { Header } = Layout;
 
 const Navbar: React.FC = () => {
   const [username, setUsername] = useState<string>("");
+  const [idUser, setIdUser] = useState<string>("");
+  const [photoUrl, setPhotoUrl] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
-    if (isAccessTokenExpired()) {
-      refreshAccessToken();
-    }
     const token = getAccessToken();
 
     if (token) {
-      const decodedToken: { username: string } = jwtDecode(token);
+      const decodedToken: { username: string; userId: string; role: string } =
+        jwtDecode(token);
 
-      setUsername(decodedToken.username);
+      if (decodedToken.role === "admin") {
+        setUsername(decodedToken.username);
+        setIdUser(decodedToken.userId);
+        getPhotoUrl(decodedToken.userId);
+      }
     }
   }, []);
 
@@ -36,20 +37,34 @@ const Navbar: React.FC = () => {
       message.success(response.message);
       router.push("/home");
     } catch (error) {
+      message.error("Failed to logout");
       console.error(error);
     }
   };
 
-  const items = [
+  const getPhotoUrl = async (id: string) => {
+    const get = await apiUrl.get(`/photo-profile/admin/${id}`);
+    setPhotoUrl(await get.data);
+  };
+
+  const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <a href="/dashboard/profile">Profile</a>,
-      icon: <AiOutlineProfile size={17} />,
+      label: <a href={`/dashboard/profile/${idUser}`}>Profile</a>,
+      icon: <BiSolidUserDetail size={17} />,
     },
     {
       key: "2",
+      label: <a href="/home">Home</a>,
+      icon: <BiHomeAlt size={17} />,
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "3",
       label: <button onClick={handleLogout}>Logout</button>,
-      icon: <AiOutlineLogout size={17} />,
+      icon: <BiLogOut size={17} />,
     },
   ];
 
@@ -71,7 +86,11 @@ const Navbar: React.FC = () => {
       <Dropdown menu={{ items }} placement="bottomRight">
         <div className="flex items-center mr-3">
           <Image
-            src="/images/logo-admin.jpeg"
+            src={
+              photoUrl === null
+                ? "/images/logo-admin.jpeg"
+                : `http://localhost:4321/${photoUrl.replace(/\\/g, "/")}`
+            }
             alt="User Profile"
             className="w-8 h-8 rounded-full cursor-pointer"
             width={32}

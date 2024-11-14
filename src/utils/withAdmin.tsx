@@ -20,10 +20,6 @@ const withAdmin = (WrappedComponent: React.ComponentType<WithAdminProps>) => {
     const router = useRouter();
 
     useEffect(() => {
-      if (isAccessTokenExpired()) {
-        refreshAccessToken();
-      }
-
       const accessToken = getAccessToken();
 
       if (!accessToken) {

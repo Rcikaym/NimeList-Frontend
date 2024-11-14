@@ -2,6 +2,7 @@
 import { AiFillStar, AiOutlineTrophy } from "react-icons/ai";
 import { Table } from "antd";
 import { useEffect, useState } from "react";
+import apiUrl from "@/hooks/api";
 
 interface animeTop {
   title: string;
@@ -55,8 +56,8 @@ const TableTop10Anime = () => {
 
   useEffect(() => {
     const fetchAnime = async () => {
-      const res = await fetch("http://localhost:4321/dashboard/top-10-anime");
-      setData(await res.json());
+      const res = await apiUrl.get("http://localhost:4321/dashboard/top-10-anime");
+      setData(await res.data);
     };
 
     fetchAnime();
@@ -69,7 +70,7 @@ const TableTop10Anime = () => {
         columns={columnsAnimeTop}
         pagination={{ position: ["none"] }}
         title={() => (
-          <h3 className="text-black font-regular font-semibold text-lg flex items-center gap-2">
+          <h3 className="font-semibold text-lg flex items-center gap-2">
             Top 10 Anime of All Time{" "}
             <div className="shadow-sm shadow-gray-400 rounded-md p-1">
               <AiOutlineTrophy

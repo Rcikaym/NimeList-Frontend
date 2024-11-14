@@ -1,4 +1,6 @@
+import apiUrl from "@/hooks/api";
 import React from "react";
+import "react-quill/dist/quill.snow.css"; // Import Quill styles
 
 const imageHandler = () => {
   return new Promise((resolve, reject) => {
@@ -13,15 +15,11 @@ const imageHandler = () => {
       formData.append("image", file);
 
       try {
-        // Ganti URL ini dengan endpoint upload gambar Anda
-        const response = await fetch(
+        const response = await apiUrl.post(
           "http://localhost:4321/topic/upload-image",
-          {
-            method: "POST",
-            body: formData,
-          }
+          formData
         );
-        const data = await response.json();
+        const data = await response.data;
         resolve(data.imageUrl);
       } catch (error) {
         console.error("Error uploading image: ", error);
@@ -34,14 +32,11 @@ const imageHandler = () => {
 export const modules = {
   toolbar: {
     container: [
-      [{ header: "1" }, { header: "2" }, { font: [] }],
-      [{ size: [] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ["bold", "italic", "underline", "blockquote"],
       [
         { list: "ordered" },
         { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
       ],
       ["link", "image"],
       ["clean"],
@@ -65,12 +60,9 @@ export const modules = {
 
 export const formats = [
   "header",
-  "font",
-  "size",
   "bold",
   "italic",
   "underline",
-  "strike",
   "blockquote",
   "list",
   "bullet",

@@ -13,10 +13,8 @@ import { useRouter } from "next/navigation";
 import PageTitle from "@/components/TitlePage";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-import {
-  formats,
-  modules,
-} from "./moduleAndFormatTextArea";
+import { formats, modules } from "./TextAreaUtils";
+import apiUrl from "@/hooks/api";
 
 interface DataType {
   title: string;
@@ -46,14 +44,13 @@ const CreateTopic: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   let [content, setContent] = useState<string>("");
   const { confirm } = Modal;
-  const api = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchAnime = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${api}/topic/get-all-anime`);
-        setAnimes(await response.json()); // Mengisi data dengan hasil dari API
+        const response = await apiUrl.get(`/topic/get-all-anime`);
+        setAnimes(await response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching animes:", error);
@@ -64,8 +61,8 @@ const CreateTopic: React.FC = () => {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${api}/topic/get-all-user`);
-        setUsers(await response.json()); // Mengisi data dengan hasil dari API
+        const response = await apiUrl.get(`/topic/get-all-user`);
+        setUsers(await response.data); // Mengisi data dengan hasil dari API
         setLoading(false); // Menonaktifkan status loading setelah data didapat
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -84,7 +81,7 @@ const CreateTopic: React.FC = () => {
       .then((values: DataType) => {
         confirm({
           centered: true,
-          title: "Do you want to add an " + values.title + " ?",
+          title: "Do you want to add this topic ?",
           icon: <ExclamationCircleFilled />,
           onOk() {
             setLoading(true); // Set status loading pada tombol OK
@@ -124,13 +121,9 @@ const CreateTopic: React.FC = () => {
 
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
-      // Kirim data menggunakan swr
-      const response = await fetch(`${api}/topic/post`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await apiUrl.post(`/topic/post`, formData);
 
-      if (!response.ok) {
+      if (!response) {
         throw new Error("Failed to add topic");
       }
 
@@ -174,14 +167,8 @@ const CreateTopic: React.FC = () => {
           </Form.Item>
 
           {/* Input synopsis */}
-          <Form.Item label="Body" name="body">
-            <ReactQuill
-              theme="snow"
-              value={content}
-              onChange={setContent}
-              modules={modules}
-              formats={formats}
-            />
+          <Form.Item label="Body" name="body" rules={[{ required: true }]}>
+            <ReactQuill theme="snow" value={content} onChange={setContent} />
           </Form.Item>
 
           {/* Select anime */}
