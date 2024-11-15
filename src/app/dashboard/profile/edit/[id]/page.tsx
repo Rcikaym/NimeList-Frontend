@@ -7,6 +7,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import { Button, Form, Input, message, Modal, Upload, UploadProps } from "antd";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -135,7 +136,7 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
   return (
     <>
       <Form layout="vertical" form={form} onFinish={showUpdateConfirm}>
-        <Form.Item name="photo_profile" label="Update Photo">
+        <Form.Item name="photo_profile">
           <Upload
             {...uploadProps}
             maxCount={1}
@@ -144,28 +145,30 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
             beforeUpload={beforeUpload}
           >
             {previewImage ? (
-              <div className="mt-4 relative">
-                <img
+              <div className="mt-4 relative w-44 h-44">
+                <Image
                   src={previewImage}
                   alt="Profile Preview"
-                  className="w-24 h-24 rounded-full object-cover"
+                  className="rounded-full object-cover"
+                  layout="fill"
                 />
                 {/* Ikon kamera saat hover */}
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <CameraOutlined className="text-white text-2xl" />
+                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
+                  <CameraOutlined className="text-white text-4xl" />
                 </div>
               </div>
             ) : (
               photoUrl && (
-                <div className="mt-4 relative">
-                  <img
+                <div className="mt-4 relative w-44 h-44">
+                  <Image
                     src={`${api}/${photoUrl.replace(/\\/g, "/")}`}
                     alt="Profile"
-                    className="w-24 h-24 rounded-full object-cover"
+                    className="rounded-full object-cover"
+                    layout="fill"
                   />
                   {/* Ikon kamera saat hover */}
-                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                    <CameraOutlined className="text-white text-2xl" />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
+                    <CameraOutlined className="text-white text-4xl" />
                   </div>
                 </div>
               )

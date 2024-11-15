@@ -52,8 +52,6 @@ interface DataEdit {
   comment: string;
 }
 
-const api = process.env.NEXT_PUBLIC_API_URL;
-
 const TopicCommentList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
@@ -285,18 +283,6 @@ const TopicCommentList: React.FC = () => {
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   }
 
-  function formatTextWithBreaks(text: string, maxLength = 70) {
-    const result = [];
-    let start = 0;
-
-    while (start < text.length) {
-      result.push(text.slice(start, start + maxLength));
-      start += maxLength;
-    }
-
-    return result.join("<br />");
-  }
-
   // Kolom table
   const columns: TableColumnsType<DataType> = [
     {
@@ -427,15 +413,13 @@ const TopicCommentList: React.FC = () => {
         height={500}
       >
         {modalMode === "detail" && detailComment ? (
-          <div className="flex flex-col w-fit">
+          <div className="flex flex-col w-full h-full">
             <div className="flex flex-col gap-3 mb-3">
               <div className="flex gap-2 items-center">
                 <AiOutlineTag size={19} />
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: formatTextWithBreaks(detailComment.topic),
-                  }}
-                />
+                <div className="break-words w-full">
+                  <span> {detailComment.topic}</span>
+                </div>
               </div>
               <div className="flex gap-2 items-center">
                 <AiOutlineHeart size={19} />
@@ -443,7 +427,9 @@ const TopicCommentList: React.FC = () => {
               </div>
             </div>
 
-            <DisplayLongText text={detailComment.comment} />
+            <div className="bg-gray-100 p-3 w-full h-full rounded-md">
+              <DisplayLongText text={detailComment.comment} />
+            </div>
 
             <div className="flex gap-2 mt-3">
               <div className="flex gap-2 items-center">

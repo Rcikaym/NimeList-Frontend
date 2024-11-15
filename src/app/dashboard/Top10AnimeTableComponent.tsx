@@ -56,7 +56,9 @@ const TableTop10Anime = () => {
 
   useEffect(() => {
     const fetchAnime = async () => {
-      const res = await apiUrl.get("http://localhost:4321/dashboard/top-10-anime");
+      const res = await apiUrl.get(
+        "http://localhost:4321/dashboard/top-10-anime"
+      );
       setData(await res.data);
     };
 

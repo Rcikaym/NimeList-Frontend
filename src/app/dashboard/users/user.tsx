@@ -42,7 +42,7 @@ const UserList = () => {
 
   const handleRefreshUsers = async () => {
     try {
-      const res = await apiUrl.put(`${api}/user/refresh-users`);
+      const res = await apiUrl.put(`/user/refresh-users`);
       message.success("Users refreshed successfully!");
       fetchUsers();
     } catch (error) {
@@ -51,7 +51,7 @@ const UserList = () => {
   };
 
   const fetchUsers = async () => {
-    const baseUrl = `${api}/user/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`;
+    const baseUrl = `/user/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`;
     const withFilterStatus =
       filterStatus !== "all" ? `${baseUrl}&status=${filterStatus}` : baseUrl;
     try {
