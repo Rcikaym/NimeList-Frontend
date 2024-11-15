@@ -93,8 +93,7 @@ const Navbar: React.FC = () => {
             }
             alt="User Profile"
             className="w-8 h-8 rounded-full cursor-pointer"
-            width={32}
-            height={32}
+            layout="fill"
           />
         </div>
       </Dropdown>
