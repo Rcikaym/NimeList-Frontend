@@ -30,7 +30,7 @@ const TransactionList = () => {
   const [detailTransaction, setDetailTransaction] = useState(
     {} as TransactionDetails
   );
-  const [filterString, setFilterString] = useState("status=&premium=");
+  const [filterString, setFilterString] = useState("status=&premium=&platform=");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
 

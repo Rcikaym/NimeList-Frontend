@@ -12,16 +12,13 @@ import {
   Upload,
   UploadProps,
 } from "antd";
-import axios from "axios";
-import {
-  ExclamationCircleFilled,
-  LeftCircleOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { ExclamationCircleFilled, UploadOutlined } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
 import { DataAnime, GenreType, PhotosType } from "./types";
 import apiUrl from "@/hooks/api";
+import { BiArrowBack } from "react-icons/bi";
+import Link from "next/link";
 
 export default function AnimeEdit({ id }: { id: string }) {
   const router = useRouter();
@@ -138,12 +135,12 @@ export default function AnimeEdit({ id }: { id: string }) {
       });
     }
 
-    fileCover.forEach((file: any) => {
+    fileCover?.forEach((file: any) => {
       formData.append("photo_cover", file.originFileObj);
     });
 
     // Tambahkan file foto anime (bisa lebih dari 1)
-    fileList.forEach((file: any) => {
+    fileList?.forEach((file: any) => {
       if (file.url) {
         // Existing file (old photo)
         existing_photos.push(file.name);
@@ -256,7 +253,7 @@ export default function AnimeEdit({ id }: { id: string }) {
   return (
     <>
       <div className="mb-2 bg-[#005B50]  p-2 rounded-md font-semibold text-lg text-white">
-        Edit Anime {anime}
+        Anime Edit Form
       </div>
       <Form
         form={form}
@@ -312,13 +309,20 @@ export default function AnimeEdit({ id }: { id: string }) {
             label="Genres"
             rules={[{ required: true, message: "Please select genres" }]}
           >
-            <Select mode="multiple" placeholder="Select genres">
-              {genres.map((genre) => (
-                <Select.Option key={genre.id} value={genre.id}>
-                  {genre.name}
-                </Select.Option>
-              ))}
-            </Select>
+            <Select
+              placeholder="Select genres"
+              allowClear
+              mode="multiple"
+              showSearch
+              filterOption={(input, option: any) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              options={genres.map((genre) => ({
+                value: genre.id,
+                label: genre.name,
+              }))}
+              style={{ width: "100%" }}
+            ></Select>
           </Form.Item>
 
           {/* Select type */}
@@ -385,12 +389,15 @@ export default function AnimeEdit({ id }: { id: string }) {
           </Form.Item>
         </div>
 
-        <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
-          <Button icon={<LeftCircleOutlined />} href="/dashboard/anime">
-            Back
-          </Button>
+        <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-between flex">
+          <Link
+            href="/dashboard/anime"
+            className="bg-white text-black px-2 py-1 rounded-md flex items-center gap-1 hover:text-[#005B50]"
+          >
+            <BiArrowBack style={{ fontSize: "20px" }} />
+          </Link>
           <Button type="primary" htmlType="submit" loading={loading}>
-            Submit
+            <span>Update</span>
           </Button>
         </div>
       </Form>

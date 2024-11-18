@@ -1,7 +1,7 @@
 import PageTitle from "@/components/TitlePage";
 import AddAnime from "./FormAddComponent";
 
-export default async function Page() {
+export default function Page() {
   return (
     <>
       <PageTitle title={`Add Anime`} />

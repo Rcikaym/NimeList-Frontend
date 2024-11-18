@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Radio } from "antd";
+import { Modal, Radio, Select } from "antd";
 
 interface FilterModalProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedPremium, setSelectedPremium] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState(null);
 
   // Fungsi untuk menghandle perubahan pilihan
   const handleStatusChange = (status: string) => {
@@ -26,10 +27,21 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   // Mengaplikasikan filter dan menggabungkan hasil menjadi satu string
   const applyFilter = () => {
-    const filterResult = `status=${selectedStatus}&premium=${selectedPremium}`;
-    onApply(decodeURIComponent(filterResult));
+    const filterResult = `status=${selectedStatus}&premium=${selectedPremium}&platform=${selectedPlatform}`;
+    onApply(filterResult);
     onClose();
   };
+
+  const paymentPlatformOptions = [
+    { value: "gopay", label: "GoPay" },
+    { value: "airpay shopee", label: "ShopeePay" },
+    { value: "dana", label: "Dana" },
+    { value: "ovo", label: "OVO" },
+    { value: "linkaja", label: "LinkAja" },
+    { value: "bca", label: "BCA" },
+    { value: "bri", label: "BRI" },
+    { value: "bni", label: "BNI" },
+  ];
 
   return (
     <Modal
@@ -44,6 +56,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               onClick={() => {
                 setSelectedStatus("");
                 setSelectedPremium("");
+                setSelectedPlatform(null);
               }}
               className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
             >
@@ -81,6 +94,21 @@ const FilterModal: React.FC<FilterModalProps> = ({
         <Radio value="Six-Month Heroes">Six-Month Heroes</Radio>
         <Radio value="Yearly Heroes">Yearly Heroes</Radio>
       </Radio.Group>
+      <div style={{ marginTop: "16px" }}>
+        <h4>Payment Platform</h4>
+        <Select
+          value={selectedPlatform}
+          style={{ width: "30%" }}
+          placeholder="Select Payment Platform"
+          onChange={setSelectedPlatform}
+          options={paymentPlatformOptions}
+          showSearch
+          filterOption={(input, option: any) =>
+            option.label.toLowerCase().includes(input.toLowerCase())
+          }
+          dropdownStyle={{ maxHeight: 100, overflow: "auto" }}
+        />
+      </div>
     </Modal>
   );
 };

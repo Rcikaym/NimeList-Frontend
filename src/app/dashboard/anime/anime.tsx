@@ -114,6 +114,15 @@ const AnimeList: React.FC = () => {
     {
       title: "Title",
       dataIndex: "title",
+      render: (text: string) => {
+        return (
+          <>
+            <div className="w-40 truncate">
+              <span>{text}</span>
+            </div>
+          </>
+        );
+      },
     },
     {
       title: "Rating",

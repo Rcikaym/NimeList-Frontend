@@ -24,7 +24,7 @@ interface DataProfile {
   bio: string;
 }
 
-const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
+const ProfileAdminEdit = () => {
   const [photoUrl, setPhotoUrl] = useState<string>("");
   const [photo, setPhoto] = useState([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -32,12 +32,11 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const { confirm } = Modal;
-  const idUser = params.id;
 
   const setForm = async () => {
     try {
       const res = await apiUrl.get<ProfileAdminDetail>(
-        `/user/detail-admin/${params.id}`
+        `/user/detail-admin`
       );
       const data = await res.data;
       form.setFieldsValue({
@@ -61,12 +60,12 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
       formData.append("bio", values.bio);
 
       const update = await apiUrl.put(
-        `/user/update-profile-admin/${idUser}`,
+        `/user/update-profile-admin`,
         formData
       );
       const res = await update.data;
       message.success(res.message);
-      router.push(`/dashboard/profile/${idUser}`);
+      router.push(`/dashboard/profile/detail`);
     } catch (error) {
       console.log(error);
     }
@@ -135,6 +134,7 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
 
   return (
     <>
+      <h3 className="text-xl font-bold mb-4">Edit Profile</h3>
       <Form layout="vertical" form={form} onFinish={showUpdateConfirm}>
         <Form.Item name="photo_profile">
           <Upload
@@ -157,7 +157,7 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
                   <CameraOutlined className="text-white text-4xl" />
                 </div>
               </div>
-            ) : (
+            ) : photoUrl ? (
               photoUrl && (
                 <div className="mt-4 relative w-44 h-44">
                   <Image
@@ -172,6 +172,19 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
                   </div>
                 </div>
               )
+            ) : (
+              <div className="mt-4 relative w-44 h-44">
+                <Image
+                  src="/images/logo-admin.jpeg"
+                  alt="Profile"
+                  className="rounded-full object-cover"
+                  layout="fill"
+                />
+                {/* Ikon kamera saat hover */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
+                  <CameraOutlined className="text-white text-4xl" />
+                </div>
+              </div>
             )}
           </Upload>
         </Form.Item>
@@ -191,7 +204,7 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
         </Form.Item>
         <div className="flex justify-between">
           <Button
-            href={`/dashboard/profile/${idUser}`}
+            href={`/dashboard/profile/detail`}
             color="default"
             className="mt-6"
           >
@@ -203,7 +216,7 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
             className="mt-6"
             htmlType="submit"
           >
-            Save Changes
+            Update
           </Button>
         </div>
       </Form>
@@ -211,4 +224,4 @@ const ProfileAdminDetail = ({ params }: { params: { id: string } }) => {
   );
 };
 
-export default ProfileAdminDetail;
+export default ProfileAdminEdit;

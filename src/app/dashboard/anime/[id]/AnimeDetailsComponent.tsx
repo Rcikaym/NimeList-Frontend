@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, memo } from "react";
-import { LeftCircleOutlined } from "@ant-design/icons";
 import {
   AiOutlineCalendar,
   AiOutlineClockCircle,
@@ -15,6 +14,8 @@ import { AnimeType, PhotosType } from "./types";
 import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
+import Link from "next/link";
+import { BiArrowBack } from "react-icons/bi";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -239,12 +240,12 @@ export default function AnimeDetails({ id }: { id: string }) {
       </div>
 
       <div className="p-2 flex justify-end mt-3 rounded-lg bg-[#005B50]">
-        <a href="/dashboard/anime">
-          <div className="flex gap-2 bg-white text-[#005B50] px-3 py-2 rounded-md items-center hover:text-blue-500">
-            <LeftCircleOutlined style={{ fontSize: 18 }} />
-            <span>Back</span>
-          </div>
-        </a>
+        <Link
+          href="/dashboard/anime"
+          className="bg-white text-black px-2 py-1 rounded-md flex items-center gap-1 hover:text-[#005B50]"
+        >
+          <BiArrowBack style={{ fontSize: "20px" }} />
+        </Link>
       </div>
     </>
   );

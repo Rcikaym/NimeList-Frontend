@@ -15,24 +15,22 @@ interface ProfileAdminDetail {
   badge: string;
 }
 
-const ProfileAdminDetail = ({ id }: { id: string }) => {
+const ProfileAdminDetail = () => {
   const [profile, setProfile] = useState<ProfileAdminDetail | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string>("");
   const [bio, setBio] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
-  const idUser = id;
 
   const adminDetail = async () => {
     try {
       const res = await apiUrl.get<ProfileAdminDetail>(
-        `/user/detail-admin/${id}`
+        `/user/detail-admin`
       );
-      const data = await res.data;
+      const data = res.data;
       setProfile(data);
       setBio(data.bio);
       setPhotoUrl(data.photo_profile);
-      console.log(photoUrl);
     } catch (error) {
       console.log(error);
     }
@@ -47,7 +45,7 @@ const ProfileAdminDetail = ({ id }: { id: string }) => {
       {profile && (
         <>
           <div className="flex justify-start items-center w-full">
-            <div className="w-40 h-40">
+            <div className="w-40 h-40 relative">
               <Image
                 src={
                   photoUrl === null
@@ -56,10 +54,8 @@ const ProfileAdminDetail = ({ id }: { id: string }) => {
                 }
                 alt="Profile"
                 className="rounded-full border-2 border-gray-300 m-0"
-                width={160}
-                height={160}
                 loading="lazy"
-                layout="fixed"
+                layout="fill"
                 objectFit="cover"
               />
             </div>
@@ -76,7 +72,7 @@ const ProfileAdminDetail = ({ id }: { id: string }) => {
             </div>
             <div className="ml-24">
               <a
-                href={`/dashboard/profile/edit/${id}`}
+                href={`/dashboard/profile/edit`}
                 className="border border-emerald-600 rounded-md hover:bg-emerald-50 flex items-center justify-center px-7 py-2"
               >
                 <span className="text-lg font-sans font-semibold text-emerald-700">
