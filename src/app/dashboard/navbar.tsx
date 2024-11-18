@@ -13,7 +13,7 @@ const { Header } = Layout;
 const Navbar: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [idUser, setIdUser] = useState<string>("");
-  const [photoUrl, setPhotoUrl] = useState<string>("");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -43,14 +43,14 @@ const Navbar: React.FC = () => {
   };
 
   const getPhotoUrl = async (id: string) => {
-    const get = await apiUrl.get(`/photo-profile/admin/${id}`);
+    const get = await apiUrl.get(`/photo-profile/admin`);
     setPhotoUrl(await get.data);
   };
 
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <a href={`/dashboard/profile/${idUser}`}>Profile</a>,
+      label: <a href={`/dashboard/profile/detail`}>Profile</a>,
       icon: <BiSolidUserDetail size={17} />,
     },
     {
@@ -84,16 +84,17 @@ const Navbar: React.FC = () => {
     >
       <span className="mr-3 text-white">{username}</span>
       <Dropdown menu={{ items }} placement="bottomRight">
-        <div className="flex items-center mr-3">
+        <div className="flex items-center mr-3 w-8 h-8">
           <Image
             src={
-              photoUrl === null
-                ? "/images/logo-admin.jpeg"
-                : `http://localhost:4321/${photoUrl.replace(/\\/g, "/")}`
+              photoUrl
+                ? `http://localhost:4321/${photoUrl.replace(/\\/g, "/")}`
+                : "/images/logo-admin.jpeg"
             }
             alt="User Profile"
-            className="w-8 h-8 rounded-full cursor-pointer"
-            layout="fill"
+            width={32}
+            height={32}
+            className="rounded-full object-cover hover:cursor-pointer"
           />
         </div>
       </Dropdown>
