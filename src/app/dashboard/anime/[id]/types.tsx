@@ -18,11 +18,11 @@ export interface AnimeType {
     photo_cover: string;
     type: string;
     episodes: number;
-    genres: GenreType[];
     created_at: string;
     updated_at: string;
     watch_link: string;
   };
-  averageRating: number;
+  genres: GenreType[];
+  avgRating: number;
   totalFav: number;
 }

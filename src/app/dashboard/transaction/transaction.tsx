@@ -36,7 +36,7 @@ const TransactionList = () => {
 
   const showModalDetail = async (id: string) => {
     setModalVisible(true);
-    const res = await apiUrl.get(`${api}/transactions/get-admin/${id}`);
+    const res = await apiUrl.get(`/transactions/get/${id}`);
     setDetailTransaction(await res.data);
   };
 

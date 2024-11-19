@@ -38,7 +38,7 @@ const ModalDetailTransaction: React.FC<ModalDetailTransactionProps> = ({
   return (
     <Modal
       title="Transaction Details"
-      open={modalVisible}
+      open={modalVisible && data !== null}
       footer={null}
       onCancel={handleCancel}
     >

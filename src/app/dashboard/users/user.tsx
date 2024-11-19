@@ -54,6 +54,7 @@ const UserList = () => {
     const baseUrl = `/user/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`;
     const withFilterStatus =
       filterStatus !== "all" ? `${baseUrl}&status=${filterStatus}` : baseUrl;
+    setLoading(true);
     try {
       const response = await apiUrl.get(withFilterStatus);
       const { data, total } = await response.data;

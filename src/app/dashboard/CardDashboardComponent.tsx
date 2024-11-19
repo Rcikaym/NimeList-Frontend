@@ -2,6 +2,7 @@
 
 import apiUrl from "@/hooks/api";
 import { LoadingOutlined } from "@ant-design/icons";
+import { message } from "antd";
 import { useEffect, useState } from "react";
 import {
   AiOutlineCrown,
@@ -32,7 +33,7 @@ export async function fetchDashboardData() {
       apiUrl.get(`${api}/dashboard/total-premium`, { method: "GET" }),
       apiUrl.get(`${api}/dashboard/total-transaction`, { method: "GET" }),
       apiUrl.get(`${api}/dashboard/total-income`, { method: "GET" }),
-    ]).then((responses) => Promise.all(responses.map((r) => r.data)));
+    ]).then((responses) => Promise.all(responses.map((res) => res.data)));
 
     return {
       totalTopics: topicsResponse.totalTopic,
@@ -55,9 +56,25 @@ export async function fetchDashboardData() {
 const CardDashboard = () => {
   const [data, setData] = useState({} as CardDashboardProps);
   const sizeIcon = 37;
+  const [loading, setLoading] = useState(true);
 
   async function CardDashboard() {
-    setData(await fetchDashboardData());
+    try {
+      setLoading(true);
+      setData(await fetchDashboardData());
+      setLoading(data.loading);
+    } catch (error) {
+      message.error("Gagal mengambil data dashboard.");
+      setLoading(true);
+    }
+  }
+
+  if (data.loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LoadingOutlined />
+      </div>
+    );
   }
 
   // Panggil fungsi CardDashboard saat komponen di-mount
@@ -79,7 +96,7 @@ const CardDashboard = () => {
             <div>
               <div className="mt-4 text-white">
                 <h3 className="text-lg mb-1">Total Members</h3>
-                {data.loading ? (
+                {loading ? (
                   <LoadingOutlined />
                 ) : (
                   <p className="text-lg font-bold ">{data.totalMembers}</p>
@@ -100,7 +117,7 @@ const CardDashboard = () => {
             <div>
               <div className="mt-4 text-white">
                 <h3 className="text-lg mb-1">Total Topics</h3>
-                {data.loading ? (
+                {loading ? (
                   <LoadingOutlined />
                 ) : (
                   <p className="text-lg font-bold">{data.totalTopics}</p>
@@ -121,7 +138,7 @@ const CardDashboard = () => {
             <div>
               <div className="mt-4 text-white">
                 <h3 className="text-lg mb-1">Total Transactions</h3>
-                {data.loading ? (
+                {loading ? (
                   <LoadingOutlined />
                 ) : (
                   <p className="text-lg font-bold">{data.totalTransaction}</p>
@@ -142,12 +159,12 @@ const CardDashboard = () => {
             <div>
               <div className="mt-4 text-white">
                 <h3 className="text-lg mb-1">Total Income</h3>
-                {data.loading ? (
+                {loading ? (
                   <LoadingOutlined />
                 ) : (
                   <p className="text-lg font-bold">
                     {`Rp${new Intl.NumberFormat("id-ID").format(
-                      data.totalIncome
+                      data.totalIncome || 0
                     )}`}
                   </p>
                 )}
