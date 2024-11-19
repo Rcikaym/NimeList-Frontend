@@ -1,17 +1,18 @@
 import apiUrl from "@/hooks/api";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { message } from "antd";
 
-export const setAccessToken = (token, expiresIn) => {
+export const setAccessToken = (accessToken, expiresIn) => {
+  // Menghitung masa berlaku access token
   const expMs = expiresIn * 1000;
-  localStorage.setItem("access_token", token);
+
+  // Menyimpan access token di localStorage
+  localStorage.setItem("access_token", accessToken);
   localStorage.setItem("access_token_expiry", expMs);
 };
 
 export const getAccessToken = () => {
-  if (isAccessTokenExpired()) {
-    refreshAccessToken();
-  }
   return localStorage.getItem("access_token");
 };
 
@@ -21,8 +22,8 @@ export const isAccessTokenExpired = () => {
 };
 
 export const refreshAccessToken = async () => {
-  const refreshToken = localStorage.getItem("access_token");
-  const data_user = jwtDecode(refreshToken);
+  const token = localStorage.getItem("access_token");
+  const payload = jwtDecode(token);
 
   try {
     // Panggil endpoint backend untuk memperbarui access token
@@ -31,16 +32,17 @@ export const refreshAccessToken = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ refreshToken, data_user }),
+      body: JSON.stringify({ payload }),
     });
 
-    const { accessToken } = await response.json();
-    const decodedToken = jwtDecode(accessToken);
+    const data = await response.json();
+    const decodedToken = jwtDecode(data.access_token);
 
     // Perbarui access token di localStorage
-    setAccessToken(accessToken, decodedToken.exp);
+    setAccessToken(data.access_token, decodedToken.exp);
+    return data.access_token;
   } catch (error) {
-    console.log("Failed to refresh access token:", error);
+    message.error(data.message);
   }
 };
 
