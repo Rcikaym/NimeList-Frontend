@@ -1,6 +1,6 @@
 "use client";
 import { AiFillStar, AiOutlineTrophy } from "react-icons/ai";
-import { Table } from "antd";
+import { message, Table } from "antd";
 import { useEffect, useState } from "react";
 import apiUrl from "@/hooks/api";
 
@@ -53,13 +53,22 @@ const columnsAnimeTop = [
 
 const TableTop10Anime = () => {
   const [data, setData] = useState<animeTop[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchAnime = async () => {
-      const res = await apiUrl.get(
-        "http://localhost:4321/dashboard/top-10-anime"
-      );
-      setData(await res.data);
+      setLoading(true);
+      try {
+
+        const res = await apiUrl.get(
+          "http://localhost:4321/dashboard/top-10-anime"
+        );
+        setData(await res.data);
+        setLoading(false);
+      } catch (error) {
+        message.error("Failed to fetch data top 10 anime");
+        setLoading(true);
+      }
     };
 
     fetchAnime();
@@ -69,6 +78,7 @@ const TableTop10Anime = () => {
     <>
       <Table
         dataSource={data}
+        loading={loading}
         columns={columnsAnimeTop}
         pagination={{ position: ["none"] }}
         title={() => (

@@ -38,7 +38,7 @@ const ModalDetailTransaction: React.FC<ModalDetailTransactionProps> = ({
   return (
     <Modal
       title="Transaction Details"
-      open={modalVisible && data !== null}
+      open={modalVisible && data !== null && data !== undefined}
       footer={null}
       onCancel={handleCancel}
     >
@@ -91,9 +91,7 @@ const ModalDetailTransaction: React.FC<ModalDetailTransactionProps> = ({
                   </div>
                   <div className="flex flex-col gap-2">
                     <span>{data.premium?.name}</span>
-                    <span>
-                      {data.premium?.duration.replace(/\.?0+$/, "")} days
-                    </span>
+                    <span>{data.premium?.duration} days</span>
                     <span>
                       {`Rp${new Intl.NumberFormat("id-ID").format(
                         data.premium?.price

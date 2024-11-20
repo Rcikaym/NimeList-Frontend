@@ -82,96 +82,56 @@ const CardDashboard = () => {
     CardDashboard();
   }, []);
 
+  const cardData = [
+    {
+      title: "Total Members",
+      value: data.totalMembers,
+      icon: <AiOutlineCrown style={{ fontSize: sizeIcon }} />,
+    },
+    {
+      title: "Total Topics",
+      value: data.totalTopics,
+      icon: <AiOutlinePicRight style={{ fontSize: sizeIcon }} />,
+    },
+    {
+      title: "Total Transactions",
+      value: data.totalTransaction,
+      icon: <AiOutlineShoppingCart style={{ fontSize: sizeIcon }} />,
+    },
+    {
+      title: "Total Income",
+      value: `Rp${new Intl.NumberFormat("id-ID").format(
+        data.totalIncome || 0
+      )}`,
+      icon: <AiOutlineDollar style={{ fontSize: sizeIcon }} />,
+    },
+  ];
+
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-        {/* Card total members */}
-        <div className="bg-emerald-700 rounded-lg px-6 py-4 shadow-md flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="bg-white rounded-lg mr-4 p-3 shadow-emerald-800 shadow-md transition-all duration-300 ease-in-out transform hover:scale-90">
-              <div className="text-emerald-700">
-                <AiOutlineCrown style={{ fontSize: sizeIcon }} />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {cardData.map((card, index) => (
+          <div
+            key={index}
+            className="bg-white border border-emerald-700 rounded-lg shadow-md p-4 h-[8rem]"
+          >
+            <div className="flex items-center h-full gap-4">
+              <div className="bg-emerald-700 text-white rounded-lg h-fit p-4 shadow-md shadow-gray-300 transition-all duration-500 ease-in-out transform hover:scale-90">
+                <div>{card.icon}</div>
               </div>
-            </div>
-            <div>
-              <div className="mt-4 text-white">
-                <h3 className="text-lg mb-1">Total Members</h3>
+              <div className="flex flex-col text-emerald-700">
+                <span className="text-lg">{card.title}</span>
                 {loading ? (
                   <LoadingOutlined />
                 ) : (
-                  <p className="text-lg font-bold ">{data.totalMembers}</p>
+                  <span className="text-lg font-bold">{card.value}</span>
                 )}
               </div>
             </div>
+            {/* <div className="flex items-center">
+            </div> */}
           </div>
-        </div>
-
-        {/* Card total topics */}
-        <div className="bg-emerald-700 px-6 py-4 rounded-lg shadow-md flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="bg-white rounded-lg mr-4 p-3 shadow-md shadow-emerald-800 transition-all duration-300 ease-in-out transform hover:scale-90">
-              <div className="text-emerald-700">
-                <AiOutlinePicRight style={{ fontSize: sizeIcon }} />
-              </div>
-            </div>
-            <div>
-              <div className="mt-4 text-white">
-                <h3 className="text-lg mb-1">Total Topics</h3>
-                {loading ? (
-                  <LoadingOutlined />
-                ) : (
-                  <p className="text-lg font-bold">{data.totalTopics}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Card total transaction */}
-        <div className="bg-emerald-700 px-6 py-4 rounded-lg shadow-md flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="bg-white rounded-lg mr-4 p-3 shadow-md shadow-emerald-800 transition-all duration-300 ease-in-out transform hover:scale-90">
-              <div className="text-emerald-700">
-                <AiOutlineShoppingCart style={{ fontSize: sizeIcon }} />
-              </div>
-            </div>
-            <div>
-              <div className="mt-4 text-white">
-                <h3 className="text-lg mb-1">Total Transactions</h3>
-                {loading ? (
-                  <LoadingOutlined />
-                ) : (
-                  <p className="text-lg font-bold">{data.totalTransaction}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Card total earning */}
-        <div className="bg-emerald-700 px-6 py-4 rounded-lg shadow-md flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="bg-white rounded-lg mr-4 p-3 shadow-md shadow-emerald-800 transition-all duration-300 ease-in-out transform hover:scale-90">
-              <div className="text-emerald-700">
-                <AiOutlineDollar style={{ fontSize: sizeIcon }} />
-              </div>
-            </div>
-            <div>
-              <div className="mt-4 text-white">
-                <h3 className="text-lg mb-1">Total Income</h3>
-                {loading ? (
-                  <LoadingOutlined />
-                ) : (
-                  <p className="text-lg font-bold">
-                    {`Rp${new Intl.NumberFormat("id-ID").format(
-                      data.totalIncome || 0
-                    )}`}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </>
   );

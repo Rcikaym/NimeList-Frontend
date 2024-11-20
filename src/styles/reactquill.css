@@ -1,0 +1,10 @@
+.ql-editor ol,
+.ql-editor ul {
+  margin: 0; /* Menghapus margin bawaan */
+  padding-left: 5px; /* Memberikan padding untuk indentation */
+}
+
+.ql-editor li {
+  margin-bottom: 4px; /* Mengatur jarak antar item */
+  line-height: 1.5; /* Menyesuaikan tinggi baris */
+}
