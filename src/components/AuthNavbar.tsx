@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import Image from "next/image";
 import React from "react";
 import { BiChevronDown, BiLogOut } from "react-icons/bi";
+import { FaCrown, FaRegBookmark, FaMagnifyingGlass } from "react-icons/fa6";
 import {
   Dropdown,
   DropdownTrigger,
@@ -154,7 +155,6 @@ const AuthNavbar = () => {
   // Ensure dynamic content only renders on the client
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    // console.log("Token:", token);
 
     if (token) {
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
@@ -240,38 +240,17 @@ const AuthNavbar = () => {
           <ul className="hidden md:flex items-center space-x-[50px]">
             <li>
               <Link href="/membership" className="block">
-                <Image
-                  src="/images/crown.svg"
-                  alt="membership"
-                  width={29}
-                  height={32}
-                  priority
-                  className="cursor-pointer"
-                />
+                <FaCrown className="cursor-pointer w-7 h-8 text-yellow-500" />
               </Link>
             </li>
             <li>
               <Link href="/favorites">
-                <Image
-                  src="/images/bookmark.svg"
-                  alt="bookmark"
-                  width={29}
-                  height={32}
-                  priority
-                  className="cursor-pointer"
-                />
+                <FaRegBookmark className="cursor-pointer w-6 h-6" />
               </Link>
             </li>
             <li>
               <Link href="/search">
-                <Image
-                  src="/images/magnifying.svg"
-                  alt="search"
-                  width={29}
-                  height={32}
-                  priority
-                  className="cursor-pointer"
-                />
+                <FaMagnifyingGlass className="cursor-pointer w-6 h-6" />
               </Link>
             </li>
           </ul>

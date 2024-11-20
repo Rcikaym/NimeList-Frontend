@@ -85,33 +85,7 @@ export default function AddAnime() {
     }
   };
 
-  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showPostConfirm = () => {
-    form
-      .validateFields() // Validasi input form terlebih dahulu
-      .then((values: DataAnime) => {
-        confirm({
-          centered: true,
-          title: "Do you want to add an " + values.title + " ?",
-          icon: <ExclamationCircleFilled />,
-          onOk() {
-            setLoading(true); // Set status loading pada tombol OK
-
-            return addAnime(values)
-              .then(() => {
-                setLoading(false); // Set loading ke false setelah selesai
-              })
-              .catch(() => {
-                setLoading(false); // Set loading ke false jika terjadi error
-              });
-          },
-        });
-      })
-      .catch(() => {
-        message.error("Please complete the form before submitting!");
-      });
-  };
-
+  // Fungsi untuk menambahkan anime
   const addAnime = async (values: DataAnime) => {
     const formData = new FormData();
 
@@ -147,18 +121,16 @@ export default function AddAnime() {
     } // Kirim genres dalam bentuk JSON
 
     // Tambahkan file foto cover
-    if (values.photo_cover) {
-      values.photo_cover.forEach((file: any) => {
-        formData.append("photo_cover", file.originFileObj);
-      });
+    fileCover?.forEach((file: any) => {
+      formData.append("photo_cover", file.originFileObj);
+    });
+    if (values.photo_cover && values.photo_cover.length > 0) {
     }
 
     // Tambahkan file foto anime (bisa lebih dari 1)
-    if (values.photos_anime) {
-      values.photos_anime.forEach((file: any) => {
-        formData.append("photos_anime", file.originFileObj);
-      });
-    }
+    fileList?.forEach((file: any) => {
+      formData.append("photos_anime", file.originFileObj);
+    });
 
     //Ubah format youtube link url menjadi embedUrl
     if (values.trailer_link) {
@@ -169,7 +141,8 @@ export default function AddAnime() {
     setLoading(true); // Set loading jadi true saat request dikirim
     try {
       // Kirim data menggunakan axios
-      const createData = await apiUrl.post(`${api}/anime/post`, formData);
+      console.log("p proses kirim");
+      const createData = await apiUrl.post(`/anime/post`, formData);
       const res = await createData.data;
       // Tampilkan pesan sukses jika request berhasil
       message.success(res.message);
@@ -179,6 +152,34 @@ export default function AddAnime() {
       // Tampilkan pesan error jika request gagal
       message.error("Failed to add anime");
     }
+  };
+
+  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
+  const showPostConfirm = async () => {
+    form
+      .validateFields() // Validasi input form terlebih dahulu
+      .then((values: DataAnime) => {
+        confirm({
+          centered: true,
+          title: "Do you want to add an " + values.title + " ?",
+          icon: <ExclamationCircleFilled />,
+          async onOk() {
+            console.log("p di pencet uy");
+            setLoading(true); // Set status loading pada tombol OK
+
+            return await addAnime(values)
+              .then(() => {
+                setLoading(false); // Set loading ke false setelah selesai
+              })
+              .catch(() => {
+                setLoading(false); // Set loading ke false jika terjadi error
+              });
+          },
+        });
+      })
+      .catch(() => {
+        message.error("Please complete the form before submitting!");
+      });
   };
 
   const handlePhotosUpload = (info: any) => {
@@ -323,8 +324,8 @@ export default function AddAnime() {
                   .includes(input.toLowerCase())
               }
             >
-              <Option value="movie">movie</Option>
-              <Option value="series">series</Option>
+              <Option value="movie">Movie</Option>
+              <Option value="series">Series</Option>
             </Select>
           </Form.Item>
 
@@ -345,31 +346,27 @@ export default function AddAnime() {
           </Form.Item>
 
           {/* Upload Image Cover */}
-          <Form.Item
-            name="photo_cover"
-            rules={[{ required: true, message: "Please input image cover" }]}
-            label="Upload Cover Image"
-          >
+          <Form.Item label="Upload Cover Image" name="photo_cover" rules={[{ required: true, message: "Please upload cover image" }]}>
             <Upload
+              {...uploadProps}
               listType="picture"
               maxCount={1}
               fileList={fileCover}
               onChange={(info) => handleCoverUpload(info)}
-              {...uploadProps}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
           </Form.Item>
 
           {/* Upload Image */}
-          <Form.Item name="photos_anime" label="Upload Photo Anime">
+          <Form.Item label="Upload Photo Anime">
             <Upload
+              {...uploadProps}
               listType="picture"
               maxCount={4}
               multiple
               fileList={fileList}
               onChange={(info) => handlePhotosUpload(info)}
-              {...uploadProps}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
@@ -385,6 +382,7 @@ export default function AddAnime() {
           {loading ? (
             <button
               type="submit"
+              disabled
               className="bg-blue-500 text-white px-3 py-1 rounded-md items-center"
             >
               <LoadingOutlined className="mr-1" style={{ fontSize: 18 }} />
