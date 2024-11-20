@@ -44,7 +44,7 @@ const PremiumList: React.FC = () => {
   const fetchPremium = async () => {
     try {
       const response = await apiUrl.get(
-        `http://localhost:4321/premium/get-admin`
+        `http://localhost:4321/premium/get-all`
       );
       setData(await response.data); // Mengisi data dengan hasil dari API
       setLoading(false); // Menonaktifkan status loading setelah data didapat
@@ -103,11 +103,11 @@ const PremiumList: React.FC = () => {
 
   const handleEditPremium = async (values: DataType) => {
     try {
-      await apiUrl.put(
-        `http://localhost:4321/premium/update/${values.id}`,
+      const res = await apiUrl.put(
+        `http://localhost:4321/premium/update-admin/${id}`,
         values
       ); // Melakukan PUT ke server
-      message.success("Premium edited successfully!");
+      message.success(res.data.message);
 
       // Fetch ulang data setelah edit
       fetchPremium();

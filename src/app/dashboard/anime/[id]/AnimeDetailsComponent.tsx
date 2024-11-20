@@ -26,10 +26,12 @@ const AnimeMetadata = memo(
     anime,
     averageRating,
     totalFav,
+    genres,
   }: {
     anime: AnimeType["anime"];
     averageRating: number;
     totalFav: number;
+    genres: AnimeType["genres"];
   }) => (
     <>
       <div className="flex mt-auto">
@@ -108,7 +110,7 @@ const AnimeMetadata = memo(
           Genres:
         </h2>
         <div className="flex gap-2">
-          {anime.genres?.map((genre) => (
+          {genres?.map((genre) => (
             <span
               key={genre.id}
               className="rounded-md py-1 px-2 text-sm bg-emerald-700 text-white"
@@ -200,7 +202,8 @@ export default function AnimeDetails({ id }: { id: string }) {
               <AnimeMetadata
                 anime={anime.anime}
                 totalFav={anime.totalFav}
-                averageRating={anime.averageRating}
+                averageRating={anime.avgRating}
+                genres={anime.genres}
               />
               <div className="grid gap-1">
                 <div className="flex items-center text-gray-600 gap-2">

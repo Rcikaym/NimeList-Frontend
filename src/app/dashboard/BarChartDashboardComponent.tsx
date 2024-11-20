@@ -107,7 +107,6 @@ const IncomeData: React.FC = () => {
         onChange={handleYearChange}
         style={{ marginBottom: "20px" }}
       />
-
       {loading ? (
         <div className="h-[460px] w-full flex justify-center items-center">
           <LoadingOutlined />
