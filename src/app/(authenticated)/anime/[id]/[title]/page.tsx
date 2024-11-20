@@ -1,6 +1,5 @@
 "use client";
 
-// import "/globals.css";
 import { useEffect, useState } from "react";
 import { Image } from "antd";
 import { Button } from "@nextui-org/react";
@@ -18,15 +17,8 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
-import { AnimeType } from "./types";
-
-type Review = {
-  id: number;
-  anime_id: number;
-  reviewer: string;
-  comment: string;
-  rating: number;
-};
+import { AnimeType, GenreType, ReviewType } from "./types";
+import ReviewModal from "./RateComponent";
 
 type AnimeDetailProps = {
   params: {
@@ -37,8 +29,9 @@ type AnimeDetailProps = {
 
 const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
   const { id } = params;
-  const [anime, setAnime] = useState<AnimeType | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [animeData, setAnimeData] = useState<AnimeType | null>(null); // State for anime data
+  const [genres, setGenres] = useState<GenreType[]>([]); // State for genres
+  const [reviews, setReviews] = useState<ReviewType[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -47,25 +40,17 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
       try {
         if (id) {
           // Fetch anime details using the ID
-          const animeResponse = await fetch(
+          const response = await fetch(
             // `http://localhost:3001/animes/${id}`
             `${api}/anime/get/${id}`
           );
-          if (!animeResponse.ok) {
+          if (!response.ok) {
             throw new Error("Error fetching anime");
           }
-          const animeData: AnimeType = await animeResponse.json();
-          setAnime(animeData);
-
-          // Fetch reviews for the anime
-          // const reviewsResponse = await fetch(
-          //   `http://localhost:3001/reviews?anime_id=${id}` // hanya untuk percobaan dikarenakan API untuk reviews belum ready, jangan lupa diganti
-          // );
-          // if (!reviewsResponse.ok) {
-          //   throw new Error("Error fetching reviews");
-          // }
-          // const reviewsData = await reviewsResponse.json();
-          // setReviews(reviewsData);
+          const data = await response.json();
+          setAnimeData(data);
+          setGenres(data.genres);
+          setReviews(data.review.data);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -75,7 +60,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
     fetchData();
   }, [id]);
 
-  if (!anime) {
+  if (!animeData) {
     return (
       <div className="w-full h-full text-center mx-auto my-auto container">
         Loading...
@@ -87,9 +72,9 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
     <>
       <div className="container mx-auto mt-6">
         <div className="w-full h-[88px] gap-1">
-          <h1 className="text-5xl font-bold m-0">{anime.anime.title}</h1>
+          <h1 className="text-5xl font-bold m-0">{animeData.anime.title}</h1>
           <p className="text-gray-500 font-semibold mb-0 mt-3">
-            {anime.anime.type} • {anime.anime.release_date}
+            {animeData.anime.type} • {animeData.anime.release_date}
           </p>
         </div>
         <div className="flex mb-5">
@@ -97,11 +82,11 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
           <div className="pt-3 w-full max-w-xs h-auto">
             <Image
               //   src={anime.photo_cover}
-              src={`${api}/${anime.anime.photo_cover.replace(/\\/g, "/")}`}
+              src={`${api}/${animeData.anime.photo_cover.replace(/\\/g, "/")}`}
               width={300} // 2:3 aspect ratio (300x450)
               height={450}
               className="object-cover w-full"
-              alt={anime.anime.title}
+              alt={animeData.anime.title}
             />
             <Button
               size="lg"
@@ -117,15 +102,15 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
           <div className="h-full">
             <iframe
               className="w-[900px] h-[471px] pt-3 select-none"
-              src={anime.anime.trailer_link}
-              title={anime.anime.title}
+              src={animeData.anime.trailer_link}
+              title={animeData.anime.title}
               allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             />
             <div className="flex flex-row mt-3">
               {/* Genre Tags */}
               <div className="flex space-x-2 mb-4">
-                {anime.anime.genres.map((genre) => (
+                {genres.map((genre) => (
                   <Chip
                     key={genre.id}
                     classNames={{
@@ -141,7 +126,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
             </div>
             <ScrollShadow className="w-[900px] max-h-[150px]" hideScrollBar>
               <p className="text-[#f5f5f5] opacity-100 font-medium scroll-smooth tracking-wider">
-                <DisplayLongText text={anime.anime.synopsis} />
+                <DisplayLongText text={animeData.anime.synopsis} />
               </p>
             </ScrollShadow>
           </div>
@@ -153,7 +138,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                   <div className="flex items-center justify-center">
                     <BiSolidStar className="w-[30px] h-[30px] text-[#ffd500] mr-2" />
                     <span className="text-4xl font-bold">
-                      {anime.averageRating}
+                      {animeData.avgRating}
                     </span>
                     <span className="text-xl font-bold opacity-70">/10</span>
                   </div>
@@ -167,73 +152,24 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                 <div className="flex flex-col justify-center text-center items-center p-4 text-white">
                   <p className="text-xl font-semibold">YOUR RATING</p>
                   <BiStar className="w-[69px] h-[69px] text-[#05E5CB]" />
-                  <Button
+                  {/* <Button
                     onPress={onOpen}
                     className="bg-transparent text-xl font-semibold text-[#05E5CB]"
                   >
-                    {/* {reviews.rating ? reviews.rating : "Not rated"} */} RATE
-                  </Button>
+                    {/* {reviews.rating ? reviews.rating : "Not rated"} */}
+                  {/* </Button> */} 
+                    <ReviewModal animeId={id} />
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          placement="center"
-          backdrop="opaque"
-          classNames={{
-            base: "bg-[#014A42] items-center",
-          }}
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader></ModalHeader>
-                <ModalBody>
-                  <Rate
-                    allowClear={false}
-                    allowHalf
-                    defaultValue={10}
-                    count={10}
-                    // className="size-28"
-                  />
-                </ModalBody>
-                <ModalFooter>
-                  <Button
-                    className="text-foreground-100"
-                    variant="light"
-                    onPress={onClose}
-                    size="sm"
-                  >
-                    Not Now
-                  </Button>
-                  <Button
-                    className="text-foreground-100 bg-[#03302b]"
-                    size="sm"
-                    onPress={onClose}
-                  >
-                    Submit
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
-
         <div className="reviews mt-6">
           <div className="flex justify-between">
             <h2 className="text-xl underline font-bold text-[#05E5CB] select-none">
               {reviews.length} REVIEWS
             </h2>
-            <button>
-              <span className="flex items-center text-[#05E5CB]">
-                <BiMessageAdd className="w-[24px] h-[24px] mt-1 mr-1" />
-                Add Review
-              </span>
-            </button>
           </div>
           {reviews.length === 0 ? (
             <p>No reviews yet.</p>
@@ -244,8 +180,8 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                   key={review.id}
                   className="container border rounded-lg border-[#05e5cbc3] p-5 my-5"
                 >
-                  <h2 className="font-bold">{review.reviewer}</h2>
-                  <p>{review.comment}</p>
+                  <h2 className="font-bold">{review.username}</h2>
+                  <p>{review.review}</p>
                   <p>Rating: {review.rating}/10</p>
                 </li>
               ))}

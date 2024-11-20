@@ -8,7 +8,7 @@ import { AnimeType } from "./types";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
+import { TiChevronLeft, TiChevronRight } from "react-icons/ti";
 
 export default function Recommended() {
   const [animes, setAnimes] = useState<AnimeType[]>([]);
@@ -29,18 +29,11 @@ export default function Recommended() {
   }, []);
 
   function NextArrow(props: any) {
-    const {
-      className,
-      style,
-      onClick,
-      currentSlide,
-      slideCount,
-      slidesToShow,
-    } = props;
+    const { style, onClick, currentSlide, slideCount, slidesToShow } = props;
     return (
       <div
         className={
-          "absolute top-1/2 transform -translate-y-1/2 right-0 lg:right-4 text-white bg-black bg-opacity-0 hover:bg-opacity-80 p-2 z-10 text-center justify-center"
+          "absolute top-[40%] transform -translate-y-1/2 right-[-50px] lg:right-[-40px] text-white bg-black bg-opacity-0 hover:bg-opacity-80 rounded-full p-2 z-10 text-center cursor-pointer justify-center"
         }
         style={{
           ...style,
@@ -48,22 +41,22 @@ export default function Recommended() {
         }}
         onClick={onClick}
       >
-        <BiSolidRightArrow className="w-5 h-5" />
+        <TiChevronRight className="w-8 h-8" />
       </div>
     );
   }
 
   function PrevArrow(props: any) {
-    const { className, style, onClick, currentSlide } = props;
+    const { style, onClick, currentSlide } = props;
     return (
       <div
         className={
-          "absolute top-1/2 transform -translate-y-1/2 left-0 lg:left-4 text-white bg-black bg-opacity-0 hover:bg-opacity-80 rounded-full p-2 z-10 text-center justify-center"
+          "absolute top-[40%] transform -translate-y-1/2 left-[-50px] lg:left-[-40px] text-white bg-black bg-opacity-0 hover:bg-opacity-80 rounded-full p-2 z-10 text-center cursor-pointer justify-center"
         }
         style={{ ...style, display: currentSlide === 0 ? "none" : "block" }}
         onClick={onClick}
       >
-        <BiSolidLeftArrow className="w-5 h-5" />
+        <TiChevronLeft className="w-8 h-8" />
       </div>
     );
   }
@@ -71,8 +64,8 @@ export default function Recommended() {
   const settings = {
     infinite: false,
     speed: 1500,
-    slidesToShow: 2,
-    slidesToScroll: 2,
+    slidesToShow: 7,
+    slidesToScroll: 7,
     initialSlide: 0,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
@@ -111,49 +104,53 @@ export default function Recommended() {
 
   return (
     <>
-      <Slider {...settings}>
-        {animes.map((anime: AnimeType) => (
-          <li
-            key={anime.id}
-            className="w-full max-w-[13.75rem] pb-6 ml-[4.688rem] h-auto shadow mb-6 sm:max-w-[10rem] md:max-w-[12rem] lg:max-w-[13.75rem]"
-          >
-            <Link
-              href={`/anime/${anime.id}/${anime.title
-                .replace(/\s+/g, "-")
-                .toLowerCase()}`}
+      <div className="pl-12 pr-12">
+        <Slider {...settings}>
+          {animes.map((anime: AnimeType) => (
+            <div
+              key={anime.id}
+              className="w-full h-full pb-6 justify-items-center"
             >
-              <Image
-                className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
-                src={`http://localhost:4321/${anime.photo_cover.replace(
-                  /\\/g,
-                  "/"
-                )}`}
-                alt={anime.title}
-                width={220}
-                height={300}
-              />
-            </Link>
-            <div className="mt-3 mb-3 mr-3">
-              <Link
-                href={`/anime/${anime.id}/${anime.title
-                  .replace(/\s+/g, "-")
-                  .toLowerCase()}`}
-              >
-                <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-                  {anime.title}
-                </h5>
-              </Link>
-              <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">
-                {anime.type}
-              </p>
-              <p className="flex items-center font-semibold">
-                <StarFilled className="text-yellow-500 mr-1" />{" "}
-                {anime.avgRating}
-              </p>
+              <div className="w-[13.75rem]">
+                <Link
+                  href={`/anime/${anime.id}/${anime.title
+                    .replace(/\s+/g, "-")
+                    .toLowerCase()}`}
+                >
+                  <Image
+                    className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
+                    src={`http://localhost:4321/${anime.photo_cover.replace(
+                      /\\/g,
+                      "/"
+                    )}`}
+                    alt={anime.title}
+                    width={220}
+                    height={300}
+                  />
+                </Link>
+                <div className="mt-3 mb-3 mr-3">
+                  <Link
+                    href={`/anime/${anime.id}/${anime.title
+                      .replace(/\s+/g, "-")
+                      .toLowerCase()}`}
+                  >
+                    <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                      {anime.title}
+                    </h5>
+                  </Link>
+                  <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">
+                    {anime.type}
+                  </p>
+                  <p className="flex items-center font-semibold">
+                    <StarFilled className="text-yellow-500 mr-1" />{" "}
+                    {anime.avgRating}
+                  </p>
+                </div>
+              </div>
             </div>
-          </li>
-        ))}
-      </Slider>
+          ))}
+        </Slider>
+      </div>
     </>
   );
 }

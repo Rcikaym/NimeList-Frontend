@@ -32,17 +32,6 @@ const config: Config = {
           light: "#53A99E", // Optional lighter variant
           dark: "#025B4F", // Optional darker variant
         },
-        // You can also create a separate set of colors for text specifically
-        // customText: {
-        //   DEFAULT: "#333333", // Custom default text color
-        //   light: "#666666", // Optional lighter text variant
-        //   dark: "#000000", // Optional darker text variant
-        // },
-        // customBackground: {
-        //   DEFAULT: "#00554B", // Custom default background color
-        //   light: "#F5F5F5", // Optional lighter background variant
-        //   dark: "#E5E5E5", // Optional darker background variant
-        // },
     
       },
     },

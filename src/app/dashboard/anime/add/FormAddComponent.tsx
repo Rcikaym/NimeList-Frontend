@@ -14,14 +14,13 @@ import {
 } from "antd";
 import {
   ExclamationCircleFilled,
+  LeftCircleOutlined,
   LoadingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
 import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
 import apiUrl from "@/hooks/api";
-import Link from "next/link";
-import { BiArrowBack } from "react-icons/bi";
 
 interface DataAnime {
   title: string;
@@ -297,16 +296,15 @@ export default function AddAnime() {
               placeholder="Select genres"
               allowClear
               mode="multiple"
-              showSearch
-              filterOption={(input, option: any) =>
-                option.label.toLowerCase().includes(input.toLowerCase())
+              filterOption={(input, option) =>
+                (option?.children as unknown as string)
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
-              options={genres.map((genre) => ({
-                value: genre.id,
-                label: genre.name,
-              }))}
-              style={{ width: "100%" }}
             >
+              {genres.map((genre) => (
+                <Option value={genre.id}>{genre.name}</Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -326,8 +324,8 @@ export default function AddAnime() {
                   .includes(input.toLowerCase())
               }
             >
-              <Option value="movie">movie</Option>
-              <Option value="series">series</Option>
+              <Option value="movie">Movie</Option>
+              <Option value="series">Series</Option>
             </Select>
           </Form.Item>
 
@@ -348,11 +346,7 @@ export default function AddAnime() {
           </Form.Item>
 
           {/* Upload Image Cover */}
-          <Form.Item
-            label="Upload Cover Image"
-            name="photo_cover"
-            rules={[{ required: true, message: "Please upload cover image" }]}
-          >
+          <Form.Item label="Upload Cover Image" name="photo_cover" rules={[{ required: true, message: "Please upload cover image" }]}>
             <Upload
               {...uploadProps}
               listType="picture"
@@ -378,16 +372,30 @@ export default function AddAnime() {
             </Upload>
           </Form.Item>
         </div>
-        <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-between flex">
-          <Link
-            href="/dashboard/anime"
-            className="bg-white text-black px-2 py-1 rounded-md flex items-center gap-1 hover:text-[#005B50]"
-          >
-            <BiArrowBack style={{ fontSize: "20px" }} />
-          </Link>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            <span>Create</span>
-          </Button>
+        <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
+          <a href="/dashboard/anime">
+            <div className="flex gap-1 bg-white text-[#005B50] px-3 py-1 rounded-md items-center hover:text-blue-500">
+              <LeftCircleOutlined className="mr-1" style={{ fontSize: 18 }} />
+              <span>Back</span>
+            </div>
+          </a>
+          {loading ? (
+            <button
+              type="submit"
+              disabled
+              className="bg-blue-500 text-white px-3 py-1 rounded-md items-center"
+            >
+              <LoadingOutlined className="mr-1" style={{ fontSize: 18 }} />
+              Loading
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-3 py-1 rounded-md items-center hover:text-black"
+            >
+              Submit
+            </button>
+          )}
         </div>
       </Form>
     </>

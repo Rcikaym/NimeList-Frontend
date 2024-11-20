@@ -8,6 +8,14 @@ export interface PhotosType {
   file_path: string;
 }
 
+export interface ReviewType {
+  id: string;
+  username: string;
+  review: string;
+  rating: number;
+  created_at: string;
+  updated_at: string;
+}
 export interface AnimeType {
   anime: {
     title: string;
@@ -18,9 +26,8 @@ export interface AnimeType {
     photo_cover: string;
     type: string;
     episodes: number;
-    genres: GenreType[];
     created_at: string;
     updated_at: string;
   };
-  averageRating: number;
+  avgRating: number;
 }
