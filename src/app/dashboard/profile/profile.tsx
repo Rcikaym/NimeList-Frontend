@@ -2,6 +2,8 @@
 
 import DisplayLongText from "@/components/DisplayLongText";
 import apiUrl from "@/hooks/api";
+import { LoadingOutlined } from "@ant-design/icons";
+import { message } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BiCrown, BiDiamond, BiShield, BiSolidShield } from "react-icons/bi";
@@ -21,24 +23,35 @@ const ProfileAdminDetail = () => {
   const [bio, setBio] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
+  const [loading, setLoading] = useState(true);
 
   const adminDetail = async () => {
+    setLoading(true);
     try {
-      const res = await apiUrl.get<ProfileAdminDetail>(
-        `/user/detail-admin`
-      );
+      const res = await apiUrl.get<ProfileAdminDetail>(`/user/profile`);
       const data = res.data;
       setProfile(data);
       setBio(data.bio);
       setPhotoUrl(data.photo_profile);
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      message.error("Error fetching data profile");
+      setLoading(true);
     }
   };
 
   useEffect(() => {
     adminDetail();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <LoadingOutlined />
+        <span>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <>

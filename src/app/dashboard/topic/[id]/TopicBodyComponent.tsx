@@ -11,19 +11,16 @@ const TopicBody: React.FC<{ content: string }> = ({ content }) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, "text/html");
 
-    // // Update src untuk gambar
-    // const images = doc.querySelectorAll("img");
-    // images.forEach((img) => {
-    //   const originalSrc = img.getAttribute("src"); // Ambil src yang asli
-    //   if (originalSrc && !originalSrc.startsWith("http")) {
-    //     img.setAttribute("src", `http://localhost:4321${originalSrc}`); // Ganti dengan URL yang diinginkan
-    //   } else {
-    //     img.setAttribute("height", "full");
-    //     img.setAttribute("width", "300");
-    //     img.setAttribute("alt", "image");
-    //     img.setAttribute("loading", "lazy");
-    //   }
-    // });
+    // Menyesuaikan indentasi baris pada elemen p yang kosong
+    const paragraphs = doc.querySelectorAll("p");
+    paragraphs.forEach((p) => {
+      if (p.textContent?.trim() === "") {
+        // Buat elemen <br>
+        const br = document.createElement("br");
+        // Ganti elemen <p> kosong dengan <br>
+        p.replaceWith(br);
+      }
+    });
 
     // Menyesuaikan ukuran font untuk elemen header (h1, h2, h3, ...)
     const headers = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");

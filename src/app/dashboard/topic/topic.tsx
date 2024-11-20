@@ -79,13 +79,13 @@ const TopicList: React.FC = () => {
   // Fungsi untuk melakukan delete data topic
   const handleDeleteTopic = async (id: string) => {
     try {
-      await apiUrl.delete(`/topic/delete/${id}`);
-      message.success("Anime deleted successfully!");
+      const res = await apiUrl.delete(`/topic/delete/${id}`);
+      message.success(res.data.message);
 
       // Fetch ulang data setelah data didelete
       fetchTopic();
-    } catch (error) {
-      message.error("Failed to delete topic");
+    } catch (error: any) {
+      message.error("Failed to delete topic", error);
     }
   };
 
