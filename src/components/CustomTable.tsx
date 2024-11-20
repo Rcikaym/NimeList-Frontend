@@ -66,6 +66,7 @@ const CustomTable = <T extends object>({
   data,
   columns,
   pagination,
+  loading,
   onChange,
 }: CustomTableProps<T>) => {
   const [pageSize, setPageSize] = useState(10);
@@ -77,6 +78,7 @@ const CustomTable = <T extends object>({
   return (
     <Table
       dataSource={data}
+      loading={loading}
       columns={columns}
       pagination={{
         pageSize: pageSize,

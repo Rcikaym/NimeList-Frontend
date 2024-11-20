@@ -44,6 +44,7 @@ const AnimeList: React.FC = () => {
 
   // Fetch data dari API ketika komponen dimuat
   const fetchAnime = async () => {
+    setLoading(true);
     try {
       const response = await apiUrl.get(
         `http://localhost:4321/anime/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`

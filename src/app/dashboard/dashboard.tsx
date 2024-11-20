@@ -33,11 +33,11 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-10 mb-6">
         <CardDashboard />
 
         {/* Chart Section */}
-        <div className="bg-white rounded-md shadow-md mb-6">
+        <div className="bg-white rounded-md shadow-md">
           <div className="mb-3 p-3 flex items-center gap-5">
             <div className="flex items-center rounded-md shadow-gray-400 shadow-sm w-fit p-3 text-emerald-700">
               <AiOutlineBarChart style={{ fontSize: 30 }} />

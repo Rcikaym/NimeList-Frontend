@@ -35,10 +35,8 @@ const ProfileAdminEdit = () => {
 
   const setForm = async () => {
     try {
-      const res = await apiUrl.get<ProfileAdminDetail>(
-        `/user/detail-admin`
-      );
-      const data = await res.data;
+      const res = await apiUrl.get<ProfileAdminDetail>(`/user/detail`);
+      const data = res.data;
       form.setFieldsValue({
         username: data.username,
         bio: data.bio,
@@ -59,10 +57,7 @@ const ProfileAdminEdit = () => {
       formData.append("username", values.username);
       formData.append("bio", values.bio);
 
-      const update = await apiUrl.put(
-        `/user/update-profile-admin`,
-        formData
-      );
+      const update = await apiUrl.put(`/user/update-profile`, formData);
       const res = await update.data;
       message.success(res.message);
       router.push(`/dashboard/profile/detail`);

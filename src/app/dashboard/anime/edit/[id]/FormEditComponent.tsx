@@ -62,7 +62,7 @@ export default function AnimeEdit({ id }: { id: string }) {
           synopsis: animeData.synopsis,
           trailer_link: animeData.trailer_link,
           watch_link: animeData.watch_link,
-          genres: animeData.genres.map((genre: GenreType) => genre.id),
+          genres: data.genres.map((genre: GenreType) => genre.id),
           type: animeData.type,
           episodes: animeData.episodes,
         });
