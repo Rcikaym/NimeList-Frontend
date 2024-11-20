@@ -39,9 +39,8 @@ body {
   background-color: #00554bc3; /* Hover background color */
   color: white; /* Optional: Hover text color */
 }
-.slick-slide {
-  width: 2rem;
-}
-.slick-list{
-  height : 
+
+.ant-form-item-required {
+  font-weight: 600;
+  color: white;
 }

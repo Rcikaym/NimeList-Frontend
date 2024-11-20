@@ -87,6 +87,7 @@ export default function AddAnime() {
   };
 
   // Fungsi untuk menambahkan anime
+  // Fungsi untuk menambahkan anime
   const addAnime = async (values: DataAnime) => {
     const formData = new FormData();
 
@@ -126,9 +127,16 @@ export default function AddAnime() {
       formData.append("photo_cover", file.originFileObj);
     });
     if (values.photo_cover && values.photo_cover.length > 0) {
+    fileCover?.forEach((file: any) => {
+      formData.append("photo_cover", file.originFileObj);
+    });
+    if (values.photo_cover && values.photo_cover.length > 0) {
     }
 
     // Tambahkan file foto anime (bisa lebih dari 1)
+    fileList?.forEach((file: any) => {
+      formData.append("photos_anime", file.originFileObj);
+    });
     fileList?.forEach((file: any) => {
       formData.append("photos_anime", file.originFileObj);
     });
@@ -144,6 +152,8 @@ export default function AddAnime() {
       // Kirim data menggunakan axios
       console.log("p proses kirim");
       const createData = await apiUrl.post(`/anime/post`, formData);
+      console.log("p proses kirim");
+      const createData = await apiUrl.post(`/anime/post`, formData);
       const res = await createData.data;
       // Tampilkan pesan sukses jika request berhasil
       message.success(res.message);
@@ -153,6 +163,34 @@ export default function AddAnime() {
       // Tampilkan pesan error jika request gagal
       message.error("Failed to add anime");
     }
+  };
+
+  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
+  const showPostConfirm = async () => {
+    form
+      .validateFields() // Validasi input form terlebih dahulu
+      .then((values: DataAnime) => {
+        confirm({
+          centered: true,
+          title: "Do you want to add an " + values.title + " ?",
+          icon: <ExclamationCircleFilled />,
+          async onOk() {
+            console.log("p di pencet uy");
+            setLoading(true); // Set status loading pada tombol OK
+
+            return await addAnime(values)
+              .then(() => {
+                setLoading(false); // Set loading ke false setelah selesai
+              })
+              .catch(() => {
+                setLoading(false); // Set loading ke false jika terjadi error
+              });
+          },
+        });
+      })
+      .catch(() => {
+        message.error("Please complete the form before submitting!");
+      });
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
@@ -326,8 +364,8 @@ export default function AddAnime() {
                   .includes(input.toLowerCase())
               }
             >
-              <Option value="movie">movie</Option>
-              <Option value="series">series</Option>
+              <Option value="movie">Movie</Option>
+              <Option value="series">Series</Option>
             </Select>
           </Form.Item>
 
@@ -355,6 +393,7 @@ export default function AddAnime() {
           >
             <Upload
               {...uploadProps}
+              {...uploadProps}
               listType="picture"
               maxCount={1}
               fileList={fileCover}
@@ -366,7 +405,9 @@ export default function AddAnime() {
 
           {/* Upload Image */}
           <Form.Item label="Upload Photo Anime">
+          <Form.Item label="Upload Photo Anime">
             <Upload
+              {...uploadProps}
               {...uploadProps}
               listType="picture"
               maxCount={4}
