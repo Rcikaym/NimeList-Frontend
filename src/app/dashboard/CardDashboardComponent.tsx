@@ -122,14 +122,14 @@ const CardDashboard = () => {
               <div className="flex flex-col text-emerald-700">
                 <span className="text-lg">{card.title}</span>
                 {loading ? (
-                  <LoadingOutlined />
+                  <span>
+                    <LoadingOutlined />
+                  </span>
                 ) : (
                   <span className="text-lg font-bold">{card.value}</span>
                 )}
               </div>
             </div>
-            {/* <div className="flex items-center">
-            </div> */}
           </div>
         ))}
       </div>
