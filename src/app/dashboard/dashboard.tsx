@@ -37,15 +37,17 @@ const Dashboard = () => {
         <CardDashboard />
 
         {/* Chart Section */}
-        <div className="bg-white rounded-md shadow-md">
-          <div className="mb-3 p-3 flex items-center gap-5">
-            <div className="flex items-center rounded-md shadow-gray-400 shadow-sm w-fit p-3 text-emerald-700">
+        <div className="bg-white rounded-md border border-emerald-700 shadow-md">
+          <div className="mb-3 p-3 flex items-center gap-4">
+            <div className="flex items-center rounded-md shadow-gray-400 bg-emerald-700 shadow-sm w-fit p-3 text-white">
               <AiOutlineBarChart style={{ fontSize: 30 }} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold">Income Report</h3>
+              <h3 className="text-lg font-semibold">
+                Income and Transaction Report
+              </h3>
               <span className="text-gray-600">
-                Here are this year's earnings data
+                Here are this year's income and transaction data
               </span>
             </div>
           </div>
@@ -55,7 +57,7 @@ const Dashboard = () => {
         </div>
 
         {/* List Top Anime */}
-        <div className="shadow-md bg-white p-4 rounded-md">
+        <div className="shadow-md bg-white border border-emerald-700 p-4 rounded-md">
           <TableTop10Anime />
         </div>
       </div>

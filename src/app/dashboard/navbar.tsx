@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
   };
 
   const getPhotoUrl = async (id: string) => {
-    const get = await apiUrl.get(`/photo-profile/admin`);
+    const get = await apiUrl.get(`/photo-profile/get`);
     setPhotoUrl(await get.data);
   };
 

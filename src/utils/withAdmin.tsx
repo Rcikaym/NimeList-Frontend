@@ -20,13 +20,7 @@ const withAdmin = (WrappedComponent: React.ComponentType<WithAdminProps>) => {
     const router = useRouter();
 
     useEffect(() => {
-      const accessToken = getAccessToken();
-
-      if (!accessToken) {
-        // Jika tidak ada token, redirect ke login
-        router.push("/login");
-        return;
-      }
+      const accessToken: any = getAccessToken();
 
       try {
         const decodedToken: { role: string } = jwtDecode(accessToken);

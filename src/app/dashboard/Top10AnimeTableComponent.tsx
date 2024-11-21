@@ -84,10 +84,10 @@ const TableTop10Anime = () => {
         title={() => (
           <h3 className="font-semibold text-lg flex items-center gap-2">
             Top 10 Anime of All Time{" "}
-            <div className="shadow-sm shadow-gray-400 rounded-md p-1">
+            <div className="shadow-sm bg-emerald-700 shadow-gray-400 rounded-md p-1">
               <AiOutlineTrophy
                 style={{ fontSize: 20 }}
-                className="text-emerald-700"
+                className="text-white"  
               />
             </div>
           </h3>

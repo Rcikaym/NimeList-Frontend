@@ -19,6 +19,7 @@ import {
 } from "chart.js";
 import { LoadingOutlined } from "@ant-design/icons";
 import apiUrl from "@/hooks/api";
+import { BiErrorAlt } from "react-icons/bi";
 
 // Register Chart.js components
 ChartJS.register(
@@ -33,6 +34,8 @@ ChartJS.register(
 interface IncomeItem {
   month: string;
   income: number;
+  total_success_transactions: number;
+  total_failed_transactions: number;
 }
 
 const IncomeData: React.FC = () => {
@@ -70,7 +73,7 @@ const IncomeData: React.FC = () => {
   };
 
   // Menyiapkan data untuk Chart.js
-  const chartData: ChartData<"bar", number[], string> = {
+  const incomeChartData: ChartData<"bar", number[], string> = {
     labels: incomeData.map((item) => item.month),
     datasets: [
       {
@@ -78,6 +81,26 @@ const IncomeData: React.FC = () => {
         data: incomeData.map((item) => item.income),
         backgroundColor: "#047857",
         borderColor: "#047857",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const transactionsChartData: ChartData<"bar", number[], string> = {
+    labels: incomeData.map((item) => item.month),
+    datasets: [
+      {
+        label: `Success Transaction`,
+        data: incomeData.map((item) => item.total_success_transactions),
+        backgroundColor: "#047857",
+        borderColor: "#047857",
+        borderWidth: 1,
+      },
+      {
+        label: `Failed Transaction`,
+        data: incomeData.map((item) => item.total_failed_transactions),
+        backgroundColor: "#ad0707",
+        borderColor: "#ad0707",
         borderWidth: 1,
       },
     ],
@@ -91,34 +114,41 @@ const IncomeData: React.FC = () => {
       legend: {
         position: "top" as const,
       },
-      title: {
-        display: true,
-        text: `${selectedYear} Income Report`,
-      },
     },
   };
 
   return (
-    <div>
-      <h2>Select the Year for the Income Report</h2>
+    <>
+      <h2>Select the Year for the Report</h2>
       <DatePicker
         picker="year"
         value={dayjs(selectedYear, "YYYY")}
         onChange={handleYearChange}
-        style={{ marginBottom: "20px" }}
       />
-      {loading ? (
-        <div className="h-[460px] w-full flex justify-center items-center">
-          <LoadingOutlined />
-        </div>
-      ) : incomeData.length > 0 ? (
-        <div className="h-[460px] w-full">
-          <Bar data={chartData} options={options} />
-        </div>
-      ) : (
-        <p>There is no income report for this year.</p>
-      )}
-    </div>
+      <div className="w-full h-full my-7">
+        {loading ? (
+          <div className="flex justify-center items-center">
+            <LoadingOutlined />
+          </div>
+        ) : incomeData.length > 0 ? (
+          <>
+            <div className="flex flex-col gap-8">
+              <div className="w-full h-[37.5rem]">
+                <Bar data={incomeChartData} options={options} />
+              </div>
+              <div className="w-full h-[37.5rem]">
+                <Bar data={transactionsChartData} options={options} />
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="w-full font-bold flex gap-2 justify-center h-full items-center">
+            <BiErrorAlt size={60} />
+            <span>No data found</span>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
