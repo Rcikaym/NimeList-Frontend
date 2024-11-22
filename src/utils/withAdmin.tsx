@@ -6,8 +6,6 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import {
   getAccessToken,
-  isAccessTokenExpired,
-  refreshAccessToken,
 } from "./auth";
 
 // Definisikan tipe untuk props

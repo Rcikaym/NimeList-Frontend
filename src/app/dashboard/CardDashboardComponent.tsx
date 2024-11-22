@@ -11,8 +11,6 @@ import {
   AiOutlineShoppingCart,
 } from "react-icons/ai";
 
-const api = process.env.NEXT_PUBLIC_API_URL;
-
 interface CardDashboardProps {
   totalTopics: number;
   totalMembers: number;
@@ -29,10 +27,10 @@ export async function fetchDashboardData() {
       transactionResponse,
       incomeResponse,
     ] = await Promise.all([
-      apiUrl.get(`${api}/dashboard/total-topic`, { method: "GET" }),
-      apiUrl.get(`${api}/dashboard/total-premium`, { method: "GET" }),
-      apiUrl.get(`${api}/dashboard/total-transaction`, { method: "GET" }),
-      apiUrl.get(`${api}/dashboard/total-income`, { method: "GET" }),
+      apiUrl.get(`/dashboard/total-topic`),
+      apiUrl.get(`/dashboard/total-premium`),
+      apiUrl.get(`/dashboard/total-transaction`),
+      apiUrl.get(`/dashboard/total-income`),
     ]).then((responses) => Promise.all(responses.map((res) => res.data)));
 
     return {
@@ -84,22 +82,22 @@ const CardDashboard = () => {
 
   const cardData = [
     {
-      title: "Total Members",
+      title: "Members This Month",
       value: data.totalMembers,
       icon: <AiOutlineCrown style={{ fontSize: sizeIcon }} />,
     },
     {
-      title: "Total Topics",
+      title: "Topics This Month",
       value: data.totalTopics,
       icon: <AiOutlinePicRight style={{ fontSize: sizeIcon }} />,
     },
     {
-      title: "Total Transactions",
+      title: "Transactions This Month",
       value: data.totalTransaction,
       icon: <AiOutlineShoppingCart style={{ fontSize: sizeIcon }} />,
     },
     {
-      title: "Total Income",
+      title: "Incomes This Month",
       value: `Rp${new Intl.NumberFormat("id-ID").format(
         data.totalIncome || 0
       )}`,
@@ -120,13 +118,13 @@ const CardDashboard = () => {
                 <div>{card.icon}</div>
               </div>
               <div className="flex flex-col text-emerald-700">
-                <span className="text-lg">{card.title}</span>
+                <span className="text-medium">{card.title}</span>
                 {loading ? (
                   <span>
                     <LoadingOutlined />
                   </span>
                 ) : (
-                  <span className="text-lg font-bold">{card.value}</span>
+                  <span className="text-2xl font-bold">{card.value}</span>
                 )}
               </div>
             </div>

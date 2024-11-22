@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <a href={`/dashboard/profile/detail`}>Profile</a>,
+      label: <a href={`/dashboard/profile/${username}`}>Profile</a>,
       icon: <BiSolidUserDetail size={17} />,
     },
     {

@@ -22,6 +22,8 @@ import { TopicType } from "./types";
 import Image from "next/image";
 import TopicBody from "./TopicBodyComponent";
 import apiUrl from "@/hooks/api";
+import { BiArrowBack } from "react-icons/bi";
+import Link from "next/link";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -105,7 +107,7 @@ const PhotoGallery = memo(
   )
 );
 
-export default function TopicDetails({ id }: { id: string }) {
+export default function TopicDetails({ slug }: { slug: string }) {
   const [topic, setTopic] = useState<TopicType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -114,7 +116,7 @@ export default function TopicDetails({ id }: { id: string }) {
     const fetchTopic = async () => {
       setLoading(true);
       try {
-        const response = await apiUrl.get(`/topic/get/${id}`);
+        const response = await apiUrl.get(`/topic/get/${slug}`);
 
         if (!response) {
           throw new Error("Failed to fetch topic data");
@@ -130,7 +132,7 @@ export default function TopicDetails({ id }: { id: string }) {
     };
 
     fetchTopic();
-  }, [id]);
+  }, [slug]);
 
   if (loading)
     return (
@@ -158,18 +160,20 @@ export default function TopicDetails({ id }: { id: string }) {
         </div>
 
         {/* Body */}
-        <div className="p-6">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Body</h2>
+        <div className="m-6">
           <div className="text-gray-600">
             <TopicBody content={body} />
           </div>
         </div>
       </div>
 
-      <div className="p-2 flex justify-end text-lg font-semibold mt-3 rounded-lg bg-[#005B50]">
-        <MemoizedButton icon={<LeftCircleOutlined />} href="/dashboard/topic">
-          Back
-        </MemoizedButton>
+      <div className="p-2 flex justify-end mt-3 rounded-lg bg-[#005B50]">
+        <Link
+          href="/dashboard/topic"
+          className="bg-white text-black px-2 py-1 rounded-md flex items-center gap-1 hover:text-[#005B50]"
+        >
+          <BiArrowBack style={{ fontSize: "20px" }} />
+        </Link>
       </div>
     </>
   );

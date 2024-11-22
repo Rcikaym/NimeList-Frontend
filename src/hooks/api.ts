@@ -24,17 +24,19 @@ apiUrl.interceptors.response.use(
     const originalRequest = error.config;
 
     const accessToken = getAccessToken();
-    if (error.response.status === 401 && accessToken) {
+    if (error.response.status === 401 && isAccessTokenExpired()) {
       try {
-        await refreshAccessToken();
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        const refreshToken = await refreshAccessToken();
+        originalRequest.headers.Authorization = `Bearer ${refreshToken}`;
         return axios(originalRequest);
       } catch (error) {
         return Promise.reject(error);
       }
+    } else if (error.response.status === 401 && !accessToken) {
+      window.location.href = "/login";
+      return Promise.reject(error);
     }
 
-    window.location.href = "/login";
     return Promise.reject(error);
   }
 );

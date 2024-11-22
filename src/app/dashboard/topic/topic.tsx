@@ -26,6 +26,7 @@ interface DataType {
   title: string;
   user: string;
   anime: string;
+  slug: string;
   created_at: string;
   updated_at: string;
 }
@@ -90,10 +91,10 @@ const TopicList: React.FC = () => {
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showDeleteConfirm = (id: string, title: string) => {
+  const showDeleteConfirm = (id: string) => {
     confirm({
       centered: true,
-      title: "Do you want to delete " + title + " topic?",
+      title: "Do you want to delete this topic?",
       icon: <ExclamationCircleFilled />,
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
@@ -144,17 +145,17 @@ const TopicList: React.FC = () => {
       dataIndex: "action",
       render: (text: string, record: DataType) => (
         <div className="flex gap-3">
-          <a href={`topic/${record.id}`}>
+          <a href={`topic/${record.slug}`}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
               <EyeOutlined style={{ fontSize: 20 }} />
             </div>
           </a>
-          <a href={`topic/edit/${record.id}`}>
+          <a href={`topic/edit/${record.slug}`}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
               <AiOutlineEdit style={{ fontSize: 20 }} />
             </div>
           </a>
-          <a onClick={() => showDeleteConfirm(record.id, record.title)}>
+          <a onClick={() => showDeleteConfirm(record.id)}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800">
               <AiOutlineDelete style={{ fontSize: 20 }} />
             </div>
