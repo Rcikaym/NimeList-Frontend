@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 interface ProfileAdminDetail {
   id: string;
   username: string;
-  email: string;
   photo_profile: string;
   bio: string;
 }
@@ -24,7 +23,7 @@ interface DataProfile {
   bio: string;
 }
 
-const ProfileAdminEdit = () => {
+const ProfileAdminEdit = ({name} : {name: string}) => {
   const [photoUrl, setPhotoUrl] = useState<string>("");
   const [photo, setPhoto] = useState([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -35,7 +34,7 @@ const ProfileAdminEdit = () => {
 
   const setForm = async () => {
     try {
-      const res = await apiUrl.get<ProfileAdminDetail>(`/user/detail`);
+      const res = await apiUrl.get<ProfileAdminDetail>(`/user/profile-for-edit/${name}`);
       const data = res.data;
       form.setFieldsValue({
         username: data.username,
@@ -60,7 +59,7 @@ const ProfileAdminEdit = () => {
       const update = await apiUrl.put(`/user/update-profile`, formData);
       const res = await update.data;
       message.success(res.message);
-      router.push(`/dashboard/profile/detail`);
+      router.push(`/dashboard/profile/${name}`);
     } catch (error) {
       console.log(error);
     }
@@ -199,7 +198,7 @@ const ProfileAdminEdit = () => {
         </Form.Item>
         <div className="flex justify-between">
           <Button
-            href={`/dashboard/profile/detail`}
+            href={`/dashboard/profile/${name}`}
             color="default"
             className="mt-6"
           >

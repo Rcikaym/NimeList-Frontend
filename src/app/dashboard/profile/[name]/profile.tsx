@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { BiCrown, BiDiamond, BiShield, BiSolidShield } from "react-icons/bi";
 
 interface ProfileAdminDetail {
-  id: string;
   username: string;
   email: string;
   photo_profile: string;
@@ -17,7 +16,7 @@ interface ProfileAdminDetail {
   badge: string;
 }
 
-const ProfileAdminDetail = () => {
+const ProfileAdminDetail = ({ username }: { username: string }) => {
   const [profile, setProfile] = useState<ProfileAdminDetail | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string>("");
   const [bio, setBio] = useState<string>("");
@@ -28,7 +27,9 @@ const ProfileAdminDetail = () => {
   const adminDetail = async () => {
     setLoading(true);
     try {
-      const res = await apiUrl.get<ProfileAdminDetail>(`/user/profile`);
+      const res = await apiUrl.get<ProfileAdminDetail>(
+        `/user/profile/${username}`
+      );
       const data = res.data;
       setProfile(data);
       setBio(data.bio);
@@ -85,7 +86,7 @@ const ProfileAdminDetail = () => {
             </div>
             <div className="ml-24">
               <a
-                href={`/dashboard/profile/edit`}
+                href={`/dashboard/profile/edit/${profile.username}`}
                 className="border border-emerald-600 rounded-md hover:bg-emerald-50 flex items-center justify-center px-7 py-2"
               >
                 <span className="text-lg font-sans font-semibold text-emerald-700">
@@ -97,7 +98,7 @@ const ProfileAdminDetail = () => {
           <div className="mt-10">
             <h3 className="text-black text-lg font-semibold mt-10">Bio</h3>
             <div className="text-black text-sm">
-              <DisplayLongText text={bio} />
+              {bio === null || bio === "" ? "No bio" : <DisplayLongText text={bio} />}
             </div>
           </div>
         </>
