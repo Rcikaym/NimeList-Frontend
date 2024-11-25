@@ -14,36 +14,29 @@ const TopicBody: React.FC<{ content: string }> = ({ content }) => {
     // Menyesuaikan indentasi baris pada elemen p yang kosong
     const paragraphs = doc.querySelectorAll("p");
     paragraphs.forEach((p) => {
-      if (p.textContent?.trim() === "") {
-        // Buat elemen <br>
-        const br = document.createElement("br");
-        // Ganti elemen <p> kosong dengan <br>
-        p.replaceWith(br);
+      // Jika tag <p> kosong isi dengan karakter tak terlihat
+      if (p.textContent?.trim() === "" && p.children.length === 0) {
+        (p as HTMLElement).style.margin = "0";
+        p.innerHTML = "&zwnj;";
+      } else {
+        (p as HTMLElement).style.margin = "3px 0";
       }
     });
 
     // Menyesuaikan ukuran font untuk elemen header (h1, h2, h3, ...)
-    const headers = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    const headers = doc.querySelectorAll("h1, h2, h3");
     headers.forEach((header: Element) => {
       const h = header as HTMLElement;
+      h.style.margin = "3px 0";
       switch (h.tagName) {
         case "H1":
-          h.style.fontSize = "2.5rem";
-          break;
-        case "H2":
           h.style.fontSize = "2rem";
           break;
-        case "H3":
-          h.style.fontSize = "1.75rem";
-          break;
-        case "H4":
+        case "H2":
           h.style.fontSize = "1.5rem";
           break;
-        case "H5":
+        case "H3":
           h.style.fontSize = "1.25rem";
-          break;
-        case "H6":
-          h.style.fontSize = "1rem";
           break;
         default:
           break;
@@ -64,7 +57,7 @@ const TopicBody: React.FC<{ content: string }> = ({ content }) => {
     lists.forEach((list: Element) => {
       const li = list as HTMLElement;
       li.style.margin = "16px";
-      li.style.paddingLeft = "20px"; // Beri indentasi pada daftar
+      li.style.paddingLeft = "15px"; // Beri indentasi pada daftar
       if (list.tagName === "UL") {
         // Untuk unordered list (UL), gunakan bullet
         li.style.listStyleType = "disc"; // Menampilkan titik sebagai bullet
@@ -85,12 +78,7 @@ const TopicBody: React.FC<{ content: string }> = ({ content }) => {
 
   const updatedContent = htmlParser(content);
 
-  return (
-    <div
-      className="text-black"
-      dangerouslySetInnerHTML={{ __html: updatedContent }}
-    />
-  );
+  return <div dangerouslySetInnerHTML={{ __html: updatedContent }} />;
 };
 
 export default TopicBody;

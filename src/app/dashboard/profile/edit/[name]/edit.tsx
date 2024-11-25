@@ -16,14 +16,16 @@ interface ProfileAdminDetail {
   username: string;
   photo_profile: string;
   bio: string;
+  name: string;
 }
 
 interface DataProfile {
   username: string;
+  name: string;
   bio: string;
 }
 
-const ProfileAdminEdit = ({name} : {name: string}) => {
+const ProfileAdminEdit = ({ name }: { name: string }) => {
   const [photoUrl, setPhotoUrl] = useState<string>("");
   const [photo, setPhoto] = useState([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -34,11 +36,14 @@ const ProfileAdminEdit = ({name} : {name: string}) => {
 
   const setForm = async () => {
     try {
-      const res = await apiUrl.get<ProfileAdminDetail>(`/user/profile-for-edit/${name}`);
+      const res = await apiUrl.get<ProfileAdminDetail>(
+        `/user/profile-for-edit/${name}`
+      );
       const data = res.data;
       form.setFieldsValue({
         username: data.username,
         bio: data.bio,
+        name: data.name,
       });
       setPhotoUrl(data.photo_profile);
     } catch (error) {
@@ -55,6 +60,7 @@ const ProfileAdminEdit = ({name} : {name: string}) => {
       });
       formData.append("username", values.username);
       formData.append("bio", values.bio);
+      formData.append("name", values.name);
 
       const update = await apiUrl.put(`/user/update-profile`, formData);
       const res = await update.data;
@@ -191,10 +197,18 @@ const ProfileAdminEdit = ({name} : {name: string}) => {
           className="mt-5"
           rules={[{ required: true, message: "Please input username" }]}
         >
-          <Input placeholder="Input username" />
+          <Input placeholder="Input username" max={30} showCount />
+        </Form.Item>
+        <Form.Item
+          name="name"
+          label="Name"
+          className="mt-5"
+          rules={[{ required: true, message: "Please input name" }]}
+        >
+          <Input placeholder="Input name" max={30} showCount />
         </Form.Item>
         <Form.Item name="bio" label="Bio">
-          <Input.TextArea autoSize placeholder="Input bio" />
+          <Input.TextArea autoSize placeholder="Input bio" maxLength={250} showCount />
         </Form.Item>
         <div className="flex justify-between">
           <Button

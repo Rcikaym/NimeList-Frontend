@@ -14,6 +14,7 @@ interface ProfileAdminDetail {
   photo_profile: string;
   bio: string;
   badge: string;
+  name: string;
 }
 
 const ProfileAdminDetail = ({ username }: { username: string }) => {
@@ -32,7 +33,6 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
       );
       const data = res.data;
       setProfile(data);
-      setBio(data.bio);
       setPhotoUrl(data.photo_profile);
       setLoading(false);
     } catch (error) {
@@ -74,13 +74,14 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
               />
             </div>
             <div className="flex flex-col gap-2 ml-5">
+              <span className="text-black text-sm">{`@${profile.username}`}</span>
               <div className="flex w-fit items-center gap-2 bg-[#005B50] rounded-md px-3 py-1 text-white">
                 <span className="text-lg font-sans font-semibold">
-                  {profile.username}
+                  {profile.name}
                 </span>
                 <BiDiamond size={20} />
               </div>
-              <div>
+              <div className="flex flex-col">
                 <span className="text-black text-sm">{profile.email}</span>
               </div>
             </div>
@@ -98,7 +99,11 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
           <div className="mt-10">
             <h3 className="text-black text-lg font-semibold mt-10">Bio</h3>
             <div className="text-black text-sm">
-              {bio === null || bio === "" ? "No bio" : <DisplayLongText text={bio} />}
+              {profile.bio === null || "" ? (
+                "No bio"
+              ) : (
+                <DisplayLongText text={profile.bio} />
+              )}
             </div>
           </div>
         </>
