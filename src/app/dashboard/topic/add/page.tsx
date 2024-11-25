@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, message, Modal, Select, Upload } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  message,
+  Modal,
+  Select,
+  Upload,
+  UploadProps,
+} from "antd";
 import axios from "axios";
 import {
   ExclamationCircleFilled,
@@ -21,7 +30,6 @@ interface DataType {
   body: string;
   id_anime: string;
   id_user: string;
-  photos: string[];
 }
 
 interface DataAnime {
@@ -43,6 +51,7 @@ const CreateTopic: React.FC = () => {
   const [users, setUsers] = useState<DataUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   let [content, setContent] = useState<string>("");
+  const [fileList, setFileList] = useState([]);
   const { confirm } = Modal;
 
   useEffect(() => {
@@ -113,8 +122,8 @@ const CreateTopic: React.FC = () => {
     formData.append("body", content);
 
     // Tambahkan file foto anime (bisa lebih dari 1)
-    if (values.photos) {
-      values.photos.forEach((file: any) => {
+    if (fileList.length > 0) {
+      fileList.forEach((file: any) => {
         formData.append("photos", file.originFileObj);
       });
     }
@@ -147,6 +156,32 @@ const CreateTopic: React.FC = () => {
       return e;
     }
     return e?.fileList;
+  };
+
+  const handlePhotosUpload = (info: any) => {
+    const { file, fileList } = info;
+
+    setFileList(fileList);
+    if (file.status === "done") {
+      message.success(`${file.name} uploaded successfully`);
+    } else if (file.status === "error") {
+      message.error(`${file.name} upload failed.`);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    beforeUpload: (file) => {
+      const isJpgOrPng =
+        file.type === "image/jpeg" || file.type === "image/png";
+      if (!isJpgOrPng) {
+        message.error("You can only upload JPG/PNG file!");
+      }
+      const isLt2M = file.size / 1024 / 1024 < 5;
+      if (!isLt2M) {
+        message.error("Image must smaller than 5MB!");
+      }
+      return isJpgOrPng && isLt2M;
+    },
   };
 
   return (
@@ -214,13 +249,14 @@ const CreateTopic: React.FC = () => {
           </Form.Item>
 
           {/* Upload Image */}
-          <Form.Item
-            name="photos"
-            label="Upload photo topic"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-          >
-            <Upload listType="picture" maxCount={4}>
+          <Form.Item name="photos" label="Upload photo topic">
+            <Upload
+              {...uploadProps}
+              listType="picture"
+              maxCount={4}
+              multiple
+              onChange={handlePhotosUpload}
+            >
               <Button icon={<UploadOutlined />}>Click to upload</Button>
             </Upload>
           </Form.Item>

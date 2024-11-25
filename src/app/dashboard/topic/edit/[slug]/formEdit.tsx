@@ -46,15 +46,6 @@ export default function TopicEdit({ slug }: { slug: string }) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, "text/html");
 
-    // Update src untuk gambar
-    const images = doc.querySelectorAll("img");
-    images.forEach((img) => {
-      const originalSrc = img.getAttribute("src");
-      if (originalSrc && !originalSrc.startsWith("http")) {
-        img.setAttribute("src", `${api}${originalSrc}`);
-      }
-    });
-
     // Tangani tag <p> kosong
     const paragraphs = doc.querySelectorAll("p");
     paragraphs.forEach((p) => {
@@ -96,6 +87,7 @@ export default function TopicEdit({ slug }: { slug: string }) {
           body: updatedContent,
         });
 
+        setContent(updatedContent);
         setTopicId(topicData.id);
         setTopic(topicData.title);
         setError(null);
@@ -127,22 +119,6 @@ export default function TopicEdit({ slug }: { slug: string }) {
     fetchAnime();
   }, []);
 
-  const setSrcImgOri = (html: string) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-
-    // Update src untuk gambar
-    const images = doc.querySelectorAll("img");
-    images.forEach((img) => {
-      const originalSrc = img.getAttribute("data-original-src");
-      if (originalSrc) {
-        img.setAttribute("src", `${originalSrc}`);
-      }
-    });
-
-    return doc.body.innerHTML;
-  };
-
   // Fungsi untuk submit data
   const updateTopic = async (values: TopicType) => {
     const formData = new FormData();
@@ -151,7 +127,7 @@ export default function TopicEdit({ slug }: { slug: string }) {
     formData.append("id_anime", values.id_anime);
 
     // Tambahkan body yang sudah dimodifikasi ke FormData
-    formData.append("body", setSrcImgOri(content));
+    formData.append("body", content);
 
     const new_photos = [] as string[];
     const existing_photos = [] as string[];

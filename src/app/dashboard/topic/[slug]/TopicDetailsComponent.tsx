@@ -152,7 +152,7 @@ export default function TopicDetails({ slug }: { slug: string }) {
       </div>
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="px-6 mt-3">
-          <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+          <h1 className="text-3xl font-bold">{title}</h1>
           <AnimeMetadata topic={topic} />
           <div className="mt-4">
             <PhotoGallery photos={photos} title={title} />
@@ -161,9 +161,7 @@ export default function TopicDetails({ slug }: { slug: string }) {
 
         {/* Body */}
         <div className="m-6">
-          <div className="text-gray-600">
-            <TopicBody content={body} />
-          </div>
+          <TopicBody content={body} />
         </div>
       </div>
 

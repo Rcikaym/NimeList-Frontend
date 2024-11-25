@@ -82,7 +82,7 @@ const CardDashboard = () => {
 
   const cardData = [
     {
-      title: "Members This Month",
+      title: "Total Members",
       value: data.totalMembers,
       icon: <AiOutlineCrown style={{ fontSize: sizeIcon }} />,
     },
