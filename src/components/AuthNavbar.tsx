@@ -31,6 +31,9 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { getAccessToken, removeAccessToken } from "@/utils/auth";
+import { message } from "antd";
+import { jwtDecode } from "jwt-decode";
 
 const inter = Inter({ subsets: ["latin"] });
 const url =
@@ -139,28 +142,36 @@ const menuItems = [
 ];
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [username, setUsername] = useState("Guest");
+  const [username, setUsername] = useState("");
+  const [name, setName] = useState("Guest");
   const [description, setDescription] = useState("guest@gmail.com");
   const router = useRouter();
 
   // Ensure dynamic content only renders on the client
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
+    const token = getAccessToken();
 
     if (token) {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const decodedToken: { username: string; email: string, name: string } = jwtDecode(token);
       setUsername(decodedToken.username);
+      setName(decodedToken.name);
       setDescription(decodedToken.email);
     }
   }, []);
- 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    router.push("/home")
-    setTimeout(() => {
-      window.location.reload();
-  }, 100); // Refresh after 100 milliseconds
-  }
+
+  const handleLogout = async () => {
+    const res = await removeAccessToken();
+
+    if (res.status === 200) {
+      message.success(res.message);
+      router.push("/home");
+      setTimeout(() => {
+        window.location.reload();
+      }, 100); // Refresh after 100 milliseconds
+    } else {
+      message.error(res.message);
+    }
+  };
 
   return (
     <>
@@ -177,7 +188,7 @@ const AuthNavbar = () => {
           />
           <NavbarItem className="ml-7">
             <Link
-              href="/"
+              href="/home"
               className="flex items-center justify-center cursor-pointer"
             >
               <Image
@@ -278,7 +289,7 @@ const AuthNavbar = () => {
                   className="h-14 gap-2 opacity-100 "
                 >
                   <User
-                    name={username}
+                    name={name}
                     description={description}
                     classNames={{
                       name: "text-white",
