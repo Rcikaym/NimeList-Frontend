@@ -152,12 +152,6 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                 <div className="flex flex-col justify-center text-center items-center p-4 text-white">
                   <p className="text-xl font-semibold">YOUR RATING</p>
                   <BiStar className="w-[69px] h-[69px] text-[#05E5CB]" />
-                  {/* <Button
-                    onPress={onOpen}
-                    className="bg-transparent text-xl font-semibold text-[#05E5CB]"
-                  >
-                    {/* {reviews.rating ? reviews.rating : "Not rated"} */}
-                  {/* </Button> */} 
                     <ReviewModal animeId={id} />
                 </div>
               </div>
