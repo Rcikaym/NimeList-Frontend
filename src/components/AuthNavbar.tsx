@@ -5,7 +5,12 @@ import { Inter } from "next/font/google";
 import Image from "next/image";
 import React from "react";
 import { BiChevronDown, BiLogOut } from "react-icons/bi";
-import { FaCrown, FaRegBookmark, FaMagnifyingGlass } from "react-icons/fa6";
+import {
+  FaCrown,
+  FaRegBookmark,
+  FaMagnifyingGlass,
+  FaStar,
+} from "react-icons/fa6";
 import {
   Dropdown,
   DropdownTrigger,
@@ -33,89 +38,68 @@ const inter = Inter({ subsets: ["latin"] });
 const url =
   "https://st3.depositphotos.com/15648834/17930/v/450/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg";
 
-const items = [
+const genres = [
   {
-    label: (
-      <Link className="text-white" href="/action">
-        Action
-      </Link>
-    ),
-    key: "1",
+    label: "Action",
+    key: 1,
   },
   {
-    label: (
-      <Link className="text-white" href="/adventure">
-        Adventure
-      </Link>
-    ),
-    key: "2",
+    label: "Adventure",
+    key: 2,
   },
   {
-    label: (
-      <Link className="text-white" href="#">
-        Avant Garde
-      </Link>
-    ),
-    key: "3",
+    label: "Comedy",
+    key: 3,
   },
   {
-    label: (
-      <Link className="text-white" href="#">
-        Comedy
-      </Link>
-    ),
-    key: "4",
+    label: "Drama",
+    key: 4,
   },
   {
-    label: (
-      <Link className="text-white" href="#">
-        Drama
-      </Link>
-    ),
-    key: "5",
+    label: "Fantasy",
+    key: 5,
   },
   {
-    label: (
-      <Link className="text-white" href="#">
-        Isekai
-      </Link>
-    ),
-    key: "6",
+    label: "Horror",
+    key: 6,
   },
   {
-    label: (
-      <Link className="text-white" href="#">
-        Josei
-      </Link>
-    ),
-    key: "7",
+    label: "Isekai",
+    key: 7,
   },
   {
-    label: (
-      <Link className="text-white" href="#">
-        Magic
-      </Link>
-    ),
-    key: "8",
+    label: "Mecha",
+    key: 8,
   },
   {
-    label: (
-      <Link className="text-white" href="#">
-        Martial Arts
-      </Link>
-    ),
-    key: "9",
+    label: "Mystery",
+    key: 9,
   },
   {
-    label: (
-      <Link className="text-white" href="#">
-        Mecha
-      </Link>
-    ),
-    key: "10",
+    label: "Romance",
+    key: 10,
+  },
+  {
+    label: "Sci-fi",
+    key: 11,
+  },
+  {
+    label: "Shounen",
+    key: 12,
+  },
+  {
+    label: "Slice of Life",
+    key: 13,
+  },
+  {
+    label: "Supernatural",
+    key: 14,
+  },
+  {
+    label: "Thriller",
+    key: 15,
   },
 ];
-
 const menuItems = [
   {
     key: "0",
@@ -124,25 +108,34 @@ const menuItems = [
   {
     key: "1",
     label: (
-      <Link className="text-white hover:underline" href="/membership">
-        Membership
-      </Link>
+      <div className="flex">
+        <FaCrown className="m-2 text-yellow-600 w-5 h-4" />
+        <Link className="text-white hover:underline" href="/membership">
+          Membership
+        </Link>
+      </div>
     ),
   },
   {
     key: "2",
     label: (
-      <Link className="text-white hover:underline" href="/favorites">
-        Your Favorites
-      </Link>
+      <div className="flex">
+        <FaStar className="m-2 text-yellow-600 w-5 h-5" />
+        <Link className="text-white hover:underline" href="/favorites">
+          Your Favorites
+        </Link>
+      </div>
     ),
   },
   {
     key: "3",
     label: (
-      <Link className="text-white hover:underline" href="/search">
-        Search Anime
-      </Link>
+      <div className="flex">
+        <FaMagnifyingGlass className="m-2 w-5 h-5" />
+        <Link className="text-white hover:underline" href="/search">
+          Search Anime
+        </Link>
+      </div>
     ),
   },
 ];
@@ -181,8 +174,9 @@ const AuthNavbar = () => {
     <>
       <Navbar
         onMenuOpenChange={setIsMenuOpen}
-        className="bg-transparent pt-3"
+        className="bg-transparent pt-3 overflow-x-hidden"
         maxWidth="full"
+
       >
         <NavbarContent justify="start">
           <NavbarMenuToggle
@@ -192,7 +186,7 @@ const AuthNavbar = () => {
           <NavbarItem className="ml-7">
             <Link
               href="/"
-              className="flex items-center justify-center w-12 h-7 cursor-pointer"
+              className="flex items-center justify-center cursor-pointer"
             >
               <Image
                 src="/images/logo.png"
@@ -200,6 +194,7 @@ const AuthNavbar = () => {
                 width={48}
                 height={28}
                 className="block"
+                style={{ width: "auto", height: "auto" }} // Adds CSS to maintain aspect ratio
               />
             </Link>
           </NavbarItem>
@@ -219,6 +214,7 @@ const AuthNavbar = () => {
               </DropdownTrigger>
               <DropdownMenu
                 aria-label="Static Actions"
+                className="max-h-[300px] overflow-y-auto scrollbar-hide grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
                 itemClasses={{
                   base: [
                     "data-[hover=true]:bg-teal-500",
@@ -227,9 +223,14 @@ const AuthNavbar = () => {
                 }}
               >
                 {/* Map through the items array and create DropdownItem for each */}
-                {items.map((item) => (
-                  <DropdownItem key={item.key} className="opacity-100">
-                    {item.label}
+                {genres.map((item) => (
+                  <DropdownItem
+                    key={`${item.label}-${item.key}`}
+                    className="opacity-100"
+                  >
+                    <Link href={`/anime/genre/${item.label}`}>
+                      {item.label}
+                    </Link>
                   </DropdownItem>
                 ))}
               </DropdownMenu>
@@ -290,7 +291,6 @@ const AuthNavbar = () => {
                     classNames={{
                       name: "text-white",
                       description: "text-white opacity-50",
-
                     }}
                     avatarProps={{
                       size: "sm",
@@ -333,6 +333,9 @@ const AuthNavbar = () => {
             <NavbarMenuItem key={item.key}>{item.label}</NavbarMenuItem>
           ))}
           <Accordion
+            itemClasses={{
+              title: "opacity-100 text-white",
+            }}
             motionProps={{
               variants: {
                 enter: {
@@ -370,11 +373,11 @@ const AuthNavbar = () => {
               },
             }}
           >
-            <AccordionItem className="text-white opacity-100" title="Genre">
-              {items.map((item) => (
-                <p key={item.key} className="opacity-75">
-                  {item.label}
-                </p>
+            <AccordionItem className="text-white" title="Genre">
+              {genres.map((item) => (
+                <Link href={`/anime/genre/${item.label}`} key={item.key}>
+                  <p className="opacity-100">{item.label}</p>
+                </Link>
               ))}
             </AccordionItem>
           </Accordion>

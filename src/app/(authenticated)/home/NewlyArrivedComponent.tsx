@@ -62,41 +62,55 @@ export default function NewlyArrived() {
   }
 
   const settings = {
-    infinite: false,
-    speed: 1500,
-    slidesToShow: 7,
-    slidesToScroll: 7,
-    initialSlide: 0,
+    infinite: false, // No infinite looping
+    speed: 1500, // Faster transition for a better UX
+    slidesToShow: 7, // Default number of visible items on large screens
+    slidesToScroll: 6, // Scroll 7 items per click
+    initialSlide: 0, // Start at the first item
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1500, // Extra large screens
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 3,
+        },
+      },
+      {
+        breakpoint: 1200, // Large screens
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 1024, // Medium screens
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 3,
-          infinite: true,
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
+          slidesToScroll: 2,
         },
       },
       {
-        breakpoint: 600,
+        breakpoint: 768, // Tablets
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 2,
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
+          slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 480,
+        breakpoint: 600, // Small tablets and large phones
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480, // Small phones
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
+          arrows: false, // Remove arrows for small screens for better UX
         },
       },
     ],

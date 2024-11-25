@@ -12,7 +12,7 @@ export default function Home() {
         <CrossfadeCarousel interval={10000} />
       </section>
 
-      <section className="w-full h-[56.2vh] mt-[5rem] mx-auto">
+      <section className="w-full h-[56.2vh] mt-[5rem] mx-auto overflow-clip">
         <div className="w-full h-full">
           <h1 className="w-fit font-jakarta ml-10 text-3xl font-black select-none p-8 bg-gradient-to-r from-[#05E1C6] to-[#008576b7] bg-clip-text text-transparent sm:text-2xl md:text-3xl lg:text-3xl">
             Recommendation
@@ -21,7 +21,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full h-[56.2vh] mt-20 mx-auto">
+      <section className="w-full h-[56.2vh] mt-20 mx-auto overflow-clip">
         <div className="w-full h-full">
           <div className="flex flex-wrap justify-between">
             <h1 className="w-fit font-jakarta ml-10 text-3xl select-none font-black p-8 bg-gradient-to-r from-[#05E1C6] to-[#008576b7] bg-clip-text text-transparent sm:text-2xl md:text-3xl lg:text-3xl">
@@ -41,14 +41,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full h-h-[56.2vh] mt-20 mx-auto">
+      <section className="w-full h-auto mt-20 mx-auto overflow-clip">
         <div className="w-full h-full bg-gradient-to-r from-[#050505] via-[#050505] to-[#009951] bg-[length:100%_30%]">
-          <div className="flex justify-between">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
             <div>
               <h1 className="w-fit font-jakarta ml-10 text-3xl select-none font-black pl-8 bg-gradient-to-r from-[#05E1C6] to-[#009e10] bg-clip-text text-transparent">
                 Newly Arrived
               </h1>
-              <p className="ml-10 mb-0 font-jakarta w-fit pl-8">
+              <p className="ml-4 lg:ml-10 mb-2 lg:mb-0 font-jakarta text-sm lg:text-base w-full lg:w-fit pl-4 lg:pl-8">
                 Epic Adventures Await: Dive into the Hottest New Anime Releases
                 of the Season!
               </p>
@@ -57,7 +57,7 @@ export default function Home() {
               <Button
                 variant="light"
                 color="primary"
-                className="font-jakarta font-bold m-8 mr-16 text-indigo-50 "
+                className="font-jakarta font-bold m-8 mr-16 text-indigo-50"
                 endContent={<MdPlayArrow />}
               >
                 VIEW ALL
