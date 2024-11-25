@@ -27,6 +27,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  overflow-x: hidden;
 }
 
 @layer utilities {
@@ -43,4 +44,8 @@ body {
 .ant-form-item-required {
   font-weight: 600;
   color: white;
+}
+
+.slider-container {
+  overflow: hidden; /* Prevent any overlap */
 }
