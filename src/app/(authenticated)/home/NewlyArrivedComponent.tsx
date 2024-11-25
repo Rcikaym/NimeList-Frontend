@@ -127,9 +127,7 @@ export default function NewlyArrived() {
             >
               <div className="w-[13.75rem]">
                 <Link
-                  href={`/anime/${anime.id}/${anime.title
-                    .replace(/\s+/g, "-")
-                    .toLowerCase()}`}
+                  href={`/anime/${anime.slug}`}
                 >
                   <Image
                     className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
@@ -144,9 +142,7 @@ export default function NewlyArrived() {
                 </Link>
                 <div className="mt-3 mb-3 mr-3">
                   <Link
-                    href={`/anime/${anime.id}/${anime.title
-                      .replace(/\s+/g, "-")
-                      .toLowerCase()}`}
+                    href={`/anime/${anime.slug}`}
                   >
                     <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white ">
                       {anime.title}

@@ -16,6 +16,7 @@ export interface AnimeType {
   trailer_link: string;
   photo_cover: string;
   type: string;
+  slug: string;
   genres: string[];
   avgRating: number;
   weighted_rating: number;
