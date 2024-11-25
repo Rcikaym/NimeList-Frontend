@@ -6,8 +6,6 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import {
   getAccessToken,
-  isAccessTokenExpired,
-  refreshAccessToken,
 } from "./auth";
 
 // Definisikan tipe untuk props
@@ -20,13 +18,7 @@ const withAdmin = (WrappedComponent: React.ComponentType<WithAdminProps>) => {
     const router = useRouter();
 
     useEffect(() => {
-      const accessToken = getAccessToken();
-
-      if (!accessToken) {
-        // Jika tidak ada token, redirect ke login
-        router.push("/login");
-        return;
-      }
+      const accessToken: any = getAccessToken();
 
       try {
         const decodedToken: { role: string } = jwtDecode(accessToken);

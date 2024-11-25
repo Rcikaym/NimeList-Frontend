@@ -1,11 +1,11 @@
 import PageTitle from "@/components/TitlePage";
 import ProfileAdminDetail from "./profile";
 
-export default async function Page() {
+export default async function Page({ params }: { params: { name: string } }) {
   return (
     <>
       <PageTitle title={`Profile Details`} />
-      <ProfileAdminDetail />
+      <ProfileAdminDetail username={params.name} />
     </>
   );
 }

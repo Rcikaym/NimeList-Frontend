@@ -20,9 +20,10 @@ import apiUrl from "@/hooks/api";
 import { BiArrowBack } from "react-icons/bi";
 import Link from "next/link";
 
-export default function AnimeEdit({ id }: { id: string }) {
+export default function AnimeEdit({ slug }: { slug: string }) {
   const router = useRouter();
   const [form] = Form.useForm();
+  const [animeId, setAnimeId] = useState<string | null>(null);
   const [genres, setGenres] = useState<GenreType[]>([]);
   const [type, setType] = useState<string | null>(null);
   const [episodes, setEpisodes] = useState<number | null>(null);
@@ -39,7 +40,7 @@ export default function AnimeEdit({ id }: { id: string }) {
     const fetchAnime = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${api}/anime/get/${id}`, {
+        const response = await fetch(`${api}/anime/get/${slug}`, {
           method: "GET",
         });
         const data = await response.json();
@@ -68,6 +69,7 @@ export default function AnimeEdit({ id }: { id: string }) {
         });
 
         setAnime(animeData.title);
+        setAnimeId(animeData.id);
         setError(null);
       } catch (error) {
         console.error("Error fetching anime:", error);
@@ -78,7 +80,7 @@ export default function AnimeEdit({ id }: { id: string }) {
     };
 
     fetchAnime();
-  }, [id, form]);
+  }, [slug, form]);
 
   // Fetch genres
   useEffect(() => {
@@ -169,7 +171,7 @@ export default function AnimeEdit({ id }: { id: string }) {
 
     setLoading(true);
     try {
-      const update = await apiUrl.put(`${api}/anime/update/${id}`, formData);
+      const update = await apiUrl.put(`${api}/anime/update/${animeId}`, formData);
       const res = await update.data;
       router.push("/dashboard/anime");
       message.success(res.message);

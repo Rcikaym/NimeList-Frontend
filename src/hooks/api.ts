@@ -23,18 +23,18 @@ apiUrl.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    const accessToken = getAccessToken();
     if (error.response.status === 401 && isAccessTokenExpired()) {
       try {
-        await refreshAccessToken();
-
-        const accessToken = getAccessToken();
-        if (accessToken) {
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          return axios(originalRequest);
-        }
+        const refreshToken = await refreshAccessToken();
+        originalRequest.headers.Authorization = `Bearer ${refreshToken}`;
+        return axios(originalRequest);
       } catch (error) {
         return Promise.reject(error);
       }
+    } else if (error.response.status === 401 && !accessToken) {
+      window.location.href = "/login";
+      return Promise.reject(error);
     }
 
     return Promise.reject(error);

@@ -240,6 +240,16 @@ const AnimeGenre: React.FC = () => {
           >
             <AiOutlineEdit style={{ fontSize: 20 }} />
           </button>
+          <button
+            type="button"
+            className="bg-emerald-700 text-white px-4 py-2 flex items-center rounded-md hover:bg-emerald-800"
+            onClick={() => {
+              showModal("edit");
+              setDataEdit(record.id);
+            }}
+          >
+            <AiOutlineEdit style={{ fontSize: 20 }} />
+          </button>
         </div>
       ),
     },

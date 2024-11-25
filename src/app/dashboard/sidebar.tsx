@@ -6,9 +6,9 @@ import {
   AiOutlineAppstore,
   AiOutlineUser,
   AiOutlineVideoCamera,
-  AiOutlineAlignCenter,
   AiOutlineShoppingCart,
   AiOutlineRuby,
+  AiOutlinePicRight,
 } from "react-icons/ai";
 import styles from "@/styles/sidebar.module.css";
 import Image from "next/image";
@@ -112,7 +112,7 @@ const SidebarMenu = () => {
         </SubMenu>
         <SubMenu
           key="sub2"
-          icon={<AiOutlineAlignCenter size={22} />}
+          icon={<AiOutlinePicRight size={22} />}
           title="Manage Topic"
           className={styles.submenu}
         >

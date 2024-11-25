@@ -12,7 +12,7 @@ const { Header } = Layout;
 
 const Navbar: React.FC = () => {
   const [username, setUsername] = useState<string>("");
-  const [idUser, setIdUser] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const router = useRouter();
 
@@ -20,12 +20,14 @@ const Navbar: React.FC = () => {
     const token = getAccessToken();
 
     if (token) {
-      const decodedToken: { username: string; userId: string; role: string } =
+      const decodedToken: { name: string; username: string; userId: string; role: string } =
         jwtDecode(token);
+
+      console.log(jwtDecode(token));
 
       if (decodedToken.role === "admin") {
         setUsername(decodedToken.username);
-        setIdUser(decodedToken.userId);
+        setName(decodedToken.name);
         getPhotoUrl(decodedToken.userId);
       }
     }
@@ -43,14 +45,14 @@ const Navbar: React.FC = () => {
   };
 
   const getPhotoUrl = async (id: string) => {
-    const get = await apiUrl.get(`/photo-profile/admin`);
+    const get = await apiUrl.get(`/photo-profile/get`);
     setPhotoUrl(await get.data);
   };
 
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <a href={`/dashboard/profile/detail`}>Profile</a>,
+      label: <a href={`/dashboard/profile/${username}`}>Profile</a>,
       icon: <BiSolidUserDetail size={17} />,
     },
     {
@@ -82,7 +84,7 @@ const Navbar: React.FC = () => {
         justifyContent: "flex-end",
       }}
     >
-      <span className="mr-3 text-white">{username}</span>
+      <span className="mr-3 text-white">{name}</span>
       <Dropdown menu={{ items }} placement="bottomRight">
         <div className="flex items-center mr-3 w-8 h-8">
           <Image

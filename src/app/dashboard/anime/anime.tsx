@@ -25,6 +25,7 @@ import apiUrl from "@/hooks/api";
 interface DataType {
   id: string;
   title: string;
+  slug: string;
   avg_rating: number;
   created_at: string;
   updated_at: string;
@@ -80,7 +81,7 @@ const AnimeList: React.FC = () => {
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
     try {
-      await apiUrl.delete(`http://localhost:4321/anime/delete/${id}`); // Melakukan DELETE ke server
+      await apiUrl.delete(`/anime/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
       // Fetch ulang data setelah post
@@ -91,10 +92,10 @@ const AnimeList: React.FC = () => {
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showDeleteConfirm = (id: string, title: string) => {
+  const showDeleteConfirm = (id: string) => {
     confirm({
       centered: true,
-      title: "Do you want to delete " + title + " anime?",
+      title: "Do you want to delete this anime?",
       icon: <ExclamationCircleFilled />,
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
@@ -154,17 +155,17 @@ const AnimeList: React.FC = () => {
       dataIndex: "action",
       render: (text: string, record: DataType) => (
         <div className="flex gap-3">
-          <a href={`anime/${record.id}`}>
+          <a href={`anime/${record.slug}`}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <EyeOutlined style={{ fontSize: 20 }} />
             </div>
           </a>
-          <a href={`anime/edit/${record.id}`}>
+          <a href={`anime/edit/${record.slug}`}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <AiOutlineEdit style={{ fontSize: 20 }} />
             </div>
           </a>
-          <a onClick={() => showDeleteConfirm(record.id, record.title)}>
+          <a onClick={() => showDeleteConfirm(record.id)}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <AiOutlineDelete style={{ fontSize: 20 }} />
             </div>
