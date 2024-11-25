@@ -1,10 +1,9 @@
 "use client";
 import { PlayIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
-import { BiBookmarkPlus } from "react-icons/bi";
+import { BiBookmarkHeart, BiBookmarkPlus } from "react-icons/bi";
 import { TiChevronRight, TiChevronLeft } from "react-icons/ti";
 import { AnimeType } from "./types";
-import { GenreType } from "./types";
 import {
   Modal,
   ModalContent,
@@ -14,6 +13,8 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { HeroVideoDialog } from "@/components/magicui/HeroVideoPlayer";
+import apiUrl from "@/hooks/api";
+import { getAccessToken } from "@/utils/auth";
 
 interface CarouselProps {
   interval: number;
@@ -22,7 +23,10 @@ interface CarouselProps {
 const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animeData, setAnimeData] = useState<AnimeType[]>([]);
+  const [isLogin, setIsLogin] = useState(false);
+  const [animeFav, setAnimeFav] = useState<string[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const token = getAccessToken();
   const api = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -40,6 +44,13 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
   }, []);
 
   useEffect(() => {
+    if (token) {
+      getAnimeFavorited();
+      setIsLogin(true);
+    }
+  }, []);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((currentIndex + 1) % animeData.length);
     }, interval);
@@ -49,6 +60,35 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
 
   const handleNext = () => {
     setCurrentIndex((currentIndex + 1) % animeData.length);
+  };
+
+  const getAnimeFavorited = async () => {
+    try {
+      const response = await apiUrl.get("/favorite-anime/user-favorites");
+      setAnimeFav(await response.data);
+    } catch (error) {
+      console.error("Error fetching favorite:", error);
+    }
+  };
+
+  const handleAddFavorite = async (id_anime: string) => {
+    try {
+      const response = await apiUrl.post("/favorite-anime/post", {
+        id_anime: id_anime,
+      });
+      getAnimeFavorited();
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+    }
+  };
+
+  const handleDelFavorite = async (id_anime: string) => {
+    try {
+      const response = await apiUrl.delete("/favorite-anime/delete/" + id_anime);
+      getAnimeFavorited();
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+    }
   };
 
   const handlePrev = () => {
@@ -114,7 +154,20 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
           >
             WATCH THE TRAILER
           </Button>
-          <BiBookmarkPlus className="text-2xl text-gray-400 cursor-pointer" />
+
+          {animeFav.includes(currentAnime.id) && isLogin ? (
+            <button onClick={() => handleDelFavorite(currentAnime.id)}>
+              <BiBookmarkHeart className="text-2xl text-gray-400" />
+            </button>
+          ) : isLogin ? (
+            <button onClick={() => handleAddFavorite(currentAnime.id)}>
+              <BiBookmarkPlus className="text-2xl text-gray-400" />
+            </button>
+          ) : (
+            <a href="/login">
+              <BiBookmarkPlus className="text-2xl text-gray-400" />
+            </a>
+          )}
         </div>
       </div>
 

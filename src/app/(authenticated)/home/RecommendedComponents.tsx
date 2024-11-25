@@ -62,41 +62,55 @@ export default function Recommended() {
   }
 
   const settings = {
-    infinite: false,
-    speed: 1500,
-    slidesToShow: 7,
-    slidesToScroll: 7,
-    initialSlide: 0,
+    infinite: false, // No infinite looping
+    speed: 1500, // Faster transition for a better UX
+    slidesToShow: 7, // Default number of visible items on large screens
+    slidesToScroll: 6, // Scroll 7 items per click
+    initialSlide: 0, // Start at the first item
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1500, // Extra large screens
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 3,
+        },
+      },
+      {
+        breakpoint: 1200, // Large screens
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 1024, // Medium screens
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 3,
-          infinite: true,
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
+          slidesToScroll: 2,
         },
       },
       {
-        breakpoint: 600,
+        breakpoint: 768, // Tablets
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 2,
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
+          slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 480,
+        breakpoint: 600, // Small tablets and large phones
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480, // Small phones
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-          nextArrow: <NextArrow />,
-          prevArrow: <PrevArrow />,
+          arrows: false, // Remove arrows for small screens for better UX
         },
       },
     ],
@@ -113,9 +127,7 @@ export default function Recommended() {
             >
               <div className="w-[13.75rem]">
                 <Link
-                  href={`/anime/${anime.id}/${anime.title
-                    .replace(/\s+/g, "-")
-                    .toLowerCase()}`}
+                  href={`/anime/${anime.slug}`}
                 >
                   <Image
                     className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
@@ -130,9 +142,7 @@ export default function Recommended() {
                 </Link>
                 <div className="mt-3 mb-3 mr-3">
                   <Link
-                    href={`/anime/${anime.id}/${anime.title
-                      .replace(/\s+/g, "-")
-                      .toLowerCase()}`}
+                    href={`/anime/${anime.slug}`}
                   >
                     <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white">
                       {anime.title}

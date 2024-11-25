@@ -13,6 +13,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { jwtDecode } from "jwt-decode";
+import { getAccessToken } from "@/utils/auth";
 
 interface ReviewModalProps {
   animeId: string; // Tipe untuk animeId
@@ -25,15 +26,8 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ animeId }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
-
-  const token = localStorage.getItem("access_token");
-
-  if (!token) {
-    router.push("/login");
-    return null;
-  }
-
-  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  const token = getAccessToken();
+  const decodedToken: { userId: string } = jwtDecode(token as string);
   const id_user = decodedToken.userId;
 
   const handleSubmit = async (values: { review: string; rating: number }) => {

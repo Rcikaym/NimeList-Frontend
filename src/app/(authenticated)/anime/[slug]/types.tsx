@@ -11,13 +11,16 @@ export interface PhotosType {
 export interface ReviewType {
   id: string;
   username: string;
+  name: string;
   review: string;
   rating: number;
   created_at: string;
   updated_at: string;
+  status_premium: string;
 }
 export interface AnimeType {
   anime: {
+    id: string;
     title: string;
     synopsis: string;
     release_date: string;
