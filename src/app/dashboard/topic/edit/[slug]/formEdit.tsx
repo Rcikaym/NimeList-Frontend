@@ -23,13 +23,16 @@ import "react-quill/dist/quill.snow.css";
 import "@/styles/reactquill.css";
 import dynamic from "next/dynamic";
 import apiUrl from "@/hooks/api";
+import Link from "next/link";
+import { BiArrowBack } from "react-icons/bi";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
-export default function TopicEdit({ id }: { id: string }) {
+export default function TopicEdit({ slug }: { slug: string }) {
   const api = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const [form] = Form.useForm();
+  const [topicId, setTopicId] = useState<string>("");
   const [topic, setTopic] = useState<any>(null);
   const [content, setContent] = useState<string>("");
   const [animes, setAnimes] = useState<AnimeType[]>([]);
@@ -42,15 +45,6 @@ export default function TopicEdit({ id }: { id: string }) {
   const htmlParser = (htmlString: string): string => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, "text/html");
-
-    // Update src untuk gambar
-    const images = doc.querySelectorAll("img");
-    images.forEach((img) => {
-      const originalSrc = img.getAttribute("src");
-      if (originalSrc && !originalSrc.startsWith("http")) {
-        img.setAttribute("src", `${api}${originalSrc}`);
-      }
-    });
 
     // Tangani tag <p> kosong
     const paragraphs = doc.querySelectorAll("p");
@@ -71,7 +65,7 @@ export default function TopicEdit({ id }: { id: string }) {
     const fetchDetailTopic = async () => {
       setLoading(true);
       try {
-        const response = await apiUrl.get(`/topic/get/${id}`);
+        const response = await apiUrl.get(`/topic/get/${slug}`);
         const topicData = await response.data;
 
         const updatedContent = htmlParser(topicData.body);
@@ -93,8 +87,8 @@ export default function TopicEdit({ id }: { id: string }) {
           body: updatedContent,
         });
 
-        // setContent(updatedContent);
-
+        setContent(updatedContent);
+        setTopicId(topicData.id);
         setTopic(topicData.title);
         setError(null);
       } catch (error) {
@@ -106,7 +100,7 @@ export default function TopicEdit({ id }: { id: string }) {
     };
 
     fetchDetailTopic();
-  }, [id, form]);
+  }, [slug, form]);
 
   // Fetch animes
   useEffect(() => {
@@ -125,22 +119,6 @@ export default function TopicEdit({ id }: { id: string }) {
     fetchAnime();
   }, []);
 
-  const setSrcImgOri = (html: string) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-
-    // Update src untuk gambar
-    const images = doc.querySelectorAll("img");
-    images.forEach((img) => {
-      const originalSrc = img.getAttribute("data-original-src");
-      if (originalSrc) {
-        img.setAttribute("src", `${originalSrc}`);
-      }
-    });
-
-    return doc.body.innerHTML;
-  };
-
   // Fungsi untuk submit data
   const updateTopic = async (values: TopicType) => {
     const formData = new FormData();
@@ -149,7 +127,7 @@ export default function TopicEdit({ id }: { id: string }) {
     formData.append("id_anime", values.id_anime);
 
     // Tambahkan body yang sudah dimodifikasi ke FormData
-    formData.append("body", setSrcImgOri(content));
+    formData.append("body", content);
 
     const new_photos = [] as string[];
     const existing_photos = [] as string[];
@@ -177,7 +155,7 @@ export default function TopicEdit({ id }: { id: string }) {
 
     setLoading(true);
     try {
-      const response = await apiUrl.put(`/topic/update/${id}`, formData);
+      const response = await apiUrl.put(`/topic/update/${topicId}`, formData);
 
       message.success("Topic updated successfully!");
       setLoading(false);
@@ -298,9 +276,12 @@ export default function TopicEdit({ id }: { id: string }) {
         </div>
 
         <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
-          <Button icon={<LeftCircleOutlined />} href="/dashboard/topic">
-            Back
-          </Button>
+          <Link
+            href="/dashboard/topic"
+            className="bg-white text-black px-2 py-1 rounded-md flex items-center gap-1 hover:text-[#005B50]"
+          >
+            <BiArrowBack style={{ fontSize: "20px" }} />
+          </Link>
           <Button type="primary" htmlType="submit" loading={loading}>
             Submit
           </Button>

@@ -32,7 +32,7 @@ export const refreshAccessToken = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ payload }),
+      body: JSON.stringify({ token }),
     });
 
     const data = await response.json();

@@ -143,7 +143,7 @@ const PhotoGallery = memo(
   )
 );
 
-export default function AnimeDetails({ id }: { id: string }) {
+export default function AnimeDetails({ slug }: { slug: string }) {
   const [anime, setAnime] = useState<AnimeType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -151,7 +151,7 @@ export default function AnimeDetails({ id }: { id: string }) {
   const fetchAnime = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${api}/anime/get/${id}`, {
+      const response = await fetch(`${api}/anime/get/${slug}`, {
         method: "GET",
       });
       setAnime(await response.json());
@@ -162,7 +162,7 @@ export default function AnimeDetails({ id }: { id: string }) {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     fetchAnime();
