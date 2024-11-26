@@ -10,12 +10,27 @@ import {
   AiOutlineTags,
   AiOutlineTool,
 } from "react-icons/ai";
-import { AnimeType, PhotosType } from "./types";
+import { AnimeType, PhotosType, ReviewType } from "./types";
 import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
 import Link from "next/link";
-import { BiArrowBack } from "react-icons/bi";
+import {
+  BiArrowBack,
+  BiCrown,
+  BiEdit,
+  BiGlobe,
+  BiTrashAlt,
+} from "react-icons/bi";
+import { message, Modal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import apiUrl from "@/hooks/api";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/id";
+
+dayjs.extend(relativeTime);
+dayjs.locale("id");
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -146,6 +161,8 @@ const PhotoGallery = memo(
 export default function AnimeDetails({ slug }: { slug: string }) {
   const [anime, setAnime] = useState<AnimeType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState<ReviewType[]>([]);
+  const { confirm } = Modal;
   const [error, setError] = useState<string | null>(null);
 
   const fetchAnime = useCallback(async () => {
@@ -154,7 +171,9 @@ export default function AnimeDetails({ slug }: { slug: string }) {
       const response = await fetch(`${api}/anime/get/${slug}`, {
         method: "GET",
       });
-      setAnime(await response.json());
+      const data = await response.json();
+      setAnime(data);
+      setReviews(data.review.data);
       setError(null);
     } catch (error) {
       console.error("Error fetching anime:", error);
@@ -167,6 +186,38 @@ export default function AnimeDetails({ slug }: { slug: string }) {
   useEffect(() => {
     fetchAnime();
   }, [fetchAnime]);
+
+  const handleDeleteReview = async (id: string) => {
+    try {
+      const response = await apiUrl.delete(`/review/delete/${id}`);
+      fetchAnime();
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  };
+
+  const showDeleteConfirm = async (id: string) => {
+    confirm({
+      title: "Are you sure delete this review?",
+      icon: <ExclamationCircleOutlined />,
+      content: "This action cannot be undone.",
+      centered: true,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        try {
+          handleDeleteReview(id);
+          message.success("Review deleted successfully!");
+        } catch (error: any) {
+          message.error("Error deleting review:", error);
+        }
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -239,6 +290,70 @@ export default function AnimeDetails({ slug }: { slug: string }) {
             Photo Gallery
           </h2>
           <PhotoGallery photos={photos} title={title} />
+        </div>
+
+        <div className="mt-6 p-6">
+          <div className="flex justify-between">
+            <h2 className="text-xl font-semibold select-none">
+              {reviews.length} REVIEWS
+            </h2>
+          </div>
+          {reviews.length === 0 ? (
+            <p>No reviews yet.</p>
+          ) : (
+            <ul>
+              {reviews.map((review) =>
+                review.status_premium === "active" ? (
+                  <li
+                    key={review.id}
+                    className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="flex">
+                        <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
+                          <span className="text-white">{review.name}</span>
+                          <BiCrown size={15} className="text-yellow-300" />
+                        </div>
+                        {review.created_at === review.updated_at ? (
+                          <span className="text-[0.75rem] p-2 text-gray-500">
+                            {dayjs(review.created_at).fromNow()}
+                          </span>
+                        ) : (
+                          <span className="text-[0.75rem] p-2 text-gray-500">
+                            {`${dayjs(review.created_at).fromNow()} (diedit)`}
+                          </span>
+                        )}
+                      </div>
+                      <p>{review.review}</p>
+                      <p>Rating: {review.rating}/10</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-fit cursor-pointer">
+                        <BiEdit size={23} className="text-emerald-700" />
+                      </div>
+                      <div
+                        className="w-fit cursor-pointer"
+                        onClick={() => showDeleteConfirm(review.id)}
+                      >
+                        <BiTrashAlt size={23} className="text-emerald-700" />
+                      </div>
+                    </div>
+                  </li>
+                ) : (
+                  <li
+                    key={review.id}
+                    className="container border rounded-lg border-[#05e5cbc3] p-5 my-5"
+                  >
+                    <div className="font-bold bg-[#005B50] text-white p-2 flex items-center gap-2 w-fit rounded-md mb-2">
+                      <span>{review.name}</span> <BiGlobe size={15} />
+                    </div>
+                    <p>{review.review}</p>
+                    <p>Rating: {review.rating}/10</p>
+                  </li>
+                )
+              )}
+            </ul>
+          )}
         </div>
       </div>
 

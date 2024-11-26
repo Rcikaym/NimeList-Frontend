@@ -1,10 +1,17 @@
 // components/PaymentModal.js
 
 import React, { useState, useEffect } from "react";
-import { Alert, Button, Form, InputNumber, Modal, Select, Spin } from "antd";
+import {
+  Button,
+  Form,
+  InputNumber,
+  message,
+  Modal,
+  Select,
+  Spin,
+} from "antd";
 import { Option } from "antd/es/mentions";
-import { getAccessToken, setAccessToken } from "@/utils/auth";
-import { jwtDecode } from "jwt-decode";
+import { getAccessToken } from "@/utils/auth";
 import apiUrl from "@/hooks/api";
 
 declare global {
@@ -18,17 +25,8 @@ const PaymentModal = ({ show, handleClose }: any) => {
   const [memberships, setMemberships] = useState([]);
   const [selectedMembership, setSelectedMembership] = useState<any>("");
   const [totalPrice, setTotalPrice] = useState(0);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState<string>("");
   const token = getAccessToken();
-
-  const setUserIdFromToken = () => {
-    if (token) {
-      const decodedToken: { userId: string } = jwtDecode(token);
-      setUserId(decodedToken.userId);
-    }
-  };
 
   const fetchData = async () => {
     try {
@@ -38,14 +36,12 @@ const PaymentModal = ({ show, handleClose }: any) => {
       setMemberships(await membershipsRes.json());
     } catch (err) {
       console.error("Error fetching data:", err);
-      setError("Gagal memuat data. Silakan coba lagi.");
     }
   };
 
   // Fetch premium dan set user id dari token local storage
   useEffect(() => {
     fetchData();
-    setUserIdFromToken();
   }, []);
 
   // Update total price ketika premium dipilih
@@ -65,17 +61,15 @@ const PaymentModal = ({ show, handleClose }: any) => {
   }, [selectedMembership, memberships]);
 
   const handleSubmit = async () => {
-    // await loadMidtransScript();
-    setError("");
     setLoading(true);
 
     try {
-      const payload = {
-        id_user: userId,
-        id_premium: selectedMembership,
-      };
+      const id_premium = selectedMembership;
 
-      const response = await apiUrl.post(`${api}/transactions/create`, payload);
+      const response = await apiUrl.post(
+        `${api}/transactions/create`,
+        id_premium
+      );
       const { token } = await response.data;
 
       // Redirect ke Midtrans
@@ -89,10 +83,9 @@ const PaymentModal = ({ show, handleClose }: any) => {
       script.onload = () => {
         window.snap.pay(token);
       };
-    } catch (err) {
-      console.error("Error creating transaction:", err);
-      setError("Gagal memproses pembayaran. Silakan coba lagi.");
-    } finally {
+      setLoading(false);
+    } catch (err: any) {
+      message.error("Error creating transaction:", err);
       setLoading(false);
     }
   };
@@ -116,22 +109,12 @@ const PaymentModal = ({ show, handleClose }: any) => {
         </Button>,
       ]}
     >
-      {error && (
-        <Alert
-          message={error}
-          type="error"
-          showIcon
-          closable
-          onClose={() => setError("")}
-        />
-      )}
       <Form layout="vertical">
         <Form.Item label="Jenis Membership">
           <Select
             placeholder="Pilih Membership"
             onChange={(value: string) => setSelectedMembership(value)}
             value={selectedMembership}
-            loading={!memberships && !setError}
           >
             {memberships &&
               memberships.map((membership: any) => (

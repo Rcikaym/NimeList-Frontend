@@ -26,3 +26,14 @@ export interface AnimeType {
   avgRating: number;
   totalFav: number;
 }
+
+export interface ReviewType {
+  id: string;
+  username: string;
+  name: string;
+  review: string;
+  rating: number;
+  created_at: string;
+  updated_at: string;
+  status_premium: string;
+}
