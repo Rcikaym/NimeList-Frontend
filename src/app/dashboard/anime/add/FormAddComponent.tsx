@@ -41,14 +41,6 @@ interface DataGenre {
   name: string;
 }
 
-// Fungsi normFile untuk memastikan fileList berupa array
-const normFile = (e: any) => {
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e?.fileList ? e.fileList : [];
-};
-
 export default function AddAnime() {
   const router = useRouter();
   const [form] = Form.useForm(); // Form handler dari Ant Design

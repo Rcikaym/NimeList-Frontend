@@ -35,6 +35,8 @@ apiUrl.interceptors.response.use(
     } else if (error.response.status === 401 && !accessToken) {
       window.location.href = "/login";
       return Promise.reject(error);
+    } else {
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);
