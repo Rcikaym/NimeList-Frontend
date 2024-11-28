@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Image } from "antd";
+import { Image, message, Modal } from "antd";
 import { Button } from "@nextui-org/react";
 import {
   BiPlus,
@@ -24,6 +24,8 @@ import apiUrl from "@/hooks/api";
 import { getAccessToken } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import timeToDay from "@/utils/TimeToDay";
 
 type AnimeDetailProps = {
   params: {
@@ -36,11 +38,12 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
   const [animeData, setAnimeData] = useState<AnimeType | null>(null); // State for anime data
   const [genres, setGenres] = useState<GenreType[]>([]); // State for genres
   const [reviews, setReviews] = useState<ReviewType[]>([]);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [favorite, setFavorite] = useState<string[]>([]);
   const [isLogin, setIsLogin] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [username, setUsername] = useState("");
   const token = getAccessToken();
+  const { confirm } = Modal;
   const api = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchData = async () => {
@@ -94,13 +97,36 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
     }
   };
 
+  const handleDeleteReview = async (id: string) => {
+    try {
+      const response = await apiUrl.delete(`/review/delete/${id}`);
+      message.success(response.data.message);
+      fetchData();
+      getUserRating();
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+    }
+  };
+
+  const showDeleteConfirm = async (id: string) => {
+    confirm({
+      title: "Are you sure delete this review?",
+      icon: <ExclamationCircleOutlined />,
+      content: "This action cannot be undone.",
+      centered: true,
+      okText: "Yes",
+      okType: "danger",
+      onOk() {
+        handleDeleteReview(id);
+      },
+    });
+  };
+
   const getFav = async () => {
     try {
-      const response = await apiUrl.get(
-        `/favorite-anime/by-user-and-anime/${animeData?.anime?.id}`
-      );
+      const response = await apiUrl.get(`/favorite-anime/user-favorites`);
       console.log(response.data);
-      setIsFavorite(await response.data);
+      setFavorite(await response.data);
     } catch (error) {
       console.error("Error:", error);
       return null;
@@ -157,7 +183,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
               className="object-cover w-full"
               alt={animeData.anime.title}
             />
-            {isFavorite && isLogin ? (
+            {favorite.includes(animeData.anime.id) && isLogin ? (
               <Button
                 size="lg"
                 radius="sm"
@@ -259,12 +285,12 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                   ) : (
                     <>
                       <BiStar className="w-[69px] h-[69px] text-[#05E5CB]" />
-                      <Button
+                      <Link
                         href="/login"
                         className="bg-transparent text-xl font-semibold text-[#05E5CB]"
                       >
                         RATE
-                      </Button>
+                      </Link>
                     </>
                   )}
                 </div>
@@ -296,10 +322,25 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                       className="container border rounded-lg border-[#05e5cbc3] p-5 my-5 flex items-center justify-between"
                     >
                       <div>
-                        <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
+                        <div className="flex">
+                          <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
+                            <span className="text-white">{review.name}</span>
+                            <BiCrown size={15} className="text-yellow-300" />
+                          </div>
+                          {review.created_at === review.updated_at ? (
+                            <span className="text-[0.75rem] p-2 text-gray-500">
+                              {timeToDay(review.created_at)}
+                            </span>
+                          ) : (
+                            <span className="text-[0.75rem] p-2 text-gray-500">
+                              {`${timeToDay(review.updated_at)} (diedit)`}
+                            </span>
+                          )}
+                        </div>
+                        {/* <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
                           <span className="text-white">{review.name}</span>
                           <BiCrown size={15} className="text-yellow-300" />
-                        </div>
+                        </div> */}
                         <p>{review.review}</p>
                         <p>Rating: {review.rating}/10</p>
                       </div>
@@ -309,7 +350,10 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                             <div className="w-fit cursor-pointer">
                               <BiEdit size={25} className="text-[#05E5CB]" />
                             </div>
-                            <div className="w-fit cursor-pointer">
+                            <div
+                              className="w-fit cursor-pointer"
+                              onClick={() => showDeleteConfirm(review.id)}
+                            >
                               <BiTrashAlt
                                 size={25}
                                 className="text-[#05E5CB]"

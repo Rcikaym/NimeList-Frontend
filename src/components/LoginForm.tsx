@@ -9,7 +9,7 @@ import { setAccessToken } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
 
 const LoginForm: React.FC = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState("");
@@ -28,7 +28,7 @@ const LoginForm: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -58,12 +58,12 @@ const LoginForm: React.FC = () => {
       <form className="w-[447px] h-[574px] items-center justify-center pt-[9rem]" onSubmit={handleLogin}>
         <Input
           className="w-[368px] m-8 select-none"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           type="text"
-          label="Username"
+          label="Email"
           labelPlacement="inside"
-          description="Enter your username"
+          description="Enter your email"
         />
         <Input
           className="w-[368px] m-8 select-none"

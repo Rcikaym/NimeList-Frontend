@@ -14,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import { jwtDecode } from "jwt-decode";
 import { getAccessToken } from "@/utils/auth";
+import apiUrl from "@/hooks/api";
 
 interface ReviewModalProps {
   animeId: string; // Tipe untuk animeId
@@ -26,35 +27,22 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ animeId }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
-  const token = getAccessToken();
-  const decodedToken: { userId: string } = jwtDecode(token as string);
-  const id_user = decodedToken.userId;
 
   const handleSubmit = async (values: { review: string; rating: number }) => {
     try {
       setLoading(true);
-      const response = await fetch(`${api}/review/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ ...values, id_user, id_anime: animeId }),
+      const response = await apiUrl.post(`/review/post`, {
+        id_anime: animeId,
+        review: values.review,
+        rating: values.rating,
       });
 
-      if (response.ok) {
-        message.success("Review submitted successfully!");
-        form.resetFields();
-      } else {
-        // Parse and display error message
-        const error = await response.json();
-        message.error("You have already submitted a review for this anime.");
-      }
-    } catch (error) {
-      console.error(error);
-      message.error("An error occurred while submitting the review");
-    } finally {
+      message.success(response.data.message);
+      form.resetFields();
       setLoading(false);
+    } catch (error: any) {
+      setLoading(false);
+      message.error(error.message);
     }
   };
 
