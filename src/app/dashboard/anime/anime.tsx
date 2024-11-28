@@ -97,6 +97,8 @@ const AnimeList: React.FC = () => {
       centered: true,
       title: "Do you want to delete this anime?",
       icon: <ExclamationCircleFilled />,
+      okText: "Yes",
+      okType: "danger",
       onOk() {
         setLoading(true); // Set status loading pada tombol OK
 
@@ -155,16 +157,16 @@ const AnimeList: React.FC = () => {
       dataIndex: "action",
       render: (text: string, record: DataType) => (
         <div className="flex gap-3">
-          <a href={`anime/${record.slug}`}>
+          <Link href={`anime/${record.slug}`}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <EyeOutlined style={{ fontSize: 20 }} />
             </div>
-          </a>
-          <a href={`anime/edit/${record.slug}`}>
+          </Link>
+          <Link href={`anime/edit/${record.slug}`}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <AiOutlineEdit style={{ fontSize: 20 }} />
             </div>
-          </a>
+          </Link>
           <a onClick={() => showDeleteConfirm(record.id)}>
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
               <AiOutlineDelete style={{ fontSize: 20 }} />

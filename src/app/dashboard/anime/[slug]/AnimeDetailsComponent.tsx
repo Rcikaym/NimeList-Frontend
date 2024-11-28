@@ -25,12 +25,7 @@ import {
 import { message, Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import apiUrl from "@/hooks/api";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import "dayjs/locale/id";
-
-dayjs.extend(relativeTime);
-dayjs.locale("id");
+import timeToDay from "@/utils/TimeToDay";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -204,7 +199,6 @@ export default function AnimeDetails({ slug }: { slug: string }) {
       centered: true,
       okText: "Yes",
       okType: "danger",
-      cancelText: "No",
       onOk() {
         try {
           handleDeleteReview(id);
@@ -212,9 +206,6 @@ export default function AnimeDetails({ slug }: { slug: string }) {
         } catch (error: any) {
           message.error("Error deleting review:", error);
         }
-      },
-      onCancel() {
-        console.log("Cancel");
       },
     });
   };
@@ -316,27 +307,22 @@ export default function AnimeDetails({ slug }: { slug: string }) {
                         </div>
                         {review.created_at === review.updated_at ? (
                           <span className="text-[0.75rem] p-2 text-gray-500">
-                            {dayjs(review.created_at).fromNow()}
+                            {timeToDay(review.created_at)}
                           </span>
                         ) : (
                           <span className="text-[0.75rem] p-2 text-gray-500">
-                            {`${dayjs(review.created_at).fromNow()} (diedit)`}
+                            {`${timeToDay(review.updated_at)} (diedit)`}
                           </span>
                         )}
                       </div>
                       <p>{review.review}</p>
                       <p>Rating: {review.rating}/10</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-fit cursor-pointer">
-                        <BiEdit size={23} className="text-emerald-700" />
-                      </div>
-                      <div
-                        className="w-fit cursor-pointer"
-                        onClick={() => showDeleteConfirm(review.id)}
-                      >
-                        <BiTrashAlt size={23} className="text-emerald-700" />
-                      </div>
+                    <div
+                      className="w-fit cursor-pointer"
+                      onClick={() => showDeleteConfirm(review.id)}
+                    >
+                      <BiTrashAlt size={23} className="text-emerald-700" />
                     </div>
                   </li>
                 ) : (
