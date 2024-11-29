@@ -24,6 +24,8 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { formats, modules } from "./TextAreaUtils";
 import apiUrl from "@/hooks/api";
+import Link from "next/link";
+import { BiArrowBack } from "react-icons/bi";
 
 interface DataType {
   title: string;
@@ -262,9 +264,12 @@ const CreateTopic: React.FC = () => {
           </Form.Item>
         </div>
         <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-end flex">
-          <Button icon={<LeftCircleOutlined />} href="/dashboard/topic">
-            Back
-          </Button>
+          <Link
+            href="/dashboard/topic"
+            className="bg-white text-black px-2 py-1 rounded-md flex items-center gap-1 hover:text-[#005B50]"
+          >
+            <BiArrowBack style={{ fontSize: "20px" }} />
+          </Link>
           <Button type="primary" onClick={showPostConfirm} loading={loading}>
             Submit
           </Button>

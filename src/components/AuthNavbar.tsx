@@ -38,69 +38,6 @@ import { jwtDecode } from "jwt-decode";
 const inter = Inter({ subsets: ["latin"] });
 const url =
   "https://st3.depositphotos.com/15648834/17930/v/450/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg";
-
-const genres = [
-  {
-    label: "Action",
-    key: 1,
-  },
-  {
-    label: "Adventure",
-    key: 2,
-  },
-  {
-    label: "Comedy",
-    key: 3,
-  },
-  {
-    label: "Drama",
-    key: 4,
-  },
-  {
-    label: "Fantasy",
-    key: 5,
-  },
-  {
-    label: "Horror",
-    key: 6,
-  },
-  {
-    label: "Isekai",
-    key: 7,
-  },
-  {
-    label: "Mecha",
-    key: 8,
-  },
-  {
-    label: "Mystery",
-    key: 9,
-  },
-  {
-    label: "Romance",
-    key: 10,
-  },
-  {
-    label: "Sci-fi",
-    key: 11,
-  },
-  {
-    label: "Shounen",
-    key: 12,
-  },
-  {
-    label: "Slice of Life",
-    key: 13,
-  },
-  {
-    label: "Supernatural",
-    key: 14,
-  },
-  {
-    label: "Thriller",
-    key: 15,
-  },
-];
 const menuItems = [
   {
     key: "0",
@@ -140,8 +77,15 @@ const menuItems = [
     ),
   },
 ];
+
+interface DataGenre {
+  id: string;
+  name: string;
+}
+
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [genres, setGenres] = useState<DataGenre[]>([]);
   const [username, setUsername] = useState("");
   const [name, setName] = useState("Guest");
   const [description, setDescription] = useState("guest@gmail.com");
@@ -152,25 +96,40 @@ const AuthNavbar = () => {
     const token = getAccessToken();
 
     if (token) {
-      const decodedToken: { username: string; email: string, name: string } = jwtDecode(token);
+      const decodedToken: { username: string; email: string; name: string } =
+        jwtDecode(token);
       setUsername(decodedToken.username);
       setName(decodedToken.name);
       setDescription(decodedToken.email);
     }
+
+    const fetchGenres = async () => {
+      try {
+        const response = await fetch("http://localhost:4321/genre/get-all");
+        const data = await response.json();
+        setGenres(data);
+      } catch (error) {
+        message.error("Failed to fetch genres");
+      }
+    };
+
+    fetchGenres();
   }, []);
 
   const handleLogout = async () => {
     const res = await removeAccessToken();
+    console.log(res);
 
-    if (res.status === 200) {
-      message.success(res.message);
-      router.push("/home");
-      setTimeout(() => {
-        window.location.reload();
-      }, 100); // Refresh after 100 milliseconds
-    } else {
-      message.error(res.message);
+    if (!res) {
+      message.error("Failed to logout");
+      return;
     }
+
+    message.success("Logout successfully!");
+    router.push("/home");
+    setTimeout(() => {
+      window.location.reload();
+    }, 100); // Refresh after 100 milliseconds
   };
 
   return (
@@ -179,7 +138,6 @@ const AuthNavbar = () => {
         onMenuOpenChange={setIsMenuOpen}
         className="bg-transparent pt-3 overflow-x-hidden"
         maxWidth="full"
-
       >
         <NavbarContent justify="start">
           <NavbarMenuToggle
@@ -228,12 +186,10 @@ const AuthNavbar = () => {
                 {/* Map through the items array and create DropdownItem for each */}
                 {genres.map((item) => (
                   <DropdownItem
-                    key={`${item.label}-${item.key}`}
+                    key={`${item.name}-${item.id}`}
                     className="opacity-100"
                   >
-                    <Link href={`/anime/genre/${item.label}`}>
-                      {item.label}
-                    </Link>
+                    <Link href={`/anime/genre/${item.name}`}>{item.name}</Link>
                   </DropdownItem>
                 ))}
               </DropdownMenu>
@@ -378,8 +334,8 @@ const AuthNavbar = () => {
           >
             <AccordionItem className="text-white" title="Genre">
               {genres.map((item) => (
-                <Link href={`/anime/genre/${item.label}`} key={item.key}>
-                  <p className="opacity-100">{item.label}</p>
+                <Link href={`/anime/genre/${item.name}`} key={item.id}>
+                  <p className="opacity-100">{item.name}</p>
                 </Link>
               ))}
             </AccordionItem>

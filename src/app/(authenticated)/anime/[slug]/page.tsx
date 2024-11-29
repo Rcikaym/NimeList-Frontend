@@ -135,12 +135,14 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
 
   const handleDelFavorite = async (id_anime: string) => {
     try {
-      const response = await apiUrl.delete(
-        "/favorite-anime/delete/" + id_anime
-      );
+      await apiUrl.delete("/favorite-anime/delete/", {
+        data: {
+          id_anime: id_anime,
+        },
+      });
       getFav(); // Mengambil id_anime dari state();
-    } catch (error) {
-      console.error("Error adding favorite:", error);
+    } catch (error: any) {
+      console.error(error.message);
     }
   };
 
@@ -315,67 +317,49 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                   if (b.username === username) return 1;
                   return 0;
                 })
-                .map((review) =>
-                  review.status_premium === "active" ? (
-                    <li
-                      key={review.id}
-                      className="container border rounded-lg border-[#05e5cbc3] p-5 my-5 flex items-center justify-between"
-                    >
-                      <div>
-                        <div className="flex">
-                          <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
-                            <span className="text-white">{review.name}</span>
+                .map((review) => (
+                  <li
+                    key={review.id}
+                    className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="flex">
+                        <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
+                          <span className="text-white">{review.name}</span>
+                          {review.status_premium === "active" ? (
                             <BiCrown size={15} className="text-yellow-300" />
-                          </div>
-                          {review.created_at === review.updated_at ? (
-                            <span className="text-[0.75rem] p-2 text-gray-500">
-                              {timeToDay(review.created_at)}
-                            </span>
                           ) : (
-                            <span className="text-[0.75rem] p-2 text-gray-500">
-                              {`${timeToDay(review.updated_at)} (diedit)`}
-                            </span>
+                            <BiGlobe size={15} className="text-[#05E5CB]" />
                           )}
                         </div>
-                        {/* <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
-                          <span className="text-white">{review.name}</span>
-                          <BiCrown size={15} className="text-yellow-300" />
-                        </div> */}
-                        <p>{review.review}</p>
-                        <p>Rating: {review.rating}/10</p>
-                      </div>
-                      {isLogin && username === review.username && (
-                        <>
-                          <div className="flex items-center gap-3">
-                            <div className="w-fit cursor-pointer">
-                              <BiEdit size={25} className="text-[#05E5CB]" />
-                            </div>
-                            <div
-                              className="w-fit cursor-pointer"
-                              onClick={() => showDeleteConfirm(review.id)}
-                            >
-                              <BiTrashAlt
-                                size={25}
-                                className="text-[#05E5CB]"
-                              />
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </li>
-                  ) : (
-                    <li
-                      key={review.id}
-                      className="container border rounded-lg border-[#05e5cbc3] p-5 my-5"
-                    >
-                      <div className="font-bold bg-[#005B50] text-white p-2 flex items-center gap-2 w-fit rounded-md mb-2">
-                        <span>{review.name}</span> <BiGlobe size={15} />
+                        {review.created_at === review.updated_at ? (
+                          <span className="text-[0.75rem] p-2 text-gray-500">
+                            {timeToDay(review.created_at)}
+                          </span>
+                        ) : (
+                          <span className="text-[0.75rem] p-2 text-gray-500">
+                            {`${timeToDay(review.created_at)} (diedit)`}
+                          </span>
+                        )}
                       </div>
                       <p>{review.review}</p>
                       <p>Rating: {review.rating}/10</p>
-                    </li>
-                  )
-                )}
+                    </div>
+                    {isLogin && review.username === username && (
+                      <div className="flex gap-2 items-center">
+                        <div className="w-fit cursor-pointer">
+                          <BiEdit size={23} className="text-emerald-700" />
+                        </div>
+                        <div
+                          className="w-fit cursor-pointer"
+                          onClick={() => showDeleteConfirm(review.id)}
+                        >
+                          <BiTrashAlt size={23} className="text-emerald-700" />
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                ))}
             </ul>
           )}
         </div>

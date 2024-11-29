@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Input, message, Select } from "antd";
+import { Input, message, Modal, Select } from "antd";
 import { TablePaginationConfig } from "antd/es/table";
 import type { TableColumnsType, TableProps } from "antd";
 import {
@@ -17,6 +17,7 @@ import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import { Option } from "antd/es/mentions";
 import apiUrl from "@/hooks/api";
+import UserDetailComponent from "./userDetailComponent";
 
 interface DataType {
   username: string;
@@ -25,6 +26,21 @@ interface DataType {
   badge: string;
   start_premium: string;
   end_premium: string;
+}
+
+export interface UserDetail {
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  bio: string;
+  badge: string;
+  photo_profile: string;
+  review_created: number;
+  favorite_anime: number;
+  topic_created: number;
+  comment_created: number;
+  transaction_created: number;
 }
 
 const UserList = () => {
@@ -37,6 +53,8 @@ const UserList = () => {
   });
   const [filterStatus, setStatus] = useState<string>("all");
   const [searchText, setSearchText] = useState<string>("");
+  const [modalDetail, setModalDetail] = useState(false);
+  const [detailUser, setDetailUser] = useState({} as UserDetail);
   const debounceText = useDebounce(searchText, 1000);
   const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -47,6 +65,17 @@ const UserList = () => {
       fetchUsers();
     } catch (error) {
       message.error("Failed to refresh users");
+    }
+  };
+
+  const modalAndUserDetail = async (username: string) => {
+    try {
+      const res = await apiUrl.get("/user/detail/" + username);
+      setDetailUser(await res.data);
+      setModalDetail(true);
+    } catch (error: any) {
+      message.error(error.message);
+      setModalDetail(false);
     }
   };
 
@@ -133,6 +162,7 @@ const UserList = () => {
           <div className="flex gap-2">
             <button
               type="button"
+              onClick={() => modalAndUserDetail(record.username)}
               className="bg-emerald-700 text-white items-center w-fit rounded-md px-4 py-2 flex hover:bg-emerald-800"
             >
               <EyeOutlined style={{ fontSize: 18 }} />
@@ -146,6 +176,14 @@ const UserList = () => {
 
   return (
     <>
+      <Modal
+        open={modalDetail}
+        onCancel={() => setModalDetail(false)}
+        footer={null}
+        centered
+      >
+        <UserDetailComponent data={detailUser} />
+      </Modal>
       <div className="flex items-center mb-10 mt-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">

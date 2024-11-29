@@ -73,21 +73,25 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
 
   const handleAddFavorite = async (id_anime: string) => {
     try {
-      const response = await apiUrl.post("/favorite-anime/post", {
+      await apiUrl.post("/favorite-anime/post", {
         id_anime: id_anime,
       });
       getAnimeFavorited();
-    } catch (error) {
-      console.error("Error adding favorite:", error);
+    } catch (error: any) {
+      console.error(error.message);
     }
   };
 
   const handleDelFavorite = async (id_anime: string) => {
     try {
-      const response = await apiUrl.delete("/favorite-anime/delete/" + id_anime);
+      await apiUrl.delete("/favorite-anime/delete/", {
+        data: {
+          id_anime: id_anime,
+        },
+      });
       getAnimeFavorited();
-    } catch (error) {
-      console.error("Error adding favorite:", error);
+    } catch (error: any) {
+      console.error(error.message);
     }
   };
 

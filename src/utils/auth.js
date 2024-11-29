@@ -47,15 +47,8 @@ export const refreshAccessToken = async () => {
 };
 
 export const removeAccessToken = async () => {
-  const token = localStorage.getItem("access_token");
-  const response = await apiUrl.post("/auth/logout", { token: token });
-  const { data } = response;
-
-  if (data.status !== 200) {
-    throw new Error("Failed to logout");
-  }
-
   localStorage.removeItem("access_token");
   localStorage.removeItem("access_token_expiry");
-  return await data;
+
+  return true;
 };

@@ -56,7 +56,7 @@ const ReviewList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [idReview, setIdReview] = useState<string>("");
   const [form] = Form.useForm();
-  const [modalMode, setMode] = useState<"post" | "edit" | "detail">();
+  const [modalMode, setMode] = useState<"edit" | "detail">();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { confirm } = Modal;
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -65,12 +65,9 @@ const ReviewList: React.FC = () => {
     total: 0,
   });
   const [searchText, setSearchText] = useState<string>("");
-  const debounceText = useDebounce(searchText, 1000);
+  const debounceText = useDebounce(searchText, 1000)
 
-  const [reviewedAnime, setReviewedAnime] = useState<string[]>([]); // Menyimpan anime yang sudah direview oleh user yang dipilih
-  const [selectedUser, setSelectedUser] = useState<string | null>(null); // Menyimpan user yang dipili
-
-  const showModal = (modalMode: "post" | "edit" | "detail") => {
+  const showModal = (modalMode: "edit" | "detail") => {
     setMode(modalMode);
     setModalVisible(true);
   };
@@ -83,9 +80,7 @@ const ReviewList: React.FC = () => {
     form
       .validateFields()
       .then((values: DataType) => {
-        if (modalMode === "post") {
-          showPostConfirm(values);
-        } else if (modalMode === "edit") {
+        if (modalMode === "edit") {
           showEditConfirm(values);
         }
         setModalVisible(false);
@@ -99,48 +94,6 @@ const ReviewList: React.FC = () => {
   const handleCancel = () => {
     setModalVisible(false);
     form.resetFields();
-  };
-
-  // Fungsi untuk melakukan post data genre
-  const handlePostReview = async (values: DataType) => {
-    try {
-      const res = await apiUrl.post(`/review/post`, values); // Melakukan POST ke server
-
-      if (res.status === 201) {
-        message.success("Review added successfully!");
-        fetchReview();
-        form.resetFields(); // Reset form setelah submit
-      } else {
-        const err = await res.data;
-        message.error(err.message);
-        setMode("post");
-      }
-    } catch (error) {
-      message.error("Failed to add review");
-    }
-  };
-
-  // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showPostConfirm = (values: DataType) => {
-    confirm({
-      centered: true,
-      title: "Do you want to add this review?",
-      icon: <ExclamationCircleFilled />,
-      async onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return await handlePostReview(values)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
-      },
-      onCancel() {
-        setModalVisible(true); // Jika dibatalkan, buka kembali modal
-      },
-    });
   };
 
   // Fungsi untuk melakukan delete data review
@@ -286,28 +239,6 @@ const ReviewList: React.FC = () => {
     fetchAnime();
   }, []);
 
-  // Fetch anime yang sudah direview oleh user yang dipilih
-  const fetchReviewedAnime = async (userId: string) => {
-    try {
-      const response = await fetch(`${api}/review/anime-reviewed/${userId}`, {
-        method: "GET",
-      });
-      setReviewedAnime(await response.json());
-    } catch (error) {
-      console.error("Error fetching reviewed anime:", error);
-    }
-  };
-
-  // Ketika user dipilih, fetch anime yang sudah direview oleh user tersebut
-  const handleUserChange = (userId: string) => {
-    setSelectedUser(userId);
-    if (userId) {
-      fetchReviewedAnime(userId);
-    } else {
-      setReviewedAnime([]);
-    }
-  };
-
   // Kolom table
   const columns: TableColumnsType<DataType> = useMemo(
     () => [
@@ -410,13 +341,7 @@ const ReviewList: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="mb-3 flex justify-between">
-        <button type="button" onClick={() => showModal("post")}>
-          <div className="flex items-center gap-2 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">
-            <AiOutlinePlus />
-            <span>Add Review</span>
-          </div>
-        </button>
+      <div className="mb-3 flex justify-end">
         <div>
           <Input
             addonBefore={<AiOutlineSearch />}
@@ -486,79 +411,6 @@ const ReviewList: React.FC = () => {
               </div>
             </div>
           </div>
-        ) : (
-          ""
-        )}
-
-        {modalMode === "post" ? (
-          <Form form={form} layout="vertical">
-            {/* Select user */}
-            <Form.Item
-              label="User"
-              name="id_user"
-              rules={[{ required: true, message: "Please select user" }]}
-            >
-              <Select
-                placeholder="Select user"
-                allowClear
-                onChange={handleUserChange}
-                filterOption={(input, option) =>
-                  (option?.children as unknown as string)
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-              >
-                {dataUser.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.username}
-                  </option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            {/* Select anime */}
-            <Form.Item
-              label="Anime"
-              name="id_anime"
-              rules={[{ required: true, message: "Please select anime" }]}
-            >
-              <Select
-                placeholder="Select anime"
-                allowClear
-                filterOption={(input, option) =>
-                  (option?.children as unknown as string)
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-              >
-                {dataAnime
-                  .filter((anime) => !reviewedAnime.includes(anime.id)) // Filter anime yang belum direview
-                  .map((anime) => (
-                    <option key={anime.id} value={anime.id}>
-                      {anime.title}
-                    </option>
-                  ))}
-              </Select>
-            </Form.Item>
-
-            {/* Input review */}
-            <Form.Item
-              label="Review"
-              name="review"
-              rules={[{ required: true, message: "Please input review" }]}
-            >
-              <Input.TextArea showCount maxLength={9999} autoSize />
-            </Form.Item>
-
-            {/* Input rating */}
-            <Form.Item
-              name="rating"
-              label="Rate"
-              rules={[{ required: true, message: "Please input rating" }]}
-            >
-              <Rate count={10} allowHalf />
-            </Form.Item>
-          </Form>
         ) : (
           ""
         )}
