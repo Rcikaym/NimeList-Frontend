@@ -308,7 +308,7 @@ const TopicPhotoList: React.FC = () => {
           <span className=" text-lg"> Manage Topic </span>
           <span> / </span>
           <Link
-            href="/dashboard/anime/photo"
+            href="/dashboard/topic/photo"
             className="hover:text-emerald-700"
           >
             <span className=" text-lg">Topic Photo</span>
@@ -319,7 +319,7 @@ const TopicPhotoList: React.FC = () => {
         <div>
           <Input
             addonBefore={<AiOutlineSearch />}
-            placeholder="Only title anime"
+            placeholder="Only title topic"
             onChange={(e) => setSearchText(e.target.value)}
           />
         </div>

@@ -20,6 +20,7 @@ import {
   AiOutlineEye,
   AiOutlineHeart,
   AiOutlinePlus,
+  AiOutlineSearch,
   AiOutlineTag,
   AiOutlineTool,
 } from "react-icons/ai";
@@ -42,12 +43,6 @@ interface DataType {
   updated_at: string;
 }
 
-interface DataPost {
-  id_user: string;
-  id_topic: string;
-  comment: string;
-}
-
 interface DataEdit {
   comment: string;
 }
@@ -55,10 +50,8 @@ interface DataEdit {
 const TopicCommentList: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [user, setUser] = useState<any[]>([]);
-  const [topic, setTopic] = useState<any[]>([]);
   const [detailComment, setDetailComment] = useState<any>(null);
-  const [modalMode, setMode] = useState<"post" | "edit" | "detail">();
+  const [modalMode, setMode] = useState<"edit" | "detail">();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [idComment, setId] = useState<string>("");
   const { confirm } = Modal;
@@ -71,7 +64,7 @@ const TopicCommentList: React.FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1500);
 
-  const showModal = (modalMode: "post" | "edit" | "detail") => {
+  const showModal = (modalMode: "edit" | "detail") => {
     setMode(modalMode);
     setModalVisible(true);
   };
@@ -89,9 +82,7 @@ const TopicCommentList: React.FC = () => {
     form
       .validateFields()
       .then((values: any) => {
-        if (modalMode === "post") {
-          showPostConfirm(values);
-        } else if (modalMode === "edit") {
+        if (modalMode === "edit") {
           showEditConfirm(values);
         }
         setModalVisible(false);
@@ -106,43 +97,6 @@ const TopicCommentList: React.FC = () => {
   const setDataDetail = async (id: string) => {
     const res = await apiUrl.get(`/comment/get/${id}`);
     setDetailComment(await res.data);
-  };
-
-  // Fungsi untuk melakukan post data genre
-  const handlePostComment = async (values: DataPost) => {
-    try {
-      const post = await apiUrl.post(`/comment/post`, values); // Melakukan POST ke server
-
-      message.success("Comment added successfully!");
-      // Fetch ulang data setelah post
-      fetchComment();
-      form.resetFields(); // Reset form setelah submit
-    } catch (error) {
-      message.error("Failed to add comment");
-    }
-  };
-
-  // Tampilkan modal confirm saat ingin create data comment
-  const showPostConfirm = (values: DataPost) => {
-    confirm({
-      centered: true,
-      title: "Do you want to post this comment?",
-      icon: <ExclamationCircleFilled />,
-      onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handlePostComment(values)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
-      },
-      onCancel() {
-        setModalVisible(true); // Jika dibatalkan, buka kembali modal
-      },
-    });
   };
 
   const setDataEdit = async (id: string) => {
@@ -206,30 +160,6 @@ const TopicCommentList: React.FC = () => {
       setLoading(false); // Tetap menonaktifkan loading jika terjadi error
     }
   };
-
-  // Fetch data dari API ketika komponen dimuat
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await apiUrl.get(`/comment/get-all-user`);
-        setUser(await response.data); // Mengisi data dengan hasil dari API
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    const fetchTopic = async () => {
-      try {
-        const response = await apiUrl.get(`/comment/get-all-topic`);
-        setTopic(await response.data); // Mengisi data dengan isi dari API
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchTopic(); // Panggil fungsi fetchTopic saat komponen dimuat
-    fetchUser(); // Panggil fungsi fetchUser saat komponen dimuat
-  }, []);
 
   useEffect(() => {
     fetchComment();
@@ -370,15 +300,14 @@ const TopicCommentList: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="mb-3">
-        <button
-          type="button"
-          className="bg-emerald-700 text-white rounded-md flex items-center gap-2 p-2 hover:bg-emerald-800"
-          onClick={() => showModal("post")}
-        >
-          <AiOutlinePlus />
-          <span>Add Comment</span>
-        </button>
+      <div className="mb-3 flex justify-end">
+        <div>
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Only title topic and username"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </div>
       </div>
       <CustomTable
         columns={columns}
@@ -389,13 +318,7 @@ const TopicCommentList: React.FC = () => {
 
       {/* Modal dynamic mode */}
       <Modal
-        title={`${
-          modalMode === "post"
-            ? "Post"
-            : modalMode === "detail"
-            ? "Detail"
-            : "Edit"
-        } Comment Topic`}
+        title={`${modalMode === "detail" ? "Detail" : "Edit"} Comment Topic`}
         centered
         open={modalVisible}
         onOk={handleOk}
@@ -443,67 +366,6 @@ const TopicCommentList: React.FC = () => {
               </div>
             </div>
           </div>
-        ) : (
-          ""
-        )}
-
-        {modalMode === "post" ? (
-          <Form form={form} layout="vertical" className="w-full p-3">
-            {/* Select user */}
-            <Form.Item
-              label="User"
-              name="id_user"
-              rules={[{ required: true, message: "Please select user" }]}
-            >
-              <Select
-                placeholder="Select user"
-                allowClear
-                filterOption={(input, option) =>
-                  (option?.children as unknown as string)
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-              >
-                {user.map((user) => (
-                  <Option key={user.id} value={user.id}>
-                    {user.username}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            {/* Select topic */}
-            <Form.Item
-              label="Topic"
-              name="id_topic"
-              rules={[{ required: true, message: "Please select topic" }]}
-            >
-              <Select
-                placeholder="Select topic"
-                allowClear
-                filterOption={(input, option) =>
-                  (option?.children as unknown as string)
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-              >
-                {topic.map((topic) => (
-                  <Option key={topic.id} value={topic.id}>
-                    {topic.title}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            {/* Input comment */}
-            <Form.Item
-              label="Comment"
-              name="comment"
-              rules={[{ required: true, message: "Please input comment" }]}
-            >
-              <Input.TextArea showCount maxLength={9999} autoSize />
-            </Form.Item>
-          </Form>
         ) : (
           ""
         )}

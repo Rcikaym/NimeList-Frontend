@@ -189,15 +189,7 @@ const TopicList: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="mb-3 flex items-center justify-between">
-        <div>
-          <a href="/dashboard/topic/add">
-            <div className="flex items-center gap-1 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">
-              <AiOutlinePlus />
-              <span>Add Topic</span>
-            </div>
-          </a>
-        </div>
+      <div className="mb-3 flex items-center justify-end">
         <div>
           <Input
             addonBefore={<AiOutlineSearch />}

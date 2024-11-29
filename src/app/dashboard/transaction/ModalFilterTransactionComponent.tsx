@@ -98,7 +98,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         <h4>Payment Platform</h4>
         <Select
           value={selectedPlatform}
-          style={{ width: "30%" }}
+          style={{ width: "30%", overflow: "hidden" }}
           placeholder="Select Payment Platform"
           onChange={setSelectedPlatform}
           options={paymentPlatformOptions}

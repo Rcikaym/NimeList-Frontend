@@ -1,15 +1,7 @@
 // components/PaymentModal.js
 
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Form,
-  InputNumber,
-  message,
-  Modal,
-  Select,
-  Spin,
-} from "antd";
+import { Button, Form, InputNumber, message, Modal, Select, Spin } from "antd";
 import { Option } from "antd/es/mentions";
 import { getAccessToken } from "@/utils/auth";
 import apiUrl from "@/hooks/api";
@@ -30,10 +22,8 @@ const PaymentModal = ({ show, handleClose }: any) => {
 
   const fetchData = async () => {
     try {
-      const [membershipsRes, usersRes]: any = await Promise.all([
-        await fetch(`${api}/premium/get-all`),
-      ]);
-      setMemberships(await membershipsRes.json());
+      const response = await fetch(`${api}/premium/get-all`);
+      setMemberships(await response.json());
     } catch (err) {
       console.error("Error fetching data:", err);
     }
@@ -65,11 +55,11 @@ const PaymentModal = ({ show, handleClose }: any) => {
 
     try {
       const id_premium = selectedMembership;
+      console.log(id_premium);
 
-      const response = await apiUrl.post(
-        `${api}/transactions/create`,
-        id_premium
-      );
+      const response = await apiUrl.post(`/transactions/create`, {
+        id_premium: id_premium,
+      });
       const { token } = await response.data;
 
       // Redirect ke Midtrans
@@ -81,7 +71,11 @@ const PaymentModal = ({ show, handleClose }: any) => {
       );
       document.body.appendChild(script);
       script.onload = () => {
-        window.snap.pay(token);
+        window.snap.pay(token, {
+          onSuccess: (result: any) => {
+            window.location.href = "/payment";
+          },
+        });
       };
       setLoading(false);
     } catch (err: any) {

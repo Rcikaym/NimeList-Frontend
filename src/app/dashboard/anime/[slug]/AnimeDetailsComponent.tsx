@@ -22,7 +22,7 @@ import {
   BiGlobe,
   BiTrashAlt,
 } from "react-icons/bi";
-import { message, Modal } from "antd";
+import { Form, Input, message, Modal, Rate } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import apiUrl from "@/hooks/api";
 import timeToDay from "@/utils/TimeToDay";
@@ -157,6 +157,9 @@ export default function AnimeDetails({ slug }: { slug: string }) {
   const [anime, setAnime] = useState<AnimeType | null>(null);
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<ReviewType[]>([]);
+  const [modalUpdate, setModalUpdate] = useState(false);
+  const [idReview, setIdReview] = useState<string>("");
+  const [form] = Form.useForm();
   const { confirm } = Modal;
   const [error, setError] = useState<string | null>(null);
 
@@ -185,27 +188,65 @@ export default function AnimeDetails({ slug }: { slug: string }) {
   const handleDeleteReview = async (id: string) => {
     try {
       const response = await apiUrl.delete(`/review/delete/${id}`);
+      message.success(response.data.message);
       fetchAnime();
-    } catch (error) {
-      console.error("Error deleting review:", error);
+    } catch (error: any) {
+      message.error(error.message);
     }
+  };
+
+  const setModalAndDataForUpdate = async (id: string) => {
+    setModalUpdate(true);
+    setIdReview(id);
+
+    const res = await fetch(`${api}/review/get/${id}`, { method: "GET" });
+    const data = await res.json();
+    form.setFieldsValue({
+      review: data.review,
+      rating: parseFloat(data.rating),
+    });
+  };
+
+  const handleEditReview = async () => {
+    try {
+      const response = await apiUrl.put(
+        `/review/update/${idReview}`,
+        form.getFieldsValue()
+      );
+      message.success(response.data.message);
+      setModalUpdate(false);
+      fetchAnime();
+    } catch (error: any) {
+      message.error(error.message);
+    }
+  };
+
+  const showEditConfirm = () => {
+    setModalUpdate(false);
+    confirm({
+      title: "Are you sure update this review?",
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: "Yes",
+      okType: "danger",
+      onOk() {
+        handleEditReview();
+      },
+      onCancel() {
+        setModalUpdate(true);
+      },
+    });
   };
 
   const showDeleteConfirm = async (id: string) => {
     confirm({
       title: "Are you sure delete this review?",
       icon: <ExclamationCircleOutlined />,
-      content: "This action cannot be undone.",
       centered: true,
       okText: "Yes",
       okType: "danger",
       onOk() {
-        try {
-          handleDeleteReview(id);
-          message.success("Review deleted successfully!");
-        } catch (error: any) {
-          message.error("Error deleting review:", error);
-        }
+        handleDeleteReview(id);
       },
     });
   };
@@ -219,6 +260,34 @@ export default function AnimeDetails({ slug }: { slug: string }) {
 
   return (
     <>
+      <Modal
+        title="Update Review"
+        centered
+        open={modalUpdate}
+        onOk={showEditConfirm}
+        onCancel={() => setModalUpdate(false)}
+      >
+        <Form form={form} layout="vertical">
+          {/* Input review */}
+          <Form.Item
+            label="Review"
+            name="review"
+            rules={[{ required: true, message: "Please input review" }]}
+          >
+            <Input.TextArea showCount maxLength={9999} autoSize />
+          </Form.Item>
+
+          {/* Input rating */}
+          <Form.Item
+            name="rating"
+            label="Rate"
+            rules={[{ required: true, message: "Please input rating" }]}
+          >
+            <Rate count={10} allowHalf />
+          </Form.Item>
+        </Form>
+      </Modal>
+
       <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50] text-white">
         Anime Details
       </div>
@@ -293,30 +362,40 @@ export default function AnimeDetails({ slug }: { slug: string }) {
             <p>No reviews yet.</p>
           ) : (
             <ul>
-              {reviews.map((review) =>
-                review.status_premium === "active" ? (
-                  <li
-                    key={review.id}
-                    className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
-                  >
-                    <div>
-                      <div className="flex">
-                        <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
-                          <span className="text-white">{review.name}</span>
+              {reviews.map((review) => (
+                <li
+                  key={review.id}
+                  className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
+                >
+                  <div>
+                    <div className="flex">
+                      <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
+                        <span className="text-white">{review.name}</span>
+                        {review.status_premium === "active" ? (
                           <BiCrown size={15} className="text-yellow-300" />
-                        </div>
-                        {review.created_at === review.updated_at ? (
-                          <span className="text-[0.75rem] p-2 text-gray-500">
-                            {timeToDay(review.created_at)}
-                          </span>
                         ) : (
-                          <span className="text-[0.75rem] p-2 text-gray-500">
-                            {`${timeToDay(review.updated_at)} (diedit)`}
-                          </span>
+                          <BiGlobe size={15} className="text-[#05E5CB]" />
                         )}
                       </div>
-                      <p>{review.review}</p>
-                      <p>Rating: {review.rating}/10</p>
+                      {review.created_at === review.updated_at ? (
+                        <span className="text-[0.75rem] p-2 text-gray-500">
+                          {timeToDay(review.created_at)}
+                        </span>
+                      ) : (
+                        <span className="text-[0.75rem] p-2 text-gray-500">
+                          {`${timeToDay(review.created_at)} (diedit)`}
+                        </span>
+                      )}
+                    </div>
+                    <p>{review.review}</p>
+                    <p>Rating: {review.rating}/10</p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div
+                      className="w-fit cursor-pointer"
+                      onClick={() => setModalAndDataForUpdate(review.id)}
+                    >
+                      <BiEdit size={23} className="text-emerald-700" />
                     </div>
                     <div
                       className="w-fit cursor-pointer"
@@ -324,20 +403,9 @@ export default function AnimeDetails({ slug }: { slug: string }) {
                     >
                       <BiTrashAlt size={23} className="text-emerald-700" />
                     </div>
-                  </li>
-                ) : (
-                  <li
-                    key={review.id}
-                    className="container border rounded-lg border-[#05e5cbc3] p-5 my-5"
-                  >
-                    <div className="font-bold bg-[#005B50] text-white p-2 flex items-center gap-2 w-fit rounded-md mb-2">
-                      <span>{review.name}</span> <BiGlobe size={15} />
-                    </div>
-                    <p>{review.review}</p>
-                    <p>Rating: {review.rating}/10</p>
-                  </li>
-                )
-              )}
+                  </div>
+                </li>
+              ))}
             </ul>
           )}
         </div>

@@ -6,7 +6,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { message } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { BiCrown, BiDiamond, BiShield, BiSolidShield } from "react-icons/bi";
+import { BiDiamond } from "react-icons/bi";
 
 interface ProfileAdminDetail {
   username: string;
@@ -80,9 +80,6 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
                   {profile.name}
                 </span>
                 <BiDiamond size={20} />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-black text-sm">{profile.email}</span>
               </div>
             </div>
             <div className="ml-24">

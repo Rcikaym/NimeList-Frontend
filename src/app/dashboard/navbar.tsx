@@ -20,8 +20,12 @@ const Navbar: React.FC = () => {
     const token = getAccessToken();
 
     if (token) {
-      const decodedToken: { name: string; username: string; userId: string; role: string } =
-        jwtDecode(token);
+      const decodedToken: {
+        name: string;
+        username: string;
+        userId: string;
+        role: string;
+      } = jwtDecode(token);
 
       console.log(jwtDecode(token));
 
@@ -34,14 +38,20 @@ const Navbar: React.FC = () => {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      const response = await removeAccessToken();
-      message.success(response.message);
-      router.push("/home");
-    } catch (error) {
+    const response = await removeAccessToken();
+
+    if (!response) {
       message.error("Failed to logout");
-      console.error(error);
+      setTimeout(() => {
+        window.location.reload();
+      });
     }
+
+    message.success("Logout successfully!");
+    router.push("/home");
+    setTimeout(() => {
+      window.location.reload();
+    });
   };
 
   const getPhotoUrl = async (id: string) => {
