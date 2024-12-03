@@ -7,6 +7,7 @@ import { BiHide, BiShow, BiRightArrowAlt } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { setAccessToken } from "@/utils/auth";
+import { message } from "antd";
 
 const RegisterForm: React.FC = () => {
   const [form, setForm] = useState({
@@ -42,13 +43,15 @@ const RegisterForm: React.FC = () => {
     });
 
     const data = await response.json();
-    if (data.access_token) {
+
+    if (data.access_token && response.ok) {
       // Simpan token di localStorage
       const { exp } = jwtDecode(data.access_token);
       setAccessToken(data.access_token, exp);
-      router.push("/login");
+      message.success("Registration successful");
+      router.push("/home");
     } else {
-      alert("Registration failed");
+      setError(data.message || "Registration failed");
     }
   };
 

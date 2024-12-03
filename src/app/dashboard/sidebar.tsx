@@ -24,14 +24,12 @@ const SidebarMenu = () => {
     if (pathname === "/dashboard/users") return ["2"];
     if (pathname?.startsWith("/dashboard/anime")) {
       if (pathname === "/dashboard/anime") return ["3"];
-      if (pathname === "/dashboard/anime/photo") return ["4"];
-      if (pathname === "/dashboard/anime/genre") return ["5"];
-      if (pathname === "/dashboard/anime/review") return ["6"];
+      if (pathname === "/dashboard/anime/genre") return ["4"];
+      if (pathname === "/dashboard/anime/review") return ["5"];
     }
     if (pathname?.startsWith("/dashboard/topic")) {
       if (pathname === "/dashboard/topic") return ["7"];
-      if (pathname === "/dashboard/topic/photo") return ["8"];
-      if (pathname === "/dashboard/topic/comment") return ["9"];
+      if (pathname === "/dashboard/topic/comment") return ["8"];
     }
     if (pathname === "/dashboard/transaction") return ["10"];
     if (pathname === "/dashboard/premium") return ["11"];
@@ -101,12 +99,9 @@ const SidebarMenu = () => {
             <Link href="/dashboard/anime">Anime</Link>
           </Menu.Item>
           <Menu.Item key="4" className={styles.menuItem}>
-            <Link href="/dashboard/anime/photo">Anime Photo</Link>
-          </Menu.Item>
-          <Menu.Item key="5" className={styles.menuItem}>
             <Link href="/dashboard/anime/genre">Anime Genre</Link>
           </Menu.Item>
-          <Menu.Item key="6" className={styles.menuItem}>
+          <Menu.Item key="5" className={styles.menuItem}>
             <Link href="/dashboard/anime/review">Anime Review</Link>
           </Menu.Item>
         </SubMenu>
@@ -120,9 +115,6 @@ const SidebarMenu = () => {
             <Link href="/dashboard/topic">Topic</Link>
           </Menu.Item>
           <Menu.Item key="8" className={styles.menuItem}>
-            <Link href="/dashboard/topic/photo">Topic Photo</Link>
-          </Menu.Item>
-          <Menu.Item key="9" className={styles.menuItem}>
             <Link href="/dashboard/topic/comment">Comment Topic</Link>
           </Menu.Item>
         </SubMenu>

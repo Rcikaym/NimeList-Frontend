@@ -34,9 +34,9 @@ const TransactionList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
 
-  const showModalDetail = async (id: string) => {
+  const showModalDetail = async (order_id: string) => {
     setModalVisible(true);
-    const res = await apiUrl.get(`/transactions/get/${id}`);
+    const res = await apiUrl.get(`/transactions/get/${order_id}`);
     setDetailTransaction(await res.data);
   };
 
@@ -139,7 +139,7 @@ const TransactionList = () => {
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => showModalDetail(record.id)}
+              onClick={() => showModalDetail(record.order_id)}
               className="bg-emerald-700 text-white items-center w-fit rounded-md px-4 py-2 flex hover:bg-emerald-800"
             >
               <EyeOutlined style={{ fontSize: 18 }} />

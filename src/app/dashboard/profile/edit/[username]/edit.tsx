@@ -25,7 +25,7 @@ interface DataProfile {
   bio: string;
 }
 
-const ProfileAdminEdit = ({ name }: { name: string }) => {
+const ProfileAdminEdit = ({ username }: { username: string }) => {
   const [photoUrl, setPhotoUrl] = useState<string>("");
   const [photo, setPhoto] = useState([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -37,7 +37,7 @@ const ProfileAdminEdit = ({ name }: { name: string }) => {
   const setForm = async () => {
     try {
       const res = await apiUrl.get<ProfileAdminDetail>(
-        `/user/profile-for-edit/${name}`
+        `/user/profile/${username}`
       );
       const data = res.data;
       form.setFieldsValue({
@@ -65,8 +65,9 @@ const ProfileAdminEdit = ({ name }: { name: string }) => {
       const update = await apiUrl.put(`/user/update-profile`, formData);
       const res = await update.data;
       message.success(res.message);
-      router.push(`/dashboard/profile/${name}`);
+      router.push(`/dashboard/profile/${username}`);
     } catch (error) {
+      message.error("Failed to update profile");
       console.log(error);
     }
   };
@@ -107,6 +108,7 @@ const ProfileAdminEdit = ({ name }: { name: string }) => {
   };
 
   const handlePhotoUpload = (info: any) => {
+    console.log(info);
     const { file, fileList } = info;
 
     setPhoto(fileList);
@@ -124,9 +126,9 @@ const ProfileAdminEdit = ({ name }: { name: string }) => {
       if (!isJpgOrPng) {
         message.error("You can only upload JPG/PNG file!");
       }
-      const isLt2M = file.size / 1024 / 1024 < 5;
+      const isLt2M = file.size / 1024 / 1024 < 2;
       if (!isLt2M) {
-        message.error("Image must smaller than 5MB!");
+        message.error("Image must smaller than 2MB!");
       }
       return isJpgOrPng && isLt2M;
     },
@@ -212,7 +214,7 @@ const ProfileAdminEdit = ({ name }: { name: string }) => {
         </Form.Item>
         <div className="flex justify-between">
           <Button
-            href={`/dashboard/profile/${name}`}
+            href={`/dashboard/profile/${username}`}
             color="default"
             className="mt-6"
           >

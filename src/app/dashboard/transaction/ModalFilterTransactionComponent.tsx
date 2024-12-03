@@ -98,15 +98,20 @@ const FilterModal: React.FC<FilterModalProps> = ({
         <h4>Payment Platform</h4>
         <Select
           value={selectedPlatform}
-          style={{ width: "30%", overflow: "hidden" }}
           placeholder="Select Payment Platform"
+          className="w-[30%]"
           onChange={setSelectedPlatform}
           options={paymentPlatformOptions}
           showSearch
           filterOption={(input, option: any) =>
             option.label.toLowerCase().includes(input.toLowerCase())
           }
-          dropdownStyle={{ maxHeight: 100, overflow: "auto" }}
+          dropdownStyle={{
+            maxHeight: 100,
+            overflow: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
         />
       </div>
     </Modal>

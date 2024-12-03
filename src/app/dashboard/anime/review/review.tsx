@@ -24,9 +24,7 @@ import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import useDebounce from "@/utils/useDebounce";
-import { SorterResult } from "antd/es/table/interface";
 import apiUrl from "@/hooks/api";
-import { a } from "framer-motion/client";
 
 interface DataType {
   id: string;
@@ -51,8 +49,6 @@ const ReviewList: React.FC = () => {
   const api = process.env.NEXT_PUBLIC_API_URL;
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
   const [detailReview, setDetailReview] = useState<any>(null); // Data diisi dengan api
-  const [dataAnime, setDataAnime] = useState<DataAnime[]>([]); // Data diisi dengan api
-  const [dataUser, setDataUser] = useState<DataUser[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const [idReview, setIdReview] = useState<string>("");
   const [form] = Form.useForm();
@@ -65,11 +61,16 @@ const ReviewList: React.FC = () => {
     total: 0,
   });
   const [searchText, setSearchText] = useState<string>("");
-  const debounceText = useDebounce(searchText, 1000)
+  const debounceText = useDebounce(searchText, 1000);
 
   const showModal = (modalMode: "edit" | "detail") => {
     setMode(modalMode);
     setModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+    form.resetFields();
   };
 
   const handleOk = () => {
@@ -91,20 +92,19 @@ const ReviewList: React.FC = () => {
       });
   };
 
-  const handleCancel = () => {
-    setModalVisible(false);
-    form.resetFields();
-  };
-
   // Fungsi untuk melakukan delete data review
   const handleDeleteReview = async (id: string) => {
+    setLoading(true);
     try {
-      await apiUrl.delete(`/review/delete/${id}`, { method: "DELETE" }); // Melakukan DELETE ke server
-      message.success("Review deleted successfully!");
+      const res = await apiUrl.delete(`/review/delete/${id}`); // Melakukan DELETE ke server
+      message.success(res.data.message);
 
       // Fetch ulang data setelah di delete
       fetchReview();
+
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       message.error("Failed to delete review");
     }
   };
@@ -116,15 +116,7 @@ const ReviewList: React.FC = () => {
       title: "Do you want to delete this review?",
       icon: <ExclamationCircleFilled />,
       onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handleDeleteReview(id)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
+        handleDeleteReview(id);
       },
     });
   };
@@ -142,15 +134,19 @@ const ReviewList: React.FC = () => {
   };
 
   const handleEditReview = async (values: DataType) => {
+    setLoading(true);
     try {
-      await apiUrl.put(`/review/update/${idReview}`, values); // Melakukan PUT ke server
-      message.success("Review updated successfully!");
+      const res = await apiUrl.put(`/review/update/${idReview}`, values); // Melakukan PUT ke server
+      message.success(res.data.message);
       setModalVisible(false);
 
       // Fetch ulang data setelah update
       fetchReview();
       form.resetFields(); // Reset form setelah submit
+
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       message.error("Failed to update review");
     }
   };
@@ -161,15 +157,7 @@ const ReviewList: React.FC = () => {
       title: "Do you want to update this review ?",
       icon: <ExclamationCircleFilled />,
       onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handleEditReview(values)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
+        handleEditReview(values);
       },
     });
   };
@@ -212,32 +200,6 @@ const ReviewList: React.FC = () => {
   useEffect(() => {
     fetchReview();
   }, [JSON.stringify(pagination), debounceText]);
-
-  // Fetch data dari API ketika komponen dimuat
-  useEffect(() => {
-    const fetchAnime = async () => {
-      try {
-        const response = await fetch(`${api}/review/get-all-anime`, {
-          method: "GET",
-        });
-        setDataAnime(await response.json()); // Mengisi data dengan anime dari API
-      } catch (error) {
-        console.error("Error fetching animes:", error);
-      }
-    };
-
-    const fetchUsers = async () => {
-      try {
-        const response = await apiUrl.get(`/review/get-all-user`);
-        setDataUser(await response.data); // Mengisi data dengan user dari API
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchUsers();
-    fetchAnime();
-  }, []);
 
   // Kolom table
   const columns: TableColumnsType<DataType> = useMemo(
@@ -360,13 +322,7 @@ const ReviewList: React.FC = () => {
 
       {/* Modal dynamic mode */}
       <Modal
-        title={
-          "Modal " + modalMode === "post"
-            ? "Add New Review"
-            : modalMode === "edit"
-            ? "Edit Review"
-            : "Detail Review"
-        }
+        title={modalMode === "edit" ? "Edit Review" : "Detail Review"}
         centered
         open={modalVisible}
         onOk={handleOk}

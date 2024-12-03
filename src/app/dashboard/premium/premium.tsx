@@ -63,6 +63,12 @@ const PremiumList: React.FC = () => {
     setModalVisible(true);
   };
 
+  
+  const handleCancel = () => {
+    setModalVisible(false);
+    form.resetFields();
+  };
+
   const handleOk = () => {
     form
       .validateFields()
@@ -80,14 +86,20 @@ const PremiumList: React.FC = () => {
   };
 
   const handlePostPremium = async (values: DataType) => {
+    setLoading(true);
     try {
-      await apiUrl.post(`http://localhost:4321/premium/post-admin`, values); // Melakukan POST ke server
-      message.success("Premium added successfully!");
+      const res = await apiUrl.post(
+        `http://localhost:4321/premium/post`,
+        values
+      ); // Melakukan POST ke server
+      message.success(res.data.message);
 
       // Fetch ulang data setelah post
       fetchPremium();
+      setLoading(false);
       form.resetFields(); // Reset form setelah submit
     } catch (error) {
+      setLoading(false);
       message.error("Failed to add premium");
     }
   };
@@ -95,36 +107,46 @@ const PremiumList: React.FC = () => {
   const setDataEdit = async (id: string) => {
     setId(id);
     const response = await apiUrl.get(
-      `http://localhost:4321/premium/get-admin-edit/${id}`
+      `http://localhost:4321/premium/get/${id}`
     );
     const data = await response.data;
     form.setFieldsValue(data);
   };
 
   const handleEditPremium = async (values: DataType) => {
+    setLoading(true);
     try {
       const res = await apiUrl.put(
-        `http://localhost:4321/premium/update-admin/${id}`,
+        `http://localhost:4321/premium/update/${id}`,
         values
       ); // Melakukan PUT ke server
       message.success(res.data.message);
 
       // Fetch ulang data setelah edit
       fetchPremium();
+
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       message.error("Failed to edit premium");
     }
   };
 
   // Fungsi untuk melakukan delete data premium
   const handleDeletePremium = async (id: string) => {
+    setLoading(true);
     try {
-      await apiUrl.delete(`http://localhost:4321/premium/delete-admin/${id}`); // Melakukan DELETE ke server
-      message.success("Premium deleted successfully!");
+      const res = await apiUrl.delete(
+        `http://localhost:4321/premium/delete/${id}`
+      ); // Melakukan DELETE ke server
+      message.success(res.data.message);
 
       // Fetch ulang data setelah post
       fetchPremium();
+
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       message.error("Failed to delete premium");
     }
   };
@@ -133,18 +155,10 @@ const PremiumList: React.FC = () => {
   const showDeleteConfirm = (id: string, name: string) => {
     confirm({
       centered: true,
-      title: "Do you want to delete " + name + " premium?",
+      title: "Do you want to delete this premium?",
       icon: <ExclamationCircleFilled />,
       onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handleDeletePremium(id)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
+        handleDeletePremium(id);
       },
     });
   };
@@ -152,18 +166,10 @@ const PremiumList: React.FC = () => {
   const showPostConfirm = (values: DataType) => {
     confirm({
       centered: true,
-      title: "Do you want to add " + values.name + " premium?",
+      title: "Do you want to add this premium?",
       icon: <ExclamationCircleFilled />,
       onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handlePostPremium(values)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
+        handlePostPremium(values);
       },
     });
   };
@@ -174,15 +180,7 @@ const PremiumList: React.FC = () => {
       title: "Do you want to add " + values.name + " premium?",
       icon: <ExclamationCircleFilled />,
       onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handleEditPremium(values)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
+        handleEditPremium(values);
       },
     });
   };
@@ -305,7 +303,7 @@ const PremiumList: React.FC = () => {
         centered
         open={modalVisible}
         onOk={handleOk}
-        onCancel={() => setModalVisible(false)}
+        onCancel={handleCancel}
       >
         {mode === "edit" ? (
           <Form form={form} layout="vertical" className="mt-3">

@@ -40,17 +40,18 @@ const ModalDetailTransaction: React.FC<ModalDetailTransactionProps> = ({
       title="Transaction Details"
       open={modalVisible && data !== null && data !== undefined}
       footer={null}
+      centered
       onCancel={handleCancel}
     >
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-2">
           <div className="flex gap-5 mb-2 border-b-1 border-gray-300 py-2">
-            <div className="flex flex-col gap-2">
-              <span className="font-semibold">Username</span>
-              <span className="font-semibold">Order Id</span>
-              <span className="font-semibold">Status</span>
-              <span className="font-semibold">Total</span>
-              <span className="font-semibold">Payment Platform</span>
+            <div className="flex flex-col gap-2 font-semibold">
+              <span>Username</span>
+              <span>Order Id</span>
+              <span>Status</span>
+              <span>Total</span>
+              <span>Payment Platform</span>
             </div>
             <div className="flex flex-col gap-2">
               <span>{data.username}</span>
@@ -84,10 +85,10 @@ const ModalDetailTransaction: React.FC<ModalDetailTransactionProps> = ({
             >
               <div className="flex flex-col bg-gray-100 gap-2 rounded-md p-2">
                 <div className="flex gap-8">
-                  <div className="flex flex-col gap-2">
-                    <span className="font-semibold">Name</span>
-                    <span className="font-semibold">Duration</span>
-                    <span className="font-semibold">Price</span>
+                  <div className="flex flex-col gap-2 font-semibold">
+                    <span>Name</span>
+                    <span>Duration</span>
+                    <span>Price</span>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span>{data.premium?.name}</span>

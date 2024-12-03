@@ -5,6 +5,7 @@ import { Button, Form, InputNumber, message, Modal, Select, Spin } from "antd";
 import { Option } from "antd/es/mentions";
 import { getAccessToken } from "@/utils/auth";
 import apiUrl from "@/hooks/api";
+import { on } from "events";
 
 declare global {
   interface Window {
@@ -72,9 +73,12 @@ const PaymentModal = ({ show, handleClose }: any) => {
       document.body.appendChild(script);
       script.onload = () => {
         window.snap.pay(token, {
-          onSuccess: (result: any) => {
+          onSuccess: () => {
             window.location.href = "/payment";
           },
+          onPending: () => {
+            window.location.href = "/payment";
+          }
         });
       };
       setLoading(false);

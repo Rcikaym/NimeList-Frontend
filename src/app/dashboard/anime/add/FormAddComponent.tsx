@@ -57,7 +57,7 @@ export default function AddAnime() {
     const fetchGenre = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${api}/anime/get-all-genre`, {
+        const response = await fetch(`${api}/genre/get-all`, {
           method: "GET",
         });
         setGenres(await response.json()); // Mengisi data dengan hasil dari API
@@ -298,8 +298,7 @@ export default function AddAnime() {
                 label: genre.name,
               }))}
               style={{ width: "100%" }}
-            >
-            </Select>
+            ></Select>
           </Form.Item>
 
           {/* Select type */}
