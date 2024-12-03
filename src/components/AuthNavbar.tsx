@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Inter } from "next/font/google";
 import Image from "next/image";
 import React from "react";
-import { BiChevronDown, BiLogOut } from "react-icons/bi";
+import { BiChevronDown, BiLogIn, BiLogOut } from "react-icons/bi";
 import {
   FaCrown,
   FaRegBookmark,
@@ -31,7 +31,7 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getAccessToken, removeAccessToken } from "@/utils/auth";
+import { getAccessToken, logout } from "@/utils/auth";
 import { message } from "antd";
 import { jwtDecode } from "jwt-decode";
 
@@ -90,14 +90,15 @@ const AuthNavbar = () => {
   const [name, setName] = useState("Guest");
   const [description, setDescription] = useState("guest@gmail.com");
   const router = useRouter();
+  const [isLogin, setIsLogin] = useState(false);
+  const token = getAccessToken();
 
   // Ensure dynamic content only renders on the client
   useEffect(() => {
-    const token = getAccessToken();
-
     if (token) {
       const decodedToken: { username: string; email: string; name: string } =
         jwtDecode(token);
+      setIsLogin(true);
       setUsername(decodedToken.username);
       setName(decodedToken.name);
       setDescription(decodedToken.email);
@@ -115,22 +116,6 @@ const AuthNavbar = () => {
 
     fetchGenres();
   }, []);
-
-  const handleLogout = async () => {
-    const res = await removeAccessToken();
-    console.log(res);
-
-    if (!res) {
-      message.error("Failed to logout");
-      return;
-    }
-
-    message.success("Logout successfully!");
-    router.push("/home");
-    setTimeout(() => {
-      window.location.reload();
-    }, 100); // Refresh after 100 milliseconds
-  };
 
   return (
     <>
@@ -275,13 +260,24 @@ const AuthNavbar = () => {
                 </DropdownItem>
                 <DropdownItem
                   key="logout"
-                  onClick={handleLogout}
                   className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
                 >
-                  <p className=" flex items-center font-semibold">
-                    <BiLogOut className="w-5 h-5 mr-2" />
-                    Log Out
-                  </p>
+                  {isLogin ? (
+                    <p
+                      className=" flex items-center font-semibold"
+                      onClick={logout}
+                    >
+                      <BiLogOut className="w-5 h-5 mr-2" />
+                      Log Out
+                    </p>
+                  ) : (
+                    <Link href="/login">
+                      <p className=" flex items-center font-semibold">
+                        <BiLogIn className="w-5 h-5 mr-2" />
+                        Login
+                      </p>
+                    </Link>
+                  )}
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>

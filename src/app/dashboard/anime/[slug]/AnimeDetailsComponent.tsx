@@ -156,7 +156,7 @@ const PhotoGallery = memo(
 export default function AnimeDetails({ slug }: { slug: string }) {
   const [anime, setAnime] = useState<AnimeType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [reviews, setReviews] = useState<ReviewType[]>([]);
+  const [reviews, setReviews] = useState({} as ReviewType);
   const [modalUpdate, setModalUpdate] = useState(false);
   const [idReview, setIdReview] = useState<string>("");
   const [form] = Form.useForm();
@@ -171,7 +171,7 @@ export default function AnimeDetails({ slug }: { slug: string }) {
       });
       const data = await response.json();
       setAnime(data);
-      setReviews(data.review.data);
+      setReviews(data.review);
       setError(null);
     } catch (error) {
       console.error("Error fetching anime:", error);
@@ -355,20 +355,20 @@ export default function AnimeDetails({ slug }: { slug: string }) {
         <div className="mt-6 p-6">
           <div className="flex justify-between">
             <h2 className="text-xl font-semibold select-none">
-              {reviews.length} REVIEWS
+              {reviews.total} REVIEWS
             </h2>
           </div>
-          {reviews.length === 0 ? (
+          {reviews.total === 0 ? (
             <p>No reviews yet.</p>
           ) : (
             <ul>
-              {reviews.map((review) => (
+              {reviews.data.map((review) => (
                 <li
                   key={review.id}
                   className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
                 >
                   <div>
-                    <div className="flex">
+                    <div className="flex items-center gap-2">
                       <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
                         <span className="text-white">{review.name}</span>
                         {review.status_premium === "active" ? (
@@ -377,15 +377,11 @@ export default function AnimeDetails({ slug }: { slug: string }) {
                           <BiGlobe size={15} className="text-[#05E5CB]" />
                         )}
                       </div>
-                      {review.created_at === review.updated_at ? (
-                        <span className="text-[0.75rem] p-2 text-gray-500">
-                          {timeToDay(review.created_at)}
-                        </span>
-                      ) : (
-                        <span className="text-[0.75rem] p-2 text-gray-500">
-                          {`${timeToDay(review.created_at)} (diedit)`}
-                        </span>
-                      )}
+                      <p className="text-[0.75rem] text-gray-500">
+                        {review.created_at === review.updated_at
+                          ? timeToDay(review.created_at)
+                          : `${timeToDay(review.created_at)} (diedit)`}
+                      </p>
                     </div>
                     <p>{review.review}</p>
                     <p>Rating: {review.rating}/10</p>

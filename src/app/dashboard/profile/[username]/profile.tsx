@@ -10,7 +10,6 @@ import { BiDiamond } from "react-icons/bi";
 
 interface ProfileAdminDetail {
   username: string;
-  email: string;
   photo_profile: string;
   bio: string;
   badge: string;
@@ -37,7 +36,7 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
       setLoading(false);
     } catch (error) {
       message.error("Error fetching data profile");
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -62,9 +61,9 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
             <div className="w-40 h-40 relative">
               <Image
                 src={
-                  photoUrl === null
+                  profile.photo_profile === null
                     ? "/images/logo-admin.jpeg"
-                    : `${api}/${photoUrl.replace(/\\/g, "/")}`
+                    : `${api}/${profile.photo_profile.replace(/\\/g, "/")}`
                 }
                 alt="Profile"
                 className="rounded-full border-2 border-gray-300 m-0"
@@ -74,13 +73,13 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
               />
             </div>
             <div className="flex flex-col gap-2 ml-5">
-              <span className="text-black text-sm">{`@${profile.username}`}</span>
               <div className="flex w-fit items-center gap-2 bg-[#005B50] rounded-md px-3 py-1 text-white">
                 <span className="text-lg font-sans font-semibold">
                   {profile.name}
                 </span>
                 <BiDiamond size={20} />
               </div>
+              <span className="text-sm">{`@${profile.username}`}</span>
             </div>
             <div className="ml-24">
               <a
@@ -94,8 +93,8 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
             </div>
           </div>
           <div className="mt-10">
-            <h3 className="text-black text-lg font-semibold mt-10">Bio</h3>
-            <div className="text-black text-sm">
+            <h3 className="text-lg font-semibold mt-10">Bio</h3>
+            <div className="text-sm">
               {profile.bio === null || "" ? (
                 "No bio"
               ) : (

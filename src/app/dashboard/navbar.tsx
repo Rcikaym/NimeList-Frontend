@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Dropdown, Layout, message } from "antd";
 import type { MenuProps } from "antd";
 import Image from "next/image";
-import { getAccessToken, removeAccessToken } from "@/utils/auth";
+import { getAccessToken, logout } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { BiHomeAlt, BiLogOut, BiSolidUserDetail } from "react-icons/bi";
@@ -37,22 +37,22 @@ const Navbar: React.FC = () => {
     }
   }, []);
 
-  const handleLogout = async () => {
-    const response = await removeAccessToken();
+  // const handleLogout = async () => {
+  //   const response = await removeAccessToken();
 
-    if (!response) {
-      message.error("Failed to logout");
-      setTimeout(() => {
-        window.location.reload();
-      });
-    }
+  //   if (!response) {
+  //     message.error("Failed to logout");
+  //     setTimeout(() => {
+  //       window.location.reload();
+  //     });
+  //   }
 
-    message.success("Logout successfully!");
-    router.push("/home");
-    setTimeout(() => {
-      window.location.reload();
-    });
-  };
+  //   message.success("Logout successfully!");
+  //   router.push("/home");
+  //   setTimeout(() => {
+  //     window.location.reload();
+  //   });
+  // };
 
   const getPhotoUrl = async (id: string) => {
     const get = await apiUrl.get(`/photo-profile/get`);
@@ -75,7 +75,7 @@ const Navbar: React.FC = () => {
     },
     {
       key: "3",
-      label: <button onClick={handleLogout}>Logout</button>,
+      label: <button onClick={logout}>Logout</button>,
       icon: <BiLogOut size={17} />,
     },
   ];

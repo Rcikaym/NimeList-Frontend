@@ -70,50 +70,59 @@ const AnimeGenre: React.FC = () => {
 
   // Fungsi untuk melakukan post data genre
   const handlePostGenre = async (values: DataType) => {
+    setLoading(true);
     try {
-      await apiUrl.post(`/genre/post`, values); // Melakukan POST ke server
-      message.success("Genre added successfully!");
+      const res = await apiUrl.post(`/genre/post`, values); // Melakukan POST ke server
+      message.success(res.data.message);
 
       // Fetch ulang data setelah post
       fetchGenre();
       form.resetFields(); // Reset form setelah submit
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       message.error("Failed to add genre");
     }
   };
 
   const setDataEdit = async (id: string) => {
     setIdGenre(id);
-    const data = await fetch(`${api}/genre/get/${id}`);
-    const res = await data.json();
+    const res = await apiUrl.get(`/genre/get/${id}`);
+    const data = await res.data;
     // Set data ke dalam form
     form.setFieldsValue({
-      name: res.name,
+      name: data.name,
     });
   };
 
   // Fungsi untuk melakukan edit data genre
   const handleEditGenre = async (values: DataType) => {
+    setLoading(true);
     try {
-      await apiUrl.put(`/genre/update/${idGenre}`, values); // Melakukan PUT ke server
-      message.success("Genre edited successfully!");
+      const res = await apiUrl.put(`/genre/update/${idGenre}`, values); // Melakukan PUT ke server
+      message.success(res.data.message);
 
       // Fetch ulang data setelah post
       fetchGenre();
+      setLoading(false);
     } catch (error) {
-      message.error("Failed to edit genre");
+      setLoading(false);
+      message.error("Failed to update genre");
     }
   };
 
   // Fungsi untuk melakukan delete data genre
   const handleDeleteGenre = async (id: string) => {
+    setLoading(true);
     try {
       await apiUrl.delete(`/genre/delete/${id}`); // Melakukan DELETE ke server
       message.success("Genre deleted successfully!");
 
       // Fetch ulang data setelah post
       fetchGenre();
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       message.error("Failed to delete genre");
     }
   };
@@ -130,15 +139,7 @@ const AnimeGenre: React.FC = () => {
           title: "Do you want to add an " + values.name + " genre?",
           icon: <ExclamationCircleFilled />,
           onOk() {
-            setLoading(true); // Set status loading pada tombol OK
-
-            return handlePostGenre(values)
-              .then(() => {
-                setLoading(false); // Set loading ke false setelah selesai
-              })
-              .catch(() => {
-                setLoading(false); // Set loading ke false jika terjadi error
-              });
+            handlePostGenre(values);
           },
           onCancel() {
             showModal("post"); // Jika dibatalkan, buka kembali modal
@@ -162,15 +163,7 @@ const AnimeGenre: React.FC = () => {
           title: "Do you want to update this genre?",
           icon: <ExclamationCircleFilled />,
           onOk() {
-            setLoading(true); // Set status loading pada tombol OK
-
-            return handleEditGenre(values)
-              .then(() => {
-                setLoading(false); // Set loading ke false setelah selesai
-              })
-              .catch(() => {
-                setLoading(false); // Set loading ke false jika terjadi error
-              });
+            handleEditGenre(values);
           },
           onCancel() {
             showModal("edit"); // Jika dibatalkan, buka kembali modal
@@ -189,15 +182,7 @@ const AnimeGenre: React.FC = () => {
       title: "Do you want to delete " + name + " genre?",
       icon: <ExclamationCircleFilled />,
       onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handleDeleteGenre(id)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
+        handleDeleteGenre(id);
       },
     });
   };
@@ -229,16 +214,6 @@ const AnimeGenre: React.FC = () => {
             onClick={() => showDeleteConfirm(record.id, record.name)}
           >
             <AiOutlineDelete style={{ fontSize: 20 }} />
-          </button>
-          <button
-            type="button"
-            className="bg-emerald-700 text-white px-4 py-2 flex items-center rounded-md hover:bg-emerald-800"
-            onClick={() => {
-              showModal("edit");
-              setDataEdit(record.id);
-            }}
-          >
-            <AiOutlineEdit style={{ fontSize: 20 }} />
           </button>
           <button
             type="button"
@@ -312,9 +287,7 @@ const AnimeGenre: React.FC = () => {
           <h2 className="text-lg mt-2"> Manage Anime </h2>
           <span> / </span>
           <Link href="/dashboard/anime/genre">
-            <h2 className="mt-2 text-lg hover:text-emerald-700">
-              Anime Genre
-            </h2>
+            <h2 className="mt-2 text-lg hover:text-emerald-700">Anime Genre</h2>
           </Link>
         </div>
       </div>
@@ -345,7 +318,7 @@ const AnimeGenre: React.FC = () => {
         data={data} // Data dari state
       />
       <Modal
-        title={"Modal " + modalMode === "post" ? "Add New Genre" : "Edit Genre"}
+        title={modalMode === "post" ? "Add Genre" : "Edit Genre"}
         centered
         open={modalVisible}
         onOk={handleOk}

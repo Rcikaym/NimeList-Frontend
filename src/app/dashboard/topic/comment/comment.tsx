@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Form,
-  Input,
-  message,
-  Modal,
-  Space,
-  Select,
-  Typography,
-} from "antd";
+import { Form, Input, message, Modal, Typography } from "antd";
 import type { TableColumnsType, TablePaginationConfig, TableProps } from "antd";
 import {
   AiOutlineClockCircle,
@@ -19,7 +10,6 @@ import {
   AiOutlineEdit,
   AiOutlineEye,
   AiOutlineHeart,
-  AiOutlinePlus,
   AiOutlineSearch,
   AiOutlineTag,
   AiOutlineTool,
@@ -29,7 +19,6 @@ import Link from "next/link";
 import { CustomTable } from "@/components/CustomTable";
 import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
-import { Option } from "antd/es/mentions";
 import useDebounce from "@/utils/useDebounce";
 import apiUrl from "@/hooks/api";
 
@@ -110,15 +99,19 @@ const TopicCommentList: React.FC = () => {
   };
 
   const handleEditComment = async (values: DataEdit) => {
+    setLoading(true);
     try {
-      await apiUrl.put(`/comment/update/${idComment}`, values); // Melakukan PUT ke server
-      message.success("Comment updated successfully!");
+      const res = await apiUrl.put(`/comment/update/${idComment}`, values); // Melakukan PUT ke server
+      message.success(res.data.message);
       setModalVisible(false);
 
       // Fetch ulang data setelah update
       fetchComment();
       form.resetFields(); // Reset form setelah submit
+
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       message.error("Failed to update comment");
     }
   };
@@ -177,13 +170,17 @@ const TopicCommentList: React.FC = () => {
 
   // Fungsi untuk melakukan delete data comment
   const handleDeleteComment = async (id: string) => {
+    setLoading(true);
     try {
-      await apiUrl.delete(`/comment/delete/${id}`); // Melakukan DELETE ke server
-      message.success("Comment deleted successfully!");
+      const res = await apiUrl.delete(`/comment/delete/${id}`); // Melakukan DELETE ke server
+      message.success(res.data.message);
 
       // Fetch ulang data setelah di delete
       fetchComment();
+
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       message.error("Failed to delete comment");
     }
   };
@@ -195,15 +192,7 @@ const TopicCommentList: React.FC = () => {
       title: "Do you want to delete this comment?",
       icon: <ExclamationCircleFilled />,
       onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handleDeleteComment(id)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
+        handleDeleteComment(id);
       },
     });
   };
@@ -329,8 +318,6 @@ const TopicCommentList: React.FC = () => {
         okButtonProps={{
           style: modalMode === "detail" ? { display: "none" } : {},
         }}
-        width={700}
-        height={500}
       >
         {modalMode === "detail" && detailComment ? (
           <div className="flex flex-col w-full h-full">

@@ -18,7 +18,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { AnimeType, PhotosType, TopicType } from "./types";
+import { PhotosType, TopicType } from "./types";
 import "react-quill/dist/quill.snow.css";
 import "@/styles/reactquill.css";
 import dynamic from "next/dynamic";
@@ -35,7 +35,6 @@ export default function TopicEdit({ slug }: { slug: string }) {
   const [topicId, setTopicId] = useState<string>("");
   const [topic, setTopic] = useState<any>(null);
   const [content, setContent] = useState<string>("");
-  const [animes, setAnimes] = useState<AnimeType[]>([]);
   const [loading, setLoading] = useState(true);
   const [fileList, setFileList] = useState([]);
   const [error, setError] = useState<string | null>(null);
@@ -102,29 +101,11 @@ export default function TopicEdit({ slug }: { slug: string }) {
     fetchDetailTopic();
   }, [slug, form]);
 
-  // Fetch animes
-  useEffect(() => {
-    const fetchAnime = async () => {
-      const response = await apiUrl.get(`/topic/get-all-anime`);
-      setLoading(true);
-      try {
-        setAnimes(await response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching animes:", error);
-        setLoading(true);
-      }
-    };
-
-    fetchAnime();
-  }, []);
-
   // Fungsi untuk submit data
   const updateTopic = async (values: TopicType) => {
     const formData = new FormData();
 
     formData.append("title", values.title);
-    formData.append("id_anime", values.id_anime);
 
     // Tambahkan body yang sudah dimodifikasi ke FormData
     formData.append("body", content);
@@ -144,7 +125,7 @@ export default function TopicEdit({ slug }: { slug: string }) {
     });
 
     // Append new and existing files
-    new_photos.forEach((file: any) => formData.append("new_photos", file));
+    new_photos.forEach((file: any) => formData.append("photos_topic", file));
     if (existing_photos.length === 0) {
       formData.append("existing_photos", "");
     } else {
@@ -156,8 +137,7 @@ export default function TopicEdit({ slug }: { slug: string }) {
     setLoading(true);
     try {
       const response = await apiUrl.put(`/topic/update/${topicId}`, formData);
-
-      message.success("Topic updated successfully!");
+      message.success(response.data.message);
       setLoading(false);
       router.push("/dashboard/topic");
     } catch (error) {
@@ -244,21 +224,6 @@ export default function TopicEdit({ slug }: { slug: string }) {
               value={content}
               onChange={(value) => setContent(value)}
             />
-          </Form.Item>
-
-          {/* Animes*/}
-          <Form.Item
-            name="id_anime"
-            label="Anime"
-            rules={[{ required: true, message: "Please select anime" }]}
-          >
-            <Select placeholder="Select anime">
-              {animes.map((anime) => (
-                <Select.Option key={anime.id} value={anime.id}>
-                  {anime.title}
-                </Select.Option>
-              ))}
-            </Select>
           </Form.Item>
 
           <Form.Item name="photos" label="Upload Topic Photo">

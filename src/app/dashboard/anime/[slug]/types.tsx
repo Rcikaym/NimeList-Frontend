@@ -27,7 +27,7 @@ export interface AnimeType {
   totalFav: number;
 }
 
-export interface ReviewType {
+interface ReviewDataType {
   id: string;
   username: string;
   name: string;
@@ -36,4 +36,9 @@ export interface ReviewType {
   created_at: string;
   updated_at: string;
   status_premium: string;
+}
+
+export interface ReviewType {
+  total: number;
+  data: ReviewDataType[];
 }

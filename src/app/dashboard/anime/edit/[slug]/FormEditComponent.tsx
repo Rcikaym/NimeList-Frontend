@@ -85,7 +85,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
   // Fetch genres
   useEffect(() => {
     const fetchGenre = async () => {
-      const response = await fetch(`${api}/anime/get-all-genre`, {
+      const response = await fetch(`${api}/genre/get-all`, {
         method: "GET",
       });
       setLoading(true);
@@ -171,7 +171,10 @@ export default function AnimeEdit({ slug }: { slug: string }) {
 
     setLoading(true);
     try {
-      const update = await apiUrl.put(`${api}/anime/update/${animeId}`, formData);
+      const update = await apiUrl.put(
+        `${api}/anime/update/${animeId}`,
+        formData
+      );
       const res = await update.data;
       router.push("/dashboard/anime");
       message.success(res.message);
