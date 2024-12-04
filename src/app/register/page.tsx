@@ -3,7 +3,7 @@ import React from "react";
 import BoxReveal from "@/components/magicui/BoxReveal";
 import NumberTicker from "@/components/magicui/NumberTicker";
 import RegisterForm from "@/components/RegisterForm";
-
+import Link from "next/link";
 
 export default function Register() {
   return (
@@ -68,12 +68,11 @@ export default function Register() {
             </BoxReveal>
 
             <BoxReveal boxColor={"#014A42"} duration={0.5}>
-              <Button
-                href="/home"
-                className="mt-[1.6rem] bg-[#014A42] text-[#f5f5f5]"
-              >
-                Explore
-              </Button>
+              <Link href="/home">
+                <Button className="mt-[1.6rem] bg-[#014A42] text-[#f5f5f5]">
+                  Explore
+                </Button>
+              </Link>
             </BoxReveal>
           </div>
 

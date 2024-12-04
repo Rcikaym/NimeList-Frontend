@@ -34,7 +34,7 @@ const Animelist: React.FC<AnimeGenreProps> = ({ params }) => {
     <ul className="place-items-center grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {anime.map((anime: AnimeType, index) => (
         <li key={anime.id} className="w-full max-w-[13.75rem] shadow mb-6">
-          <Link href={`/anime/${anime.id}/${anime.title.replace(/\s+/g, "-").toLowerCase()}`}>
+          <Link href={`/anime/${anime.slug}`}>
             <Image
               className="w-full h-[300px] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
               src={`http://localhost:4321/${anime.photo_cover.replace(/\\/g, "/")}`}
@@ -45,7 +45,7 @@ const Animelist: React.FC<AnimeGenreProps> = ({ params }) => {
             />
           </Link>
           <div className="mt-3 mb-3">
-            <Link href={`/anime/${anime.id}/${anime.title.replace(/\s+/g, "-").toLowerCase()}`}>
+            <Link href={`/anime/${anime.slug}`}>
               <h5
                 className="truncate text-lg font-bold text-gray-900 dark:text-white"
                 style={{ minHeight: "1.5em" }} // Reserve space for title

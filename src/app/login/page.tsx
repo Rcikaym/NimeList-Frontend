@@ -8,7 +8,6 @@ import LoginForm from "@/components/LoginForm";
 import {
   getAccessToken,
   isAccessTokenExpired,
-  refreshAccessToken,
 } from "@/utils/auth";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +16,6 @@ export default function Login() {
 
   useEffect(() => {
     const token = getAccessToken();
-
     // Periksa apakah token ada dan belum kadaluarsa
     if (token && !isAccessTokenExpired()) {
       // Arahkan pengguna ke halaman utama jika token masih berlaku
@@ -85,7 +83,7 @@ export default function Login() {
 
             <BoxReveal boxColor={"#014A42"} duration={0.5}>
               <Button
-                href="/home"
+                onClick={() => router.push("/home")}
                 className="mt-[1.6rem] bg-[#014A42] text-[#f5f5f5]"
               >
                 Explore
