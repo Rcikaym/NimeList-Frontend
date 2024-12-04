@@ -85,13 +85,10 @@ const AnimeGenre: React.FC = () => {
     }
   };
 
-  const setDataEdit = async (id: string) => {
-    setIdGenre(id);
-    const res = await apiUrl.get(`/genre/get/${id}`);
-    const data = await res.data;
+  const setDataEdit = async (name: string) => {
     // Set data ke dalam form
     form.setFieldsValue({
-      name: data.name,
+      name: name,
     });
   };
 
@@ -220,7 +217,7 @@ const AnimeGenre: React.FC = () => {
             className="bg-emerald-700 text-white px-4 py-2 flex items-center rounded-md hover:bg-emerald-800"
             onClick={() => {
               showModal("edit");
-              setDataEdit(record.id);
+              setDataEdit(record.name);
             }}
           >
             <AiOutlineEdit style={{ fontSize: 20 }} />
@@ -278,16 +275,17 @@ const AnimeGenre: React.FC = () => {
           </div>
         </div>
         <div className="items-center flex gap-3">
-          <Link href="/dashboard">
-            <div className="hover:text-emerald-700">
-              <AppstoreFilled style={{ fontSize: 18 }} />
-            </div>
+          <Link href="/dashboard" className="hover:text-emerald-700">
+            <AppstoreFilled style={{ fontSize: 18 }} />
           </Link>
           <span> / </span>
-          <h2 className="text-lg mt-2"> Manage Anime </h2>
+          <span className="text-lg font-semibold"> Manage Anime </span>
           <span> / </span>
-          <Link href="/dashboard/anime/genre">
-            <h2 className="mt-2 text-lg hover:text-emerald-700">Anime Genre</h2>
+          <Link
+            href="/dashboard/anime/genre"
+            className="hover:text-emerald-700"
+          >
+            <span className="text-lg font-semibold">Anime Genre</span>
           </Link>
         </div>
       </div>
