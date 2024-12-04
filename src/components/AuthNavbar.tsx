@@ -143,6 +143,7 @@ const menuItems = [
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [username, setUsername] = useState("");
+  const [isLogin, setIsLogin] = useState(false);
   const [name, setName] = useState("Guest");
   const [description, setDescription] = useState("guest@gmail.com");
   const router = useRouter();
@@ -152,25 +153,29 @@ const AuthNavbar = () => {
     const token = getAccessToken();
 
     if (token) {
-      const decodedToken: { username: string; email: string, name: string } = jwtDecode(token);
+      const decodedToken: { username: string; email: string; name: string } =
+      jwtDecode(token);
       setUsername(decodedToken.username);
       setName(decodedToken.name);
       setDescription(decodedToken.email);
+      setIsLogin(true);
     }
   }, []);
 
   const handleLogout = async () => {
     const res = await removeAccessToken();
+    console.log(res);
 
-    if (res.status === 200) {
-      message.success(res.message);
-      router.push("/home");
-      setTimeout(() => {
-        window.location.reload();
-      }, 100); // Refresh after 100 milliseconds
-    } else {
-      message.error(res.message);
+    if (!res) {
+      message.error("Failed to logout");
+      return;
     }
+
+    message.success("Logout successfully!");
+    router.push("/home");
+    setTimeout(() => {
+      window.location.reload();
+    }, 100); // Refresh after 100 milliseconds
   };
 
   return (
@@ -179,7 +184,6 @@ const AuthNavbar = () => {
         onMenuOpenChange={setIsMenuOpen}
         className="bg-transparent pt-3 overflow-x-hidden"
         maxWidth="full"
-
       >
         <NavbarContent justify="start">
           <NavbarMenuToggle
@@ -283,50 +287,65 @@ const AuthNavbar = () => {
                   ],
                 }}
               >
-                <DropdownItem
-                  key="profile1"
-                  isReadOnly
-                  className="h-14 gap-2 opacity-100 "
-                >
-                  <User
-                    name={name}
-                    description={description}
-                    classNames={{
-                      name: "text-white",
-                      description: "text-white opacity-50",
-                    }}
-                    avatarProps={{
-                      size: "sm",
-                      src: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-                    }}
-                  />
-                </DropdownItem>
-                <DropdownItem
-                  key="profile2"
-                  className="dark:hover:text-white"
-                  href="/profile"
-                >
-                  My Profile
-                  <Divider orientation="horizontal" className="mt-2" />
-                </DropdownItem>
-                <DropdownItem
-                  key="my_favorites"
-                  className="dark:hover:text-white "
-                  href="/profile/favorites"
-                >
-                  My Favorites
-                  <Divider orientation="horizontal" className="mt-2" />
-                </DropdownItem>
-                <DropdownItem
-                  key="logout"
-                  onClick={handleLogout}
-                  className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
-                >
-                  <p className=" flex items-center font-semibold">
-                    <BiLogOut className="w-5 h-5 mr-2" />
-                    Log Out
-                  </p>
-                </DropdownItem>
+                {isLogin ? (
+                  <>
+                    <DropdownItem
+                      key="profile1"
+                      isReadOnly
+                      className="h-14 gap-2 opacity-100 "
+                    >
+                      <User
+                        name={name}
+                        description={description}
+                        classNames={{
+                          name: "text-white",
+                          description: "text-white opacity-50",
+                        }}
+                        avatarProps={{
+                          size: "sm",
+                          src: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
+                        }}
+                      />
+                    </DropdownItem>
+                    <DropdownItem
+                      key="profile2"
+                      className="dark:hover:text-white"
+                      href="/profile"
+                    >
+                      My Profile
+                      <Divider orientation="horizontal" className="mt-2" />
+                    </DropdownItem>
+                    <DropdownItem
+                      key="my_favorites"
+                      className="dark:hover:text-white "
+                      href="/profile/favorites"
+                    >
+                      My Favorites
+                      <Divider orientation="horizontal" className="mt-2" />
+                    </DropdownItem>
+                    <DropdownItem
+                      key="logout"
+                      onClick={handleLogout}
+                      className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
+                    >
+                      <p className=" flex items-center font-semibold">
+                        <BiLogOut className="w-5 h-5 mr-2" />
+                        Log Out
+                      </p>
+                    </DropdownItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownItem key="login" href="/login">
+                      Login
+                      <Divider orientation="horizontal" className="mt-2" />
+                    </DropdownItem>
+                    <DropdownItem key="register" href="/register">
+                      Register
+                      <Divider orientation="horizontal" className="mt-2" />
+                    </DropdownItem>
+                  </>
+                )}
               </DropdownMenu>
             </Dropdown>
           </div>
