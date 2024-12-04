@@ -190,16 +190,14 @@ const AnimeList: React.FC = () => {
           </div>
         </div>
         <div className="items-center flex gap-3">
-          <Link href="/dashboard">
-            <div className="hover:text-emerald-700">
-              <AppstoreFilled style={{ fontSize: 18 }} />
-            </div>
+          <Link href="/dashboard" className="hover:text-emerald-700">
+            <AppstoreFilled style={{ fontSize: 18 }} />
           </Link>
           <span> / </span>
-          <h2 className="text-lg mt-2"> Manage Anime </h2>
+          <span className="text-lg font-semibold"> Manage Anime </span>
           <span> / </span>
-          <Link href="/dashboard/anime">
-            <h2 className="text-lg hover:text-emerald-700 mt-2">Anime</h2>
+          <Link href="/dashboard/anime" className="hover:text-emerald-700">
+            <span className="text-lg font-semibold">Anime</span>
           </Link>
         </div>
       </div>

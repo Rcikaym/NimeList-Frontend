@@ -1,9 +1,10 @@
 import { jwtDecode } from "jwt-decode";
-import { getAccessToken } from "./auth"
+import { getAccessToken } from "./auth";
 
 export const checkAdminRole = () => {
-    const token: any = getAccessToken();
-    const decodedToken: { role: string } = jwtDecode(token);
+  const token: any = getAccessToken();
 
-    return decodedToken.role === "admin";
-}
+  const decodedToken: { role: string } = jwtDecode(token);
+
+  return decodedToken.role === "admin";
+};

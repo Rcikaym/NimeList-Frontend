@@ -63,7 +63,6 @@ const PremiumList: React.FC = () => {
     setModalVisible(true);
   };
 
-  
   const handleCancel = () => {
     setModalVisible(false);
     form.resetFields();
@@ -104,13 +103,8 @@ const PremiumList: React.FC = () => {
     }
   };
 
-  const setDataEdit = async (id: string) => {
-    setId(id);
-    const response = await apiUrl.get(
-      `http://localhost:4321/premium/get/${id}`
-    );
-    const data = await response.data;
-    form.setFieldsValue(data);
+  const setDataEdit = async (values: DataType) => {
+    form.setFieldsValue(values);
   };
 
   const handleEditPremium = async (values: DataType) => {
@@ -242,7 +236,7 @@ const PremiumList: React.FC = () => {
           <a
             onClick={() => {
               showModal("edit");
-              setDataEdit(record.id);
+              setDataEdit(record);
             }}
           >
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
@@ -276,13 +270,11 @@ const PremiumList: React.FC = () => {
           </div>
         </div>
         <div className="items-center flex gap-3">
-          <Link href="/dashboard">
-            <div className="hover:text-emerald-700">
-              <AppstoreFilled style={{ fontSize: 18 }} />
-            </div>
+          <Link href="/dashboard" className="hover:text-emerald-700">
+            <AppstoreFilled style={{ fontSize: 18 }} />
           </Link>
           <span> / </span>
-          <h2 className="text-lg mt-2"> Manage Premium </h2>
+          <span className="text-lg font-semibold"> Manage Premium </span>
         </div>
       </div>
       <div className="mb-3">

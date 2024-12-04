@@ -56,7 +56,6 @@ const PaymentModal = ({ show, handleClose }: any) => {
 
     try {
       const id_premium = selectedMembership;
-      console.log(id_premium);
 
       const response = await apiUrl.post(`/transactions/create`, {
         id_premium: id_premium,

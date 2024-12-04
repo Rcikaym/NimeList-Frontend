@@ -8,7 +8,6 @@ import {
   getAccessToken,
 } from "./auth";
 
-// Definisikan tipe untuk props
 interface WithAdminProps {
   children: React.ReactNode;
 }
