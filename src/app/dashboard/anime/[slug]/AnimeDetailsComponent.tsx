@@ -10,7 +10,7 @@ import {
   AiOutlineTags,
   AiOutlineTool,
 } from "react-icons/ai";
-import { AnimeType, PhotosType, ReviewType } from "./types";
+import { AnimeType, ReviewType } from "./types";
 import renderDateTime from "@/components/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
@@ -135,12 +135,12 @@ const AnimeMetadata = memo(
 );
 
 const PhotoGallery = memo(
-  ({ photos, title }: { photos: PhotosType[]; title: string }) => (
+  ({ photos, title }: { photos: string[]; title: string }) => (
     <div className="flex gap-4 grid-cols-5">
       {photos?.map((photo, index) => (
         <div key={index}>
           <MemoizedImage
-            src={`${api}/${photo.file_path.replace(/\\/g, "/")}`}
+            src={`${api}/${photo}`}
             alt={`${title} - Photo ${index + 1}`}
             className="rounded-sm shadow-xl hover:shadow-lg hover:shadow-gray-400 transition-shadow"
             height={160}
@@ -291,7 +291,7 @@ export default function AnimeDetails({ slug }: { slug: string }) {
       <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50] text-white">
         Anime Details
       </div>
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="bg-white shadow-lg rounded-lg">
         <div className="md:flex items-center mt-3">
           {/* Left column for image */}
           <div className="justify-center p-2 ml-3 flex gap-5">
@@ -299,7 +299,7 @@ export default function AnimeDetails({ slug }: { slug: string }) {
               <MemoizedImage
                 alt={title}
                 className="rounded-md shadow-md hover:shadow-lg hover:shadow-gray-400 transition-shadow"
-                src={`${api}/${photo_cover.replace(/\\/g, "/")}`}
+                src={`${api}/${photo_cover}`}
                 height={330}
                 width={200}
               />
@@ -339,7 +339,7 @@ export default function AnimeDetails({ slug }: { slug: string }) {
         {/* Synopsis */}
         <div className="p-6">
           <h2 className="text-2xl font-semibold text-gray-800">Synopsis</h2>
-          <div className="text-gray-600">
+          <div className="text-gray-600 w-full">
             <DisplayLongText text={synopsis} />
           </div>
         </div>
@@ -361,11 +361,11 @@ export default function AnimeDetails({ slug }: { slug: string }) {
           {reviews.total === 0 ? (
             <p>No reviews yet.</p>
           ) : (
-            <ul>
+            <ul className="gap-3 flex flex-col">
               {reviews.data.map((review) => (
                 <li
                   key={review.id}
-                  className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
+                  className="border rounded-lg border-emerald-500 p-5 mt-3 flex items-center justify-between"
                 >
                   <div>
                     <div className="flex items-center gap-2">
