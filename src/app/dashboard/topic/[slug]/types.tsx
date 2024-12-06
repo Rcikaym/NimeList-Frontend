@@ -10,11 +10,7 @@ export interface TopicType {
   totalComments: number;
   user: string;
   anime: string;
-  photos: [
-    {
-      file_path: string;
-    }
-  ];
+  photos: string[];
 }
 
 export interface CommentType {

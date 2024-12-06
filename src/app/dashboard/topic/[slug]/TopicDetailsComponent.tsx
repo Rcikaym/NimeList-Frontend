@@ -102,7 +102,7 @@ const PhotoGallery = memo(
       {photos?.map((photo, index) => (
         <div key={index}>
           <MemoizedImage
-            src={`${api}/${photo.file_path.replace(/\\/g, "/")}`}
+            src={`${api}/${photo}`}
             alt={`${title} - Photo ${index + 1}`}
             className="rounded-sm shadow-md hover:shadow-xl transition-shadow"
             height={160}

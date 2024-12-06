@@ -13,7 +13,7 @@ const UserDetailComponent = ({ data }: { data: UserDetail }) => {
             src={
               data.photo_profile === null
                 ? "/images/logo-admin.jpeg"
-                : `${api}/${data.photo_profile.replace(/\\/g, "/")}`
+                : `${api}/${data.photo_profile}`
             }
             alt="Profile"
             className="rounded-full border-2 border-gray-300 m-0"
