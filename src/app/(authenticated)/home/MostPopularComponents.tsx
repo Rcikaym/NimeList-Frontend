@@ -118,7 +118,6 @@ export default function MostPopular() {
       },
     ],
   };
-  
 
   return (
     <>
@@ -130,24 +129,17 @@ export default function MostPopular() {
               className="h-full w-full justify-items-center pb-6"
             >
               <div className="w-[13.75rem]">
-                <Link
-                  href={`/anime/${anime.slug}`}
-                >
+                <Link href={`/anime/${anime.slug}`}>
                   <Image
                     className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
-                    src={`http://localhost:4321/${anime.photo_cover.replace(
-                      /\\/g,
-                      "/"
-                    )}`}
+                    src={`${api}/images/${anime.photo_cover}`}
                     alt={anime.title}
                     width={220}
                     height={300}
                   />
                 </Link>
                 <div className="mt-3 mb-3 mr-3">
-                  <Link
-                    href={`/anime/${anime.slug}`}
-                  >
+                  <Link href={`/anime/${anime.slug}`}>
                     <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white ">
                       {anime.title}
                     </h5>

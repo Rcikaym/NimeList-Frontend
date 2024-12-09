@@ -11,7 +11,7 @@ import {
   AiOutlineTool,
 } from "react-icons/ai";
 import { AnimeType, ReviewType } from "./types";
-import renderDateTime from "@/components/FormatDateTime";
+import renderDateTime from "@/utils/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
 import Link from "next/link";
@@ -139,13 +139,12 @@ const PhotoGallery = memo(
     <div className="flex gap-4 grid-cols-5">
       {photos?.map((photo, index) => (
         <div key={index}>
-          <MemoizedImage
-            src={`${api}/${photo}`}
+          <Image
+            src={`${api}/images/${photo}`}
             alt={`${title} - Photo ${index + 1}`}
             className="rounded-sm shadow-xl hover:shadow-lg hover:shadow-gray-400 transition-shadow"
             height={160}
             width={260}
-            loading="lazy"
           />
         </div>
       ))}
@@ -296,10 +295,10 @@ export default function AnimeDetails({ slug }: { slug: string }) {
           {/* Left column for image */}
           <div className="justify-center p-2 ml-3 flex gap-5">
             {photo_cover && (
-              <MemoizedImage
+              <Image
                 alt={title}
                 className="rounded-md shadow-md hover:shadow-lg hover:shadow-gray-400 transition-shadow"
-                src={`${api}/${photo_cover}`}
+                src={`${api}/images/${photo_cover}`}
                 height={330}
                 width={200}
               />
@@ -379,8 +378,8 @@ export default function AnimeDetails({ slug }: { slug: string }) {
                       </div>
                       <p className="text-[0.75rem] text-gray-500">
                         {review.created_at === review.updated_at
-                          ? timeToDay(review.created_at)
-                          : `${timeToDay(review.created_at)} (diedit)`}
+                          ? renderDateTime(review.created_at)
+                          : `${renderDateTime(review.created_at)} (diedit)`}
                       </p>
                     </div>
                     <p>{review.review}</p>

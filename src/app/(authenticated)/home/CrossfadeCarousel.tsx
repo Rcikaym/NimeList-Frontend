@@ -111,7 +111,7 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
           {animeData.map((data, index) => (
             <img
               key={index}
-              src={`${api}/${data.photo_cover.replace(/\\/g, "/")}`}
+              src={`${api}/images/${currentAnime.photo_cover}`}
               alt={`Carousel item ${index}`}
               className={`absolute w-full h-full object-cover transition-opacity duration-1000 ease-in-out transform ${
                 index === currentIndex

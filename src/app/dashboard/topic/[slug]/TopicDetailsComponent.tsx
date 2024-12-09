@@ -1,13 +1,8 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, memo } from "react";
-import {
-  ExclamationCircleOutlined,
-  LeftCircleOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
-import { Button, Form, Input, message, Modal } from "antd";
-import axios from "axios";
+import React, { useEffect, useState, memo } from "react";
+import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Form, Input, message, Modal } from "antd";
 import {
   AiOutlineClockCircle,
   AiOutlineComment,
@@ -17,10 +12,9 @@ import {
   AiOutlineTool,
   AiOutlineUser,
 } from "react-icons/ai";
-
 // Types moved to a separate file to reduce bundle size
-import renderDateTime from "@/components/FormatDateTime";
-import { CommentType, TopicType } from "./types";
+import renderDateTime from "@/utils/FormatDateTime";
+import { TopicType } from "./types";
 import Image from "next/image";
 import TopicBody from "./TopicBodyComponent";
 import apiUrl from "@/hooks/api";
@@ -32,7 +26,6 @@ import {
   BiTrashAlt,
 } from "react-icons/bi";
 import Link from "next/link";
-import timeToDay from "@/utils/TimeToDay";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -102,7 +95,7 @@ const PhotoGallery = memo(
       {photos?.map((photo, index) => (
         <div key={index}>
           <MemoizedImage
-            src={`${api}/${photo}`}
+            src={`${api}/images/${photo}`}
             alt={`${title} - Photo ${index + 1}`}
             className="rounded-sm shadow-md hover:shadow-xl transition-shadow"
             height={160}
@@ -271,7 +264,7 @@ export default function TopicDetails({ slug }: { slug: string }) {
               {topic.comments.map((comment) => (
                 <li
                   key={comment.id}
-                  className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
+                  className="border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
                 >
                   <div>
                     <div className="flex gap-2 items-center">
@@ -281,8 +274,8 @@ export default function TopicDetails({ slug }: { slug: string }) {
                       </div>
                       <p className="text-[0.75rem] text-gray-500">
                         {comment.created_at === comment.updated_at
-                          ? timeToDay(comment.created_at)
-                          : `${timeToDay(comment.created_at)} (diedit)`}
+                          ? renderDateTime(comment.created_at)
+                          : `${renderDateTime(comment.created_at)} (diedit)`}
                       </p>
                     </div>
                     <p>{comment.comment}</p>

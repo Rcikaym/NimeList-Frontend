@@ -7,7 +7,7 @@ import { AiOutlineShoppingCart } from "react-icons/ai";
 import { AppstoreFilled, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
+import renderDateTime from "@/utils/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import { DataType, TransactionDetails } from "./types";
@@ -30,7 +30,9 @@ const TransactionList = () => {
   const [detailTransaction, setDetailTransaction] = useState(
     {} as TransactionDetails
   );
-  const [filterString, setFilterString] = useState("status=&premium=&platform=");
+  const [filterString, setFilterString] = useState(
+    "status=&premium=&platform="
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
 

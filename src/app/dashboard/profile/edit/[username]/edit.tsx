@@ -4,7 +4,6 @@ import apiUrl from "@/hooks/api";
 import {
   CameraOutlined,
   ExclamationCircleFilled,
-  UploadOutlined,
 } from "@ant-design/icons";
 import { Button, Form, Input, message, Modal, Upload, UploadProps } from "antd";
 import Image from "next/image";
@@ -163,7 +162,7 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
               photoUrl && (
                 <div className="mt-4 relative w-44 h-44">
                   <Image
-                    src={`${api}/${photoUrl.replace(/\\/g, "/")}`}
+                    src={`${api}/images/${photoUrl}`}
                     alt="Profile"
                     className="rounded-full object-cover"
                     layout="fill"
@@ -210,7 +209,12 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
           <Input placeholder="Input name" max={30} showCount />
         </Form.Item>
         <Form.Item name="bio" label="Bio">
-          <Input.TextArea autoSize placeholder="Input bio" maxLength={250} showCount />
+          <Input.TextArea
+            autoSize
+            placeholder="Input bio"
+            maxLength={250}
+            showCount
+          />
         </Form.Item>
         <div className="flex justify-between">
           <Button
