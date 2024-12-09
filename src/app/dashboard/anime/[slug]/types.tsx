@@ -22,7 +22,7 @@ export interface AnimeType {
   totalFav: number;
 }
 
-interface ReviewDataType {
+export interface ReviewDataType {
   id: string;
   username: string;
   name: string;

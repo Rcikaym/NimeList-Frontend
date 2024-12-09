@@ -10,7 +10,7 @@ import {
   AiOutlineTags,
   AiOutlineTool,
 } from "react-icons/ai";
-import { AnimeType, ReviewType } from "./types";
+import { AnimeType, ReviewDataType, ReviewType } from "./types";
 import renderDateTime from "@/utils/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
@@ -25,7 +25,7 @@ import {
 import { Form, Input, message, Modal, Rate } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import apiUrl from "@/hooks/api";
-import timeToDay from "@/utils/TimeToDay";
+import { Virtuoso } from "react-virtuoso";
 
 // Memoized components
 const MemoizedImage = memo(Image);
@@ -360,48 +360,65 @@ export default function AnimeDetails({ slug }: { slug: string }) {
           {reviews.total === 0 ? (
             <p>No reviews yet.</p>
           ) : (
-            <ul className="gap-3 flex flex-col">
-              {reviews.data.map((review) => (
-                <li
-                  key={review.id}
-                  className="border rounded-lg border-emerald-500 p-5 mt-3 flex items-center justify-between"
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
-                        <span className="text-white">{review.name}</span>
-                        {review.status_premium === "active" ? (
-                          <BiCrown size={15} className="text-yellow-300" />
-                        ) : (
-                          <BiGlobe size={15} className="text-[#05E5CB]" />
-                        )}
+            <Virtuoso
+              style={{
+                height: "600px",
+                scrollbarWidth: "none",
+              }}
+              data={reviews.data}
+              totalCount={reviews.total}
+              itemContent={(index, review: ReviewDataType) => {
+                return (
+                  <div
+                    key={index}
+                    className="border rounded-lg border-emerald-500 p-5 my-3 flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md">
+                          <span className="text-white">{review.name}</span>
+                          {review.status_premium === "active" ? (
+                            <BiCrown size={15} className="text-yellow-300" />
+                          ) : (
+                            <BiGlobe size={15} className="text-[#05E5CB]" />
+                          )}
+                        </div>
+                        <p className="text-[0.75rem] text-gray-500">
+                          {review.created_at === review.updated_at
+                            ? renderDateTime(review.created_at)
+                            : `${renderDateTime(review.created_at)} (diedit)`}
+                        </p>
                       </div>
-                      <p className="text-[0.75rem] text-gray-500">
-                        {review.created_at === review.updated_at
-                          ? renderDateTime(review.created_at)
-                          : `${renderDateTime(review.created_at)} (diedit)`}
-                      </p>
+                      <div className="my-2">
+                        <DisplayLongText text={review.review} />
+                      </div>
+                      <Rate
+                        count={10}
+                        disabled
+                        allowHalf
+                        defaultValue={0}
+                        value={review.rating}
+                        className="text-small"
+                      />
                     </div>
-                    <p>{review.review}</p>
-                    <p>Rating: {review.rating}/10</p>
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className="w-fit cursor-pointer"
+                        onClick={() => setModalAndDataForUpdate(review.id)}
+                      >
+                        <BiEdit size={23} className="text-emerald-700" />
+                      </div>
+                      <div
+                        className="w-fit cursor-pointer"
+                        onClick={() => showDeleteConfirm(review.id)}
+                      >
+                        <BiTrashAlt size={23} className="text-emerald-700" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <div
-                      className="w-fit cursor-pointer"
-                      onClick={() => setModalAndDataForUpdate(review.id)}
-                    >
-                      <BiEdit size={23} className="text-emerald-700" />
-                    </div>
-                    <div
-                      className="w-fit cursor-pointer"
-                      onClick={() => showDeleteConfirm(review.id)}
-                    >
-                      <BiTrashAlt size={23} className="text-emerald-700" />
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                );
+              }}
+            ></Virtuoso>
           )}
         </div>
       </div>
