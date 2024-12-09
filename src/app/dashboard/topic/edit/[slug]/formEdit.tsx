@@ -71,11 +71,11 @@ export default function TopicEdit({ slug }: { slug: string }) {
 
         // Set data foto ke setter dari fileList
         setFileList(
-          topicData.photos.map((photo: PhotosType, index: number) => ({
+          topicData.photos.map((photo: string, index: number) => ({
             uid: index + 1, // Unique identifier
-            name: `${photo.file_path}`, // Extract filename from file_path
+            name: photo, // Extract filename from file_path
             status: "done",
-            url: `${api}/${photo.file_path.replace(/\\/g, "/")}`,
+            url: `${api}/images/${photo}`,
           }))
         );
 
@@ -125,7 +125,7 @@ export default function TopicEdit({ slug }: { slug: string }) {
     });
 
     // Append new and existing files
-    new_photos.forEach((file: any) => formData.append("photos_topic", file));
+    new_photos.forEach((file: any) => formData.append("new_photos", file));
     if (existing_photos.length === 0) {
       formData.append("existing_photos", "");
     } else {
