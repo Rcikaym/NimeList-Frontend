@@ -87,6 +87,7 @@ const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [genres, setGenres] = useState<DataGenre[]>([]);
   const [username, setUsername] = useState("");
+  const [isLogin, setIsLogin] = useState(false);
   const [name, setName] = useState("Guest");
   const [description, setDescription] = useState("guest@gmail.com");
   const router = useRouter();
@@ -102,6 +103,7 @@ const AuthNavbar = () => {
       setUsername(decodedToken.username);
       setName(decodedToken.name);
       setDescription(decodedToken.email);
+      setIsLogin(true);
     }
 
     const fetchGenres = async () => {
