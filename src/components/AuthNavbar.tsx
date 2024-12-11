@@ -91,7 +91,6 @@ const AuthNavbar = () => {
   const [name, setName] = useState("Guest");
   const [description, setDescription] = useState("guest@gmail.com");
   const router = useRouter();
-  const [isLogin, setIsLogin] = useState(false);
   const token = getAccessToken();
 
   // Ensure dynamic content only renders on the client
