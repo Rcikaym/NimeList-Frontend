@@ -1,3 +1,5 @@
+import apiUrl from "@/hooks/api";
+import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { message } from "antd";
 
@@ -44,17 +46,9 @@ export const refreshAccessToken = async () => {
   }
 };
 
-export const logout = async () => {
-  try {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("access_token_expiry");
+export const removeAccessToken = async () => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("access_token_expiry");
 
-    message.success("Logout successfully!");
-    setTimeout(() => {
-      window.location.href = "/home";
-      window.location.reload();
-    }, 200);
-  } catch (error) {
-    message.error("Failed to logout");
-  }
+  return true;
 };
