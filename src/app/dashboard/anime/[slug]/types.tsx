@@ -5,6 +5,7 @@ export interface GenreType {
 
 export interface AnimeType {
   anime: {
+    id: string;
     title: string;
     synopsis: string;
     release_date: string;

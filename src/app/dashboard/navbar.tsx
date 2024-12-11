@@ -82,7 +82,7 @@ const Navbar: React.FC = () => {
       <Dropdown menu={{ items }} placement="bottomRight">
         <div className="flex items-center mr-3 w-8 h-8">
           <Image
-            src={photoUrl ? `${api}/images/${photoUrl}` : "/images/logo-admin.jpeg"}
+            src={photoUrl ? `${api}/${photoUrl}` : "/images/logo-admin.jpeg"}
             alt="User Profile"
             width={32}
             height={32}

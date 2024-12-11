@@ -162,7 +162,7 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
               photoUrl && (
                 <div className="mt-4 relative w-44 h-44">
                   <Image
-                    src={`${api}/images/${photoUrl}`}
+                    src={`${api}/${photoUrl}`}
                     alt="Profile"
                     className="rounded-full object-cover"
                     layout="fill"

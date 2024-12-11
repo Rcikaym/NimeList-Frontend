@@ -51,7 +51,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
             uid: index + 1, // Unique identifier
             name: `${photo}`, // Extract filename from file_path
             status: "done",
-            url: `${api}/images/${photo}`,
+            url: `${api}/${photo}`,
           }))
         );
 
