@@ -12,7 +12,7 @@ import {
 } from "react-icons/ai";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
-import renderDateTime from "@/components/FormatDateTime";
+import renderDateTime from "@/utils/FormatDateTime";
 import { CustomTable } from "@/components/CustomTable";
 import { TablePaginationConfig } from "antd/es/table";
 import useDebounce from "@/utils/useDebounce";

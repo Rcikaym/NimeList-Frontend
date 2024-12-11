@@ -27,7 +27,6 @@ export default function AnimeEdit({ slug }: { slug: string }) {
   const [genres, setGenres] = useState<GenreType[]>([]);
   const [type, setType] = useState<string | null>(null);
   const [episodes, setEpisodes] = useState<number | null>(null);
-  const [anime, setAnime] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [fileList, setFileList] = useState([]);
   const [fileCover, setFileCover] = useState([]);
@@ -48,11 +47,11 @@ export default function AnimeEdit({ slug }: { slug: string }) {
 
         // Set data foto ke setter dari fileList
         setFileList(
-          animeData.photos.map((photo: PhotosType) => ({
-            uid: photo.id, // Unique identifier
-            name: `${photo.file_path}`, // Extract filename from file_path
+          animeData.photos.map((photo: string, index: number) => ({
+            uid: index + 1, // Unique identifier
+            name: `${photo}`, // Extract filename from file_path
             status: "done",
-            url: `${api}/${photo.file_path.replace(/\\/g, "/")}`,
+            url: `${api}/${photo}`,
           }))
         );
 
@@ -68,7 +67,6 @@ export default function AnimeEdit({ slug }: { slug: string }) {
           episodes: animeData.episodes,
         });
 
-        setAnime(animeData.title);
         setAnimeId(animeData.id);
         setError(null);
       } catch (error) {
@@ -191,7 +189,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
       .then((values: DataAnime) => {
         confirm({
           centered: true,
-          title: "Do you want to update an " + anime + " ?",
+          title: "Do you want to update this anime?",
           icon: <ExclamationCircleFilled />,
           onOk() {
             setLoading(true); // Set status loading pada tombol OK

@@ -63,7 +63,7 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
                 src={
                   profile.photo_profile === null
                     ? "/images/logo-admin.jpeg"
-                    : `${api}/${profile.photo_profile.replace(/\\/g, "/")}`
+                    : `${api}/${profile.photo_profile}`
                 }
                 alt="Profile"
                 className="rounded-full border-2 border-gray-300 m-0"

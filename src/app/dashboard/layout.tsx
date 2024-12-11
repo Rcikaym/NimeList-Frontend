@@ -13,9 +13,9 @@ const { Content } = Layout;
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const [isInitialized, setIsInitialized] = useState(false);
-  const token = getAccessToken();
 
   useEffect(() => {
+    const token = getAccessToken();
     if (!token) {
       router.push("/login");
       setIsInitialized(false);
