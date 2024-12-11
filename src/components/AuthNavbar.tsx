@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Inter } from "next/font/google";
 import Image from "next/image";
 import React from "react";
-import { BiChevronDown, BiLogOut } from "react-icons/bi";
+import { BiChevronDown, BiLogIn, BiLogOut } from "react-icons/bi";
 import {
   FaCrown,
   FaRegBookmark,
@@ -31,76 +31,13 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getAccessToken, removeAccessToken } from "@/utils/auth";
+import { getAccessToken, logout } from "@/utils/auth";
 import { message } from "antd";
 import { jwtDecode } from "jwt-decode";
 
 const inter = Inter({ subsets: ["latin"] });
 const url =
   "https://st3.depositphotos.com/15648834/17930/v/450/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg";
-
-const genres = [
-  {
-    label: "Action",
-    key: 1,
-  },
-  {
-    label: "Adventure",
-    key: 2,
-  },
-  {
-    label: "Comedy",
-    key: 3,
-  },
-  {
-    label: "Drama",
-    key: 4,
-  },
-  {
-    label: "Fantasy",
-    key: 5,
-  },
-  {
-    label: "Horror",
-    key: 6,
-  },
-  {
-    label: "Isekai",
-    key: 7,
-  },
-  {
-    label: "Mecha",
-    key: 8,
-  },
-  {
-    label: "Mystery",
-    key: 9,
-  },
-  {
-    label: "Romance",
-    key: 10,
-  },
-  {
-    label: "Sci-fi",
-    key: 11,
-  },
-  {
-    label: "Shounen",
-    key: 12,
-  },
-  {
-    label: "Slice of Life",
-    key: 13,
-  },
-  {
-    label: "Supernatural",
-    key: 14,
-  },
-  {
-    label: "Thriller",
-    key: 15,
-  },
-];
 const menuItems = [
   {
     key: "0",
@@ -140,43 +77,46 @@ const menuItems = [
     ),
   },
 ];
+
+interface DataGenre {
+  id: string;
+  name: string;
+}
+
 const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [genres, setGenres] = useState<DataGenre[]>([]);
   const [username, setUsername] = useState("");
   const [isLogin, setIsLogin] = useState(false);
   const [name, setName] = useState("Guest");
   const [description, setDescription] = useState("guest@gmail.com");
   const router = useRouter();
+  const token = getAccessToken();
 
   // Ensure dynamic content only renders on the client
   useEffect(() => {
-    const token = getAccessToken();
-
     if (token) {
       const decodedToken: { username: string; email: string; name: string } =
-      jwtDecode(token);
+        jwtDecode(token);
+      setIsLogin(true);
       setUsername(decodedToken.username);
       setName(decodedToken.name);
       setDescription(decodedToken.email);
       setIsLogin(true);
     }
+
+    const fetchGenres = async () => {
+      try {
+        const response = await fetch("http://localhost:4321/genre/get-all");
+        const data = await response.json();
+        setGenres(data);
+      } catch (error) {
+        message.error("Failed to fetch genres");
+      }
+    };
+
+    fetchGenres();
   }, []);
-
-  const handleLogout = async () => {
-    const res = await removeAccessToken();
-    console.log(res);
-
-    if (!res) {
-      message.error("Failed to logout");
-      return;
-    }
-
-    message.success("Logout successfully!");
-    router.push("/home");
-    setTimeout(() => {
-      window.location.reload();
-    }, 100); // Refresh after 100 milliseconds
-  };
 
   return (
     <>
@@ -232,12 +172,10 @@ const AuthNavbar = () => {
                 {/* Map through the items array and create DropdownItem for each */}
                 {genres.map((item) => (
                   <DropdownItem
-                    key={`${item.label}-${item.key}`}
+                    key={`${item.name}-${item.id}`}
                     className="opacity-100"
                   >
-                    <Link href={`/anime/genre/${item.label}`}>
-                      {item.label}
-                    </Link>
+                    <Link href={`/anime/genre/${item.name}`}>{item.name}</Link>
                   </DropdownItem>
                 ))}
               </DropdownMenu>
@@ -287,65 +225,61 @@ const AuthNavbar = () => {
                   ],
                 }}
               >
-                {isLogin ? (
-                  <>
-                    <DropdownItem
-                      key="profile1"
-                      isReadOnly
-                      className="h-14 gap-2 opacity-100 "
+                <DropdownItem
+                  key="profile1"
+                  isReadOnly
+                  className="h-14 gap-2 opacity-100 "
+                >
+                  <User
+                    name={name}
+                    description={description}
+                    classNames={{
+                      name: "text-white",
+                      description: "text-white opacity-50",
+                    }}
+                    avatarProps={{
+                      size: "sm",
+                      src: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
+                    }}
+                  />
+                </DropdownItem>
+                <DropdownItem
+                  key="profile2"
+                  className="dark:hover:text-white"
+                  href="/profile"
+                >
+                  My Profile
+                  <Divider orientation="horizontal" className="mt-2" />
+                </DropdownItem>
+                <DropdownItem
+                  key="my_favorites"
+                  className="dark:hover:text-white "
+                  href="/profile/favorites"
+                >
+                  My Favorites
+                  <Divider orientation="horizontal" className="mt-2" />
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
+                >
+                  {isLogin ? (
+                    <p
+                      className=" flex items-center font-semibold"
+                      onClick={logout}
                     >
-                      <User
-                        name={name}
-                        description={description}
-                        classNames={{
-                          name: "text-white",
-                          description: "text-white opacity-50",
-                        }}
-                        avatarProps={{
-                          size: "sm",
-                          src: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
-                        }}
-                      />
-                    </DropdownItem>
-                    <DropdownItem
-                      key="profile2"
-                      className="dark:hover:text-white"
-                      href="/profile"
-                    >
-                      My Profile
-                      <Divider orientation="horizontal" className="mt-2" />
-                    </DropdownItem>
-                    <DropdownItem
-                      key="my_favorites"
-                      className="dark:hover:text-white "
-                      href="/profile/favorites"
-                    >
-                      My Favorites
-                      <Divider orientation="horizontal" className="mt-2" />
-                    </DropdownItem>
-                    <DropdownItem
-                      key="logout"
-                      onClick={handleLogout}
-                      className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
-                    >
+                      <BiLogOut className="w-5 h-5 mr-2" />
+                      Log Out
+                    </p>
+                  ) : (
+                    <Link href="/login">
                       <p className=" flex items-center font-semibold">
-                        <BiLogOut className="w-5 h-5 mr-2" />
-                        Log Out
+                        <BiLogIn className="w-5 h-5 mr-2" />
+                        Login
                       </p>
-                    </DropdownItem>
-                  </>
-                ) : (
-                  <>
-                    <DropdownItem key="login" href="/login">
-                      Login
-                      <Divider orientation="horizontal" className="mt-2" />
-                    </DropdownItem>
-                    <DropdownItem key="register" href="/register">
-                      Register
-                      <Divider orientation="horizontal" className="mt-2" />
-                    </DropdownItem>
-                  </>
-                )}
+                    </Link>
+                  )}
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -397,8 +331,8 @@ const AuthNavbar = () => {
           >
             <AccordionItem className="text-white" title="Genre">
               {genres.map((item) => (
-                <Link href={`/anime/genre/${item.label}`} key={item.key}>
-                  <p className="opacity-100">{item.label}</p>
+                <Link href={`/anime/genre/${item.name}`} key={item.id}>
+                  <p className="opacity-100">{item.name}</p>
                 </Link>
               ))}
             </AccordionItem>
