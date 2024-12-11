@@ -131,10 +131,7 @@ export default function NewlyArrived() {
                 >
                   <Image
                     className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
-                    src={`http://localhost:4321/${anime.photo_cover.replace(
-                      /\\/g,
-                      "/"
-                    )}`}
+                    src={`${api}/${anime.photo_cover}`}
                     alt={anime.title}
                     width={220}
                     height={300}

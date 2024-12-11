@@ -22,7 +22,7 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
+import renderDateTime from "@/utils/FormatDateTime";
 import PageTitle from "@/components/TitlePage";
 import useDebounce from "@/utils/useDebounce";
 import Image from "next/image";
@@ -315,9 +315,7 @@ const AnimePhotos: React.FC = () => {
           <h2 className="text-lg mt-2"> Manage Anime </h2>
           <span> / </span>
           <Link href="/dashboard/anime/photo">
-            <h2 className="text-lg hover:text-emerald-700 mt-2">
-              Anime Photo
-            </h2>
+            <h2 className="text-lg hover:text-emerald-700 mt-2">Anime Photo</h2>
           </Link>
         </div>
       </div>

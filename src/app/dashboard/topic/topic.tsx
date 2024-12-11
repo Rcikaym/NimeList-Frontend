@@ -16,7 +16,7 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import renderDateTime from "@/components/FormatDateTime";
+import renderDateTime from "@/utils/FormatDateTime";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import useDebounce from "@/utils/useDebounce";
 import apiUrl from "@/hooks/api";

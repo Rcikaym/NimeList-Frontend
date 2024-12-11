@@ -17,7 +17,7 @@ import {
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable } from "@/components/CustomTable";
-import renderDateTime from "@/components/FormatDateTime";
+import renderDateTime from "@/utils/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import useDebounce from "@/utils/useDebounce";
 import apiUrl from "@/hooks/api";

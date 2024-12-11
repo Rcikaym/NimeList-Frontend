@@ -178,8 +178,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
           {/* <div className="flex flex-col"> */}
           <div className="pt-3 w-full max-w-xs h-auto">
             <Image
-              //   src={anime.photo_cover}
-              src={`${api}/${animeData.anime.photo_cover.replace(/\\/g, "/")}`}
+              src={`${api}/${animeData.anime.photo_cover}`}
               width={300} // 2:3 aspect ratio (300x450)
               height={450}
               className="object-cover w-full"

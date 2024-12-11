@@ -14,6 +14,7 @@ const Navbar: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
 
   useEffect(() => {
@@ -36,23 +37,6 @@ const Navbar: React.FC = () => {
       }
     }
   }, []);
-
-  // const handleLogout = async () => {
-  //   const response = await removeAccessToken();
-
-  //   if (!response) {
-  //     message.error("Failed to logout");
-  //     setTimeout(() => {
-  //       window.location.reload();
-  //     });
-  //   }
-
-  //   message.success("Logout successfully!");
-  //   router.push("/home");
-  //   setTimeout(() => {
-  //     window.location.reload();
-  //   });
-  // };
 
   const getPhotoUrl = async (id: string) => {
     const get = await apiUrl.get(`/photo-profile/get`);
@@ -98,11 +82,7 @@ const Navbar: React.FC = () => {
       <Dropdown menu={{ items }} placement="bottomRight">
         <div className="flex items-center mr-3 w-8 h-8">
           <Image
-            src={
-              photoUrl
-                ? `http://localhost:4321/${photoUrl.replace(/\\/g, "/")}`
-                : "/images/logo-admin.jpeg"
-            }
+            src={photoUrl ? `${api}/${photoUrl}` : "/images/logo-admin.jpeg"}
             alt="User Profile"
             width={32}
             height={32}

@@ -87,22 +87,30 @@ const AuthNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [genres, setGenres] = useState<DataGenre[]>([]);
   const [username, setUsername] = useState("");
-  const [isLogin, setIsLogin] = useState(false);
   const [name, setName] = useState("Guest");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [description, setDescription] = useState("guest@gmail.com");
   const router = useRouter();
-  const token = getAccessToken();
+  const [isLogin, setIsLogin] = useState(false);
 
   // Ensure dynamic content only renders on the client
   useEffect(() => {
+    const token = getAccessToken();
     if (token) {
-      const decodedToken: { username: string; email: string; name: string } =
-        jwtDecode(token);
+      const decodedToken: {
+        username: string;
+        email: string;
+        name: string;
+        role: string;
+      } = jwtDecode(token);
+
+      if (decodedToken.role === "admin") {
+        setIsAdmin(true);
+      }
       setIsLogin(true);
       setUsername(decodedToken.username);
       setName(decodedToken.name);
       setDescription(decodedToken.email);
-      setIsLogin(true);
     }
 
     const fetchGenres = async () => {
@@ -259,6 +267,22 @@ const AuthNavbar = () => {
                   My Favorites
                   <Divider orientation="horizontal" className="mt-2" />
                 </DropdownItem>
+                <>
+                  {isLogin && isAdmin ? (
+                    <DropdownItem
+                      key="dashboard"
+                      className="dark:hover:text-white"
+                      href="/dashboard"
+                    >
+                      <>
+                        Dashboard
+                        <Divider orientation="horizontal" className="mt-2" />
+                      </>
+                    </DropdownItem>
+                  ) : (
+                    ""
+                  )}
+                </>
                 <DropdownItem
                   key="logout"
                   className="opacity-75 text-white dark hover:opacity-100 hover:text-white"
