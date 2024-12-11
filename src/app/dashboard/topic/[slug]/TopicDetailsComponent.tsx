@@ -3,112 +3,17 @@
 import React, { useEffect, useState, memo } from "react";
 import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Form, Input, message, Modal } from "antd";
-import {
-  AiOutlineClockCircle,
-  AiOutlineComment,
-  AiOutlineDislike,
-  AiOutlineLike,
-  AiOutlineTag,
-  AiOutlineTool,
-  AiOutlineUser,
-} from "react-icons/ai";
-// Types moved to a separate file to reduce bundle size
-import renderDateTime from "@/utils/FormatDateTime";
-import { TopicType } from "./types";
-import Image from "next/image";
-import TopicBody from "./TopicBodyComponent";
+import { CommentDataType, CommentType, TopicType } from "./types";
 import apiUrl from "@/hooks/api";
-import {
-  BiArrowBack,
-  BiCrown,
-  BiEdit,
-  BiHeart,
-  BiTrashAlt,
-} from "react-icons/bi";
+import { BiArrowBack } from "react-icons/bi";
 import Link from "next/link";
-
-// Memoized components
-const MemoizedImage = memo(Image);
-const api = process.env.NEXT_PUBLIC_API_URL;
-
-const AnimeMetadata = memo(({ topic }: { topic: TopicType }) => (
-  <>
-    <div className="flex justify-between">
-      <div className="flex gap-4">
-        <div className="flex">
-          <AiOutlineUser className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1 text-small">
-            <span className="text-gray-800">:</span>
-            <span className="text-gray-800">{topic.user}</span>
-          </div>
-        </div>
-        <div className="flex">
-          <AiOutlineLike className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1 text-small">
-            <h2 className="text-gray-800">:</h2>
-            <span className="text-gray-800">{topic.totalLikes}</span>
-          </div>
-        </div>
-        <div className="flex">
-          <AiOutlineDislike className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1 text-small">
-            <h2 className="text-gray-800">:</h2>
-            <span className="text-gray-800">{topic.totalDislikes}</span>
-          </div>
-        </div>
-        <div className="flex">
-          <AiOutlineTag className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1 text-small">
-            <h2 className="text-gray-800">:</h2>
-            <span className="text-gray-800">{topic.anime}</span>
-          </div>
-        </div>
-        <div className="flex">
-          <AiOutlineComment className="mr-1 text-emerald-700" size={20} />
-          <div className="flex gap-1 text-small">
-            <span className="text-gray-800">:</span>
-            <span className="text-gray-800">{topic.totalComments}</span>
-          </div>
-        </div>
-      </div>
-      <div className="flex gap-2">
-        <div className="flex">
-          <div className="flex gap-1 text-small text-gray-400">
-            <AiOutlineClockCircle size={20} />
-            <span>{renderDateTime(topic.created_at)}</span>
-          </div>
-        </div>
-        <div className="flex">
-          <div className="flex gap-1 text-small text-gray-400">
-            <AiOutlineTool size={20} />
-            <span>{renderDateTime(topic.updated_at)}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </>
-));
-
-const PhotoGallery = memo(
-  ({ photos, title }: { photos: TopicType["photos"]; title: string }) => (
-    <div className="flex gap-4 grid-cols-5">
-      {photos?.map((photo, index) => (
-        <div key={index}>
-          <MemoizedImage
-            src={`${api}/images/${photo}`}
-            alt={`${title} - Photo ${index + 1}`}
-            className="rounded-sm shadow-md hover:shadow-xl transition-shadow"
-            height={160}
-            width={260}
-            loading="lazy"
-          />
-        </div>
-      ))}
-    </div>
-  )
-);
+import CommentList from "./ComemntComponent";
+import { TopicMetadata } from "./TopicMetadata";
+import PhotoGalleryTopic from "./PhotoGalleryComponent";
+import TopicBody from "./TopicBodyComponent";
 
 export default function TopicDetails({ slug }: { slug: string }) {
+  const api = process.env.NEXT_PUBLIC_API_URL;
   const [topic, setTopic] = useState<TopicType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -116,6 +21,10 @@ export default function TopicDetails({ slug }: { slug: string }) {
   const [idComment, setIdComment] = useState<string>("");
   const { confirm } = Modal;
   const [modalEdit, setModalEdit] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [comments, setComments] = useState<CommentDataType[]>([]);
+  const [totalComment, setTotalComment] = useState(0);
 
   const fetchTopic = async () => {
     setLoading(true);
@@ -126,6 +35,7 @@ export default function TopicDetails({ slug }: { slug: string }) {
       }
 
       setTopic(await response.data);
+      fetchComment(page, response.data.id);
       setError(null);
       setLoading(false);
     } catch (error) {
@@ -134,9 +44,39 @@ export default function TopicDetails({ slug }: { slug: string }) {
     }
   };
 
+  const fetchComment = async (page: number, id_topic?: string) => {
+    try {
+      const response = await apiUrl.get(
+        `/comment/get/by-topic/${id_topic}?page=${page}&limit=5`
+      );
+      const res: CommentType = await response.data;
+      console.log(res.data.length);
+
+      if (res.data.length === 0) {
+        setHasMore(false);
+      } else {
+        setTotalComment(res.total);
+        setComments((prev) => (page === 1 ? res.data : [...prev, ...res.data]));
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching review:", error);
+    }
+  };
+
+  useEffect(() => {
+    pohonNatal();
+  }, []);
+
   useEffect(() => {
     fetchTopic();
   }, [slug]);
+
+  useEffect(() => {
+    if (topic?.id && page > 1) {
+      setTimeout(() => fetchComment(page, topic.id), 500);
+    }
+  }, [page, topic?.id]);
 
   const setModalAndDataForUpdate = async (id: string) => {
     setModalEdit(true);
@@ -151,13 +91,25 @@ export default function TopicDetails({ slug }: { slug: string }) {
 
   const handleEditComment = async () => {
     try {
-      const res = await apiUrl.put(
-        `/comment/update/${idComment}`,
-        form.getFieldsValue()
-      );
+      const updatedData = form.getFieldsValue();
+      const res = await apiUrl.put(`/comment/update/${idComment}`, updatedData);
+
+      // Proses berhasil
       message.success(res.data.message);
       form.resetFields();
-      fetchTopic();
+
+      // Perbarui comment di state
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === idComment
+            ? {
+                ...comment,
+                ...updatedData,
+                updated_at: new Date().toISOString(),
+              }
+            : comment
+        )
+      );
     } catch (error) {
       message.error("Failed to update comment");
     }
@@ -184,7 +136,13 @@ export default function TopicDetails({ slug }: { slug: string }) {
     try {
       const res = await apiUrl.delete(`/comment/delete/${id}`);
       message.success(res.data.message);
-      fetchTopic();
+      // Perbarui review di state
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== id)
+      );
+
+      // Perbarui total review di state
+      setTotalComment((prevTotal) => prevTotal - 1);
     } catch (error) {
       message.error("Failed to delete comment");
     }
@@ -240,78 +198,25 @@ export default function TopicDetails({ slug }: { slug: string }) {
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="px-6 mt-3">
           <h1 className="text-3xl font-bold">{title}</h1>
-          <AnimeMetadata topic={topic} />
+          <TopicMetadata topic={topic} />
           <div className="mt-4">
-            <PhotoGallery photos={photos} title={title} />
+            <PhotoGalleryTopic photos={photos} title={title} />
           </div>
         </div>
 
-        {/* Body */}
         <div className="m-6">
           <TopicBody content={body} />
         </div>
 
-        <div className="mt-6 p-6">
-          <div className="flex justify-between">
-            <h2 className="text-xl font-semibold select-none">
-              {topic.totalComments} COMMENTS
-            </h2>
-          </div>
-          {topic.totalComments === 0 ? (
-            <p>No comments yet.</p>
-          ) : (
-            <ul>
-              {topic.comments.map((comment) => (
-                <li
-                  key={comment.id}
-                  className="border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
-                >
-                  <div>
-                    <div className="flex gap-2 items-center">
-                      <div className="font-bold flex bg-[#005b50] p-2 gap-1 w-fit rounded-md mb-2">
-                        <span className="text-white">{comment.name}</span>
-                        <BiCrown size={15} className="text-yellow-300" />
-                      </div>
-                      <p className="text-[0.75rem] text-gray-500">
-                        {comment.created_at === comment.updated_at
-                          ? renderDateTime(comment.created_at)
-                          : `${renderDateTime(comment.created_at)} (diedit)`}
-                      </p>
-                    </div>
-                    <p>{comment.comment}</p>
-                    <div className="flex items-center gap-1 mt-2">
-                      <BiHeart size={20} />
-                      <span>{comment.total_likes}</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <div
-                      className="w-fit cursor-pointer"
-                      onClick={() => setModalAndDataForUpdate(comment.id)}
-                    >
-                      <BiEdit size={23} className="text-emerald-700" />
-                    </div>
-                    <div
-                      className="w-fit cursor-pointer"
-                      onClick={() => showDeleteConfirm(comment.id)}
-                    >
-                      <BiTrashAlt size={23} className="text-emerald-700" />
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
-      <div className="p-2 flex justify-end mt-3 rounded-lg bg-[#005B50]">
-        <Link
-          href="/dashboard/topic"
-          className="bg-white text-black px-2 py-1 rounded-md flex items-center gap-1 hover:text-[#005B50]"
-        >
-          <BiArrowBack style={{ fontSize: "20px" }} />
-        </Link>
+        {/* Comment List */}
+        <CommentList
+          comments={comments}
+          hasMore={hasMore}
+          totalReview={totalComment}
+          onLoadMore={() => setPage((prev) => prev + 1)}
+          onEdit={setModalAndDataForUpdate}
+          onDelete={showDeleteConfirm}
+        />
       </div>
     </>
   );
