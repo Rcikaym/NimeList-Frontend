@@ -9,6 +9,11 @@ export interface PhotosType {
 }
 
 export interface ReviewType {
+  data: ReviewDataType[];
+  total: number;
+}
+
+export interface ReviewDataType {
   id: string;
   username: string;
   name: string;

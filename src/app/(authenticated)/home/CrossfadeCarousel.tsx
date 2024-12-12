@@ -23,6 +23,7 @@ interface CarouselProps {
 const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animeData, setAnimeData] = useState<AnimeType[]>([]);
+  const [Static, setStatic] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [animeFav, setAnimeFav] = useState<string[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -57,9 +58,13 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
 
     return () => clearInterval(timer);
   }, [currentIndex, animeData.length, interval]);
-
+  
   const handleNext = () => {
     setCurrentIndex((currentIndex + 1) % animeData.length);
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((currentIndex - 1 + animeData.length) % animeData.length);
   };
 
   const getAnimeFavorited = async () => {
@@ -95,9 +100,6 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
     }
   };
 
-  const handlePrev = () => {
-    setCurrentIndex((currentIndex - 1 + animeData.length) % animeData.length);
-  };
 
   if (animeData.length === 0) return <div>Loading...</div>;
 
@@ -196,7 +198,11 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
             <HeroVideoDialog
               animationStyle="from-center"
               videoSrc={currentAnime.trailer_link}
-              thumbnailSrc="https://startup-template-sage.vercel.app/hero-light.png"
+              thumbnailSrc={
+                currentAnime.backdrop === null
+                  ? "https://startup-template-sage.vercel.app/hero-light.png"
+                  : `${api}/${currentAnime.backdrop}`
+              }
             />
           </ModalBody>
         </ModalContent>

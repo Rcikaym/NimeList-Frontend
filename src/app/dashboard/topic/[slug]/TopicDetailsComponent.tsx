@@ -65,10 +65,6 @@ export default function TopicDetails({ slug }: { slug: string }) {
   };
 
   useEffect(() => {
-    pohonNatal();
-  }, []);
-
-  useEffect(() => {
     fetchTopic();
   }, [slug]);
 

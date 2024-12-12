@@ -18,14 +18,15 @@ import { Spacer } from "@nextui-org/react";
 import { Chip } from "@nextui-org/chip";
 import { ScrollShadow } from "@nextui-org/react";
 import DisplayLongText from "@/components/DisplayLongText";
-import { AnimeType, GenreType, ReviewType } from "./types";
+import { AnimeType, GenreType, ReviewDataType, ReviewType } from "./types";
 import ReviewModal from "./RateComponent";
 import apiUrl from "@/hooks/api";
 import { getAccessToken } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import timeToDay from "@/utils/TimeToDay";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 type AnimeDetailProps = {
   params: {
@@ -37,12 +38,16 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
   const { slug } = params;
   const [animeData, setAnimeData] = useState<AnimeType | null>(null); // State for anime data
   const [genres, setGenres] = useState<GenreType[]>([]); // State for genres
-  const [reviews, setReviews] = useState<ReviewType[]>([]);
+  const [reviews, setReviews] = useState<ReviewDataType[]>([]);
   const [favorite, setFavorite] = useState<string[]>([]);
   const [isLogin, setIsLogin] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [username, setUsername] = useState("");
+  const [totalReview, setTotalReview] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const token = getAccessToken();
+
   const { confirm } = Modal;
   const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -56,11 +61,33 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
         }
         const data = await response.json();
         setAnimeData(data);
+        fetchReview(page, data.anime.id);
         setGenres(data.genres);
-        setReviews(data.review.data);
       }
     } catch (error) {
       console.error("Error:", error);
+    }
+  };
+
+  const fetchReview = async (page: number, id_anime?: string) => {
+    try {
+      const response = await fetch(
+        `${api}/review/get/by-anime/${id_anime}?page=${page}&limit=5`,
+        {
+          method: "GET",
+        }
+      );
+      const res: ReviewType = await response.json();
+      console.log(res.data.length);
+
+      if (res.data.length === 0) {
+        setHasMore(false);
+      } else {
+        setTotalReview(res.total);
+        setReviews((prev) => (page === 1 ? res.data : [...prev, ...res.data]));
+      }
+    } catch (error) {
+      console.error("Error fetching review:", error);
     }
   };
 
@@ -85,6 +112,12 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
     }
   }, [animeData, isLogin]);
 
+  useEffect(() => {
+    if (animeData?.anime?.id && page > 1) {
+      setTimeout(() => fetchReview(page, animeData.anime.id), 500);
+    }
+  }, [page, animeData?.anime?.id]);
+
   const getUserRating = async () => {
     try {
       const response = await apiUrl.get(
@@ -101,7 +134,14 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
     try {
       const response = await apiUrl.delete(`/review/delete/${id}`);
       message.success(response.data.message);
-      fetchData();
+      // Perbarui review di state
+      setReviews((prevReviews) =>
+        prevReviews.filter((review) => review.id !== id)
+      );
+
+      // Perbarui total review di state
+      setTotalReview((prevTotal) => prevTotal - 1);
+
       getUserRating();
     } catch (error) {
       console.error("Error adding favorite:", error);
@@ -303,63 +343,85 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
         <div className="reviews mt-6">
           <div className="flex justify-between">
             <h2 className="text-xl underline font-bold text-[#05E5CB] select-none">
-              {reviews.length} REVIEWS
+              {totalReview} REVIEWS
             </h2>
           </div>
           {reviews.length === 0 ? (
             <p>No reviews yet.</p>
           ) : (
-            <ul>
-              {reviews
-                .sort((a, b) => {
-                  if (a.username === username) return -1;
-                  if (b.username === username) return 1;
-                  return 0;
-                })
-                .map((review) => (
-                  <li
-                    key={review.id}
-                    className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
-                  >
-                    <div>
-                      <div className="flex">
-                        <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
-                          <span className="text-white">{review.name}</span>
-                          {review.status_premium === "active" ? (
-                            <BiCrown size={15} className="text-yellow-300" />
+            <InfiniteScroll
+              dataLength={reviews.length}
+              next={() => setPage((prevPage) => prevPage + 1)}
+              hasMore={hasMore && reviews.length < totalReview}
+              style={{ height: "fit" }}
+              loader={
+                <div
+                  style={{
+                    padding: "2rem",
+                    display: "flex",
+                    justifyContent: "center",
+                    fontSize: "2rem",
+                  }}
+                >
+                  <LoadingOutlined />
+                </div>
+              }
+            >
+              <div>
+                {reviews
+                  .sort((a, b) => {
+                    if (a.username === username) return -1;
+                    if (b.username === username) return 1;
+                    return 0;
+                  })
+                  .map((review) => (
+                    <div
+                      key={review.id}
+                      className="container border rounded-lg border-emerald-500 p-5 my-5 flex items-center justify-between"
+                    >
+                      <div>
+                        <div className="flex">
+                          <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md mb-2">
+                            <span className="text-white">{review.name}</span>
+                            {review.status_premium === "active" ? (
+                              <BiCrown size={15} className="text-yellow-300" />
+                            ) : (
+                              <BiGlobe size={15} className="text-[#05E5CB]" />
+                            )}
+                          </div>
+                          {review.created_at === review.updated_at ? (
+                            <span className="text-[0.75rem] p-2 text-gray-500">
+                              {timeToDay(review.created_at)}
+                            </span>
                           ) : (
-                            <BiGlobe size={15} className="text-[#05E5CB]" />
+                            <span className="text-[0.75rem] p-2 text-gray-500">
+                              {`${timeToDay(review.created_at)} (diedit)`}
+                            </span>
                           )}
                         </div>
-                        {review.created_at === review.updated_at ? (
-                          <span className="text-[0.75rem] p-2 text-gray-500">
-                            {timeToDay(review.created_at)}
-                          </span>
-                        ) : (
-                          <span className="text-[0.75rem] p-2 text-gray-500">
-                            {`${timeToDay(review.created_at)} (diedit)`}
-                          </span>
-                        )}
+                        <p>{review.review}</p>
+                        <p>Rating: {review.rating}/10</p>
                       </div>
-                      <p>{review.review}</p>
-                      <p>Rating: {review.rating}/10</p>
+                      {isLogin && review.username === username && (
+                        <div className="flex gap-2 items-center">
+                          <div className="w-fit cursor-pointer">
+                            <BiEdit size={23} className="text-emerald-700" />
+                          </div>
+                          <div
+                            className="w-fit cursor-pointer"
+                            onClick={() => showDeleteConfirm(review.id)}
+                          >
+                            <BiTrashAlt
+                              size={23}
+                              className="text-emerald-700"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    {isLogin && review.username === username && (
-                      <div className="flex gap-2 items-center">
-                        <div className="w-fit cursor-pointer">
-                          <BiEdit size={23} className="text-emerald-700" />
-                        </div>
-                        <div
-                          className="w-fit cursor-pointer"
-                          onClick={() => showDeleteConfirm(review.id)}
-                        >
-                          <BiTrashAlt size={23} className="text-emerald-700" />
-                        </div>
-                      </div>
-                    )}
-                  </li>
-                ))}
-            </ul>
+                  ))}
+              </div>
+            </InfiniteScroll>
           )}
         </div>
       </div>
