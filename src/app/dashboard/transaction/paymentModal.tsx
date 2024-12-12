@@ -3,9 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, InputNumber, message, Modal, Select, Spin } from "antd";
 import { Option } from "antd/es/mentions";
-import { getAccessToken } from "@/utils/auth";
 import apiUrl from "@/hooks/api";
-import { on } from "events";
 
 declare global {
   interface Window {
@@ -19,7 +17,6 @@ const PaymentModal = ({ show, handleClose }: any) => {
   const [selectedMembership, setSelectedMembership] = useState<any>("");
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(false);
-  const token = getAccessToken();
 
   const fetchData = async () => {
     try {
@@ -57,7 +54,7 @@ const PaymentModal = ({ show, handleClose }: any) => {
     try {
       const id_premium = selectedMembership;
 
-      const response = await apiUrl.post(`/transactions/create`, {
+      const response = await apiUrl.post(`/transactions/post`, {
         id_premium: id_premium,
       });
       const { token } = await response.data;
