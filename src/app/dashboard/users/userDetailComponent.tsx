@@ -1,9 +1,47 @@
 import Image from "next/image";
 import { UserDetail } from "./user";
-import { BiCrown, BiDiamond, BiGlobe } from "react-icons/bi";
+import {
+  BiAlignLeft,
+  BiBookmarkHeart,
+  BiCart,
+  BiCommentDetail,
+  BiCrown,
+  BiDiamond,
+  BiGlobe,
+  BiHappyAlt,
+} from "react-icons/bi";
 
 const UserDetailComponent = ({ data }: { data: UserDetail }) => {
   const api = process.env.NEXT_PUBLIC_API_URL;
+  const sizeIcon = 25;
+
+  const cardData = [
+    {
+      title: "Reviews Created",
+      value: data.review_created,
+      icon: <BiHappyAlt size={sizeIcon} />,
+    },
+    {
+      title: "Comments Created",
+      value: data.comment_created,
+      icon: <BiCommentDetail size={sizeIcon} />,
+    },
+    {
+      title: "Favorited Anime",
+      value: data.favorite_anime,
+      icon: <BiBookmarkHeart size={sizeIcon} />,
+    },
+    {
+      title: "Transactions Created",
+      value: data.transaction_created,
+      icon: <BiCart size={sizeIcon} />,
+    },
+    {
+      title: "Topics Created",
+      value: data.topic_created,
+      icon: <BiAlignLeft size={sizeIcon} />,
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -43,28 +81,23 @@ const UserDetailComponent = ({ data }: { data: UserDetail }) => {
       </div>
       <div className="mb-5 gap-3">
         <h2 className="text-xl font-semibold">Activities</h2>
-        <div className="flex gap-5">
-          <div className="flex flex-col gap-2">
-            <span>{`Comment Created`}</span>
-            <span>{`Favorite Anime`}</span>
-            <span>{`Review Created`}</span>
-            <span>{`Topic Created`}</span>
-            <span>{`Transaction Created`}</span>
-          </div>
-          <div className="flex flex-col gap-2">
-            <span>{`:`}</span>
-            <span>{`:`}</span>
-            <span>{`:`}</span>
-            <span>{`:`}</span>
-            <span>{`:`}</span>
-          </div>
-          <div className="flex flex-col gap-2 font-semibold">
-            <span>{data.comment_created}</span>
-            <span>{data.favorite_anime}</span>
-            <span>{data.review_created}</span>
-            <span>{data.topic_created}</span>
-            <span>{data.transaction_created}</span>
-          </div>
+        <div className="gap-5 grid grid-cols-2">
+          {cardData.map((card, index) => (
+            <div
+              className="bg-white border border-emerald-700 rounded-lg shadow-md p-2 h-[6rem]"
+              key={index}
+            >
+              <div className="flex items-center h-full gap-4">
+                <div className="bg-emerald-700 text-white rounded-lg p-3 shadow-md shadow-gray-300 transition-all duration-500 ease-in-out transform hover:scale-90">
+                  {card.icon}
+                </div>
+                <div className="flex flex-col text-emerald-700">
+                  <span className="text-small">{card.title}</span>
+                  <span className="text-lg font-bold">{card.value}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

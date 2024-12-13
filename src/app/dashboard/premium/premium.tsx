@@ -1,27 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Form, Input, InputNumber, message, Modal } from "antd";
-import type { TableColumnsType, TablePaginationConfig, TableProps } from "antd";
+import { Form, Input, InputNumber, message, Modal, Select } from "antd";
+import type { TableColumnsType, TablePaginationConfig } from "antd";
 import {
-  AiFillStar,
   AiOutlineDelete,
   AiOutlineEdit,
   AiOutlinePlus,
   AiOutlineRuby,
   AiOutlineSearch,
 } from "react-icons/ai";
-import {
-  AppstoreFilled,
-  ExclamationCircleFilled,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/utils/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import apiUrl from "@/hooks/api";
-import { transform } from "next/dist/build/swc";
+import { Option } from "antd/es/mentions";
 
 interface DataType {
   id: string;
@@ -29,6 +24,7 @@ interface DataType {
   price: number;
   duration: number;
   transactions: number;
+  status: string;
 }
 
 const PremiumList: React.FC = () => {
@@ -39,14 +35,28 @@ const PremiumList: React.FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
   const [id, setId] = useState<string>("");
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [filterStatus, setStatus] = useState<string>("");
+  const [searchText, setSearchText] = useState<string>("");
+  const debounceText = useDebounce(searchText, 1000);
 
   // Fungsi untuk fetch data premium
   const fetchPremium = async () => {
     try {
       const response = await apiUrl.get(
-        `http://localhost:4321/premium/get-all`
+        `http://localhost:4321/premium/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&status=${filterStatus}`
       );
-      setData(await response.data); // Mengisi data dengan hasil dari API
+      const { data, total } = await response.data;
+      setData(data); // Mengisi data dengan hasil dari API
+      setPagination({
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+        total: total,
+      });
       setLoading(false); // Menonaktifkan status loading setelah data didapat
     } catch (error) {
       console.error("Error fetching premium data:", error);
@@ -56,7 +66,7 @@ const PremiumList: React.FC = () => {
 
   useEffect(() => {
     fetchPremium(); // Panggil fungsi fetchPremium saat komponen dimuat
-  }, []);
+  }, [pagination.current, debounceText, filterStatus]);
 
   const showModal = (modalMode: "edit" | "post") => {
     setMode(modalMode);
@@ -104,6 +114,7 @@ const PremiumList: React.FC = () => {
   };
 
   const setDataEdit = async (values: DataType) => {
+    setId(values.id);
     form.setFieldsValue(values);
   };
 
@@ -208,6 +219,25 @@ const PremiumList: React.FC = () => {
       },
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      render: (status: string) => {
+        return status === "active" ? (
+          <>
+            <div className="flex rounded-md bg-emerald-700 px-3 py-1 justify-center w-fit">
+              <span className="text-white">Active</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex rounded-md bg-red-600 px-3 py-1 justify-center w-fit">
+              <span className="text-white">Inactive</span>
+            </div>
+          </>
+        );
+      },
+    },
+    {
       title: "Total Transactions",
       dataIndex: "transactions",
       render: (transactions: number) => {
@@ -277,17 +307,36 @@ const PremiumList: React.FC = () => {
           <span className="text-lg font-semibold"> Manage Premium </span>
         </div>
       </div>
-      <div className="mb-3">
+      <div className="mb-3 flex justify-between">
         <button onClick={() => showModal("post")}>
           <div className="flex items-center gap-1 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">
             <AiOutlinePlus />
             <span>Add Premium</span>
           </div>
         </button>
+        <div className="flex items-center gap-3">
+          <Input
+            addonBefore={<AiOutlineSearch />}
+            placeholder="Search Premium"
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+          <div>
+            <Select
+              defaultValue={filterStatus}
+              style={{ width: 120 }}
+              onChange={(value) => setStatus(value)}
+            >
+              <Option value="">All</Option>
+              <Option value="active">Active</Option>
+              <Option value="inactive">Inactive</Option>
+            </Select>
+          </div>
+        </div>
       </div>
       <CustomTable
         loading={loading}
         columns={columns}
+        pagination={pagination} // Jumlah data yang ditampilkan
         data={data} // Data yang sudah difilter
       />
       <Modal
@@ -333,6 +382,18 @@ const PremiumList: React.FC = () => {
                 min={1}
                 style={{ width: "100%" }}
               ></InputNumber>
+            </Form.Item>
+            <Form.Item
+              name="status"
+              label="Status"
+              rules={[
+                { required: true, message: "Please input premium status!" },
+              ]}
+            >
+              <Select defaultValue>
+                <Option value="active">Active</Option>
+                <Option value="inactive">Inactive</Option>
+              </Select>
             </Form.Item>
           </Form>
         ) : (

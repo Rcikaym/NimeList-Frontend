@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineClockCircle, AiOutlineTool } from "react-icons/ai";
 import { AnimeType, ReviewDataType, ReviewType } from "./types";
 import renderDateTime from "@/utils/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
-import { Form, Input, message, Modal, Rate } from "antd";
+import { message, Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import apiUrl from "@/hooks/api";
 import ReviewList from "./ReviewComponent";
@@ -19,9 +19,6 @@ export default function AnimeDetails({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<ReviewDataType[]>([]);
   const [totalReview, setTotalReview] = useState(0);
-  const [modalUpdate, setModalUpdate] = useState(false);
-  const [idReview, setIdReview] = useState<string>("");
-  const [form] = Form.useForm();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const { confirm } = Modal;
@@ -95,62 +92,6 @@ export default function AnimeDetails({ slug }: { slug: string }) {
     }
   };
 
-  const setModalAndDataForUpdate = async (id: string) => {
-    setModalUpdate(true);
-    setIdReview(id);
-
-    const res = await fetch(`${api}/review/get/${id}`, { method: "GET" });
-    const data = await res.json();
-    form.setFieldsValue({
-      review: data.review,
-      rating: parseFloat(data.rating),
-    });
-  };
-
-  const handleEditReview = async () => {
-    try {
-      const updatedData = form.getFieldsValue(); // Dapatkan data dari form
-      const response = await apiUrl.put(
-        `/review/update/${idReview}`,
-        updatedData
-      );
-      message.success(response.data.message);
-      setModalUpdate(false);
-
-      // Perbarui review di state
-      setReviews((prevReviews) =>
-        prevReviews.map((review) =>
-          review.id === idReview
-            ? {
-                ...review,
-                ...updatedData,
-                updated_at: new Date().toISOString(),
-              }
-            : review
-        )
-      );
-    } catch (error: any) {
-      message.error(error.message);
-    }
-  };
-
-  const showEditConfirm = () => {
-    setModalUpdate(false);
-    confirm({
-      title: "Are you sure update this review?",
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: "Yes",
-      okType: "danger",
-      onOk() {
-        handleEditReview();
-      },
-      onCancel() {
-        setModalUpdate(true);
-      },
-    });
-  };
-
   const showDeleteConfirm = async (id: string) => {
     confirm({
       title: "Are you sure delete this review?",
@@ -173,34 +114,6 @@ export default function AnimeDetails({ slug }: { slug: string }) {
 
   return (
     <>
-      <Modal
-        title="Update Review"
-        centered
-        open={modalUpdate}
-        onOk={showEditConfirm}
-        onCancel={() => setModalUpdate(false)}
-      >
-        <Form form={form} layout="vertical">
-          {/* Input review */}
-          <Form.Item
-            label="Review"
-            name="review"
-            rules={[{ required: true, message: "Please input review" }]}
-          >
-            <Input.TextArea showCount maxLength={9999} autoSize />
-          </Form.Item>
-
-          {/* Input rating */}
-          <Form.Item
-            name="rating"
-            label="Rate"
-            rules={[{ required: true, message: "Please input rating" }]}
-          >
-            <Rate count={10} allowHalf />
-          </Form.Item>
-        </Form>
-      </Modal>
-
       <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50] text-white">
         Anime Details
       </div>
@@ -272,7 +185,6 @@ export default function AnimeDetails({ slug }: { slug: string }) {
           totalReview={totalReview}
           onLoadMore={() => setPage((prevPage) => prevPage + 1)}
           onDelete={showDeleteConfirm}
-          onEdit={setModalAndDataForUpdate}
         />
       </div>
     </>

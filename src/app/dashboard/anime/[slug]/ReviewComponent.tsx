@@ -1,18 +1,26 @@
 import React from "react";
-import { BiCrown, BiGlobe, BiEdit, BiTrashAlt } from "react-icons/bi";
-import { Rate } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import InfiniteScroll from "react-infinite-scroll-component";
-import DisplayLongText from "@/components/DisplayLongText";
+import dynamic from "next/dynamic";
+import { BiCrown, BiGlobe, BiEdit, BiTrashAlt } from "react-icons/bi"; // Ikon tetap di-load secara langsung
 import renderDateTime from "@/utils/FormatDateTime";
 import { ReviewDataType } from "./types";
+import DisplayLongText from "@/components/DisplayLongText";
+
+// Dynamic import untuk komponen berat
+const Rate = dynamic(() => import("antd/lib/rate"), { ssr: false });
+const LoadingOutlined = dynamic(
+  () => import("@ant-design/icons/LoadingOutlined"),
+  { ssr: false }
+);
+const InfiniteScroll = dynamic(
+  () => import("react-infinite-scroll-component"),
+  { ssr: false }
+);
 
 interface ReviewListProps {
   reviews: ReviewDataType[];
   hasMore: boolean;
   totalReview: number;
   onLoadMore: () => void;
-  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
@@ -21,7 +29,6 @@ const ReviewList: React.FC<ReviewListProps> = ({
   hasMore,
   totalReview,
   onLoadMore,
-  onEdit,
   onDelete,
 }) => {
   return (
@@ -86,12 +93,6 @@ const ReviewList: React.FC<ReviewListProps> = ({
                 />
               </div>
               <div className="flex gap-2 items-center">
-                <div
-                  className="w-fit cursor-pointer"
-                  onClick={() => onEdit(review.id)}
-                >
-                  <BiEdit size={23} className="text-emerald-700" />
-                </div>
                 <div
                   className="w-fit cursor-pointer"
                   onClick={() => onDelete(review.id)}

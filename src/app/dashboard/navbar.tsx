@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { BiHomeAlt, BiLogOut, BiSolidUserDetail } from "react-icons/bi";
 import apiUrl from "@/hooks/api";
+import { span } from "framer-motion/client";
 
 const { Header } = Layout;
 
@@ -46,21 +47,24 @@ const Navbar: React.FC = () => {
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <a href={`/dashboard/profile/${username}`}>Profile</a>,
+      label: <span>Profile</span>,
       icon: <BiSolidUserDetail size={17} />,
+      onClick: () => router.push(`/dashboard/profile/${username}`),
     },
     {
       key: "2",
-      label: <a href="/home">Home</a>,
+      label: <span>Home</span>,
       icon: <BiHomeAlt size={17} />,
+      onClick: () => router.push("/home"),
     },
     {
       type: "divider",
     },
     {
       key: "3",
-      label: <button onClick={logout}>Logout</button>,
+      label: <span>Logout</span>,
       icon: <BiLogOut size={17} />,
+      onClick: () => logout(),
     },
   ];
 
