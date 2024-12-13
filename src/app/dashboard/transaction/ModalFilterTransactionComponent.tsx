@@ -41,6 +41,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
     { value: "bca", label: "BCA" },
     { value: "bri", label: "BRI" },
     { value: "bni", label: "BNI" },
+    { value: "cimb", label: "CIMB" },
   ];
 
   return (
