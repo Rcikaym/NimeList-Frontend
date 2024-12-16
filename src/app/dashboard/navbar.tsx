@@ -47,15 +47,13 @@ const Navbar: React.FC = () => {
   const items: MenuProps["items"] = [
     {
       key: "1",
-      label: <span>Profile</span>,
+      label: <a href={`/dashboard/profile/${username}`}>Profile</a>,
       icon: <BiSolidUserDetail size={17} />,
-      onClick: () => router.push(`/dashboard/profile/${username}`),
     },
     {
       key: "2",
-      label: <span>Home</span>,
+      label: <a href="/home">Home</a>,
       icon: <BiHomeAlt size={17} />,
-      onClick: () => router.push("/home"),
     },
     {
       type: "divider",
@@ -86,7 +84,7 @@ const Navbar: React.FC = () => {
       <Dropdown menu={{ items }} placement="bottomRight">
         <div className="flex items-center mr-3 w-8 h-8">
           <Image
-            src={photoUrl ? `${api}/${photoUrl}` : "/images/logo-admin.jpeg"}
+            src={`${api}/${photoUrl}`}
             alt="User Profile"
             width={32}
             height={32}

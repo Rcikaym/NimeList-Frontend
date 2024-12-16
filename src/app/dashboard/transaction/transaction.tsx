@@ -11,9 +11,13 @@ import renderDateTime from "@/utils/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import { DataType, TransactionDetails } from "./types";
-import ModalDetailTransaction from "@/app/dashboard/transaction/ModalDetailTransactionComponent";
-import FilterModal from "@/app/dashboard/transaction/ModalFilterTransactionComponent";
 import apiUrl from "@/hooks/api";
+import dynamic from "next/dynamic";
+
+const FilterModal = dynamic(() => import("./ModalFilterTransactionComponent"));
+const ModalDetailTransaction = dynamic(
+  () => import("./ModalDetailTransactionComponent")
+);
 
 const TransactionList = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
@@ -63,7 +67,7 @@ const TransactionList = () => {
 
   useEffect(() => {
     fetchTransaction(); // Panggil fungsi fetchTransaction saat komponen dimuat
-  }, [JSON.stringify(pagination), debounceText, filterString]);
+  }, [pagination.current, debounceText !== "", filterString]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
     pagination: TablePaginationConfig,
@@ -154,6 +158,7 @@ const TransactionList = () => {
   );
 
   const handleApplyFilter = (filterResult: string) => {
+    setPagination({ ...pagination, current: 1 });
     setFilterString(filterResult);
   };
 

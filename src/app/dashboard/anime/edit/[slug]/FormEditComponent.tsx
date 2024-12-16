@@ -103,7 +103,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
   const updateAnime = async (values: DataAnime) => {
     const formData = new FormData();
 
-    function convertToEmbedUrl(url: any) {
+    function convertToEmbedUrl(url: string) {
       // Regular expression to match YouTube video IDs
       const videoIdMatch = url.match(
         /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
@@ -113,10 +113,10 @@ export default function AnimeEdit({ slug }: { slug: string }) {
       if (videoIdMatch && videoIdMatch[1]) {
         const videoId = videoIdMatch[1];
         return `https://www.youtube.com/embed/${videoId}`;
-      } else {
-        // Return null or the original URL if it's not a valid YouTube link
-        return null;
       }
+
+      // Return null or the original URL if it's not a valid YouTube link
+      return null;
     }
 
     formData.append("title", values.title);

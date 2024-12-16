@@ -80,7 +80,7 @@ const ReviewList: React.FC<ReviewListProps> = ({
                       : `${renderDateTime(review.created_at)} (edited)`}
                   </span>
                 </div>
-                <div className="my-2">
+                <div className="my-3">
                   <DisplayLongText text={review.review} />
                 </div>
                 <Rate
