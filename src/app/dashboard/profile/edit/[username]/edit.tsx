@@ -1,10 +1,7 @@
 "use client";
 
 import apiUrl from "@/hooks/api";
-import {
-  CameraOutlined,
-  ExclamationCircleFilled,
-} from "@ant-design/icons";
+import { CameraOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { Button, Form, Input, message, Modal, Upload, UploadProps } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -145,48 +142,18 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
             onChange={handlePhotoUpload}
             beforeUpload={beforeUpload}
           >
-            {previewImage ? (
-              <div className="mt-4 relative w-44 h-44">
-                <Image
-                  src={previewImage}
-                  alt="Profile Preview"
-                  className="rounded-full object-cover"
-                  layout="fill"
-                />
-                {/* Ikon kamera saat hover */}
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
-                  <CameraOutlined className="text-white text-4xl" />
-                </div>
+            <div className="mt-4 relative w-44 h-44">
+              <Image
+                src={previewImage ? previewImage : `${api}/${photoUrl}`}
+                alt="Profile"
+                className="rounded-full object-cover"
+                layout="fill"
+              />
+              {/* Ikon kamera saat hover */}
+              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
+                <CameraOutlined className="text-white text-4xl" />
               </div>
-            ) : photoUrl ? (
-              photoUrl && (
-                <div className="mt-4 relative w-44 h-44">
-                  <Image
-                    src={`${api}/${photoUrl}`}
-                    alt="Profile"
-                    className="rounded-full object-cover"
-                    layout="fill"
-                  />
-                  {/* Ikon kamera saat hover */}
-                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
-                    <CameraOutlined className="text-white text-4xl" />
-                  </div>
-                </div>
-              )
-            ) : (
-              <div className="mt-4 relative w-44 h-44">
-                <Image
-                  src="/images/logo-admin.jpeg"
-                  alt="Profile"
-                  className="rounded-full object-cover"
-                  layout="fill"
-                />
-                {/* Ikon kamera saat hover */}
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
-                  <CameraOutlined className="text-white text-4xl" />
-                </div>
-              </div>
-            )}
+            </div>
           </Upload>
         </Form.Item>
         <span className="text-sm text-gray-400">

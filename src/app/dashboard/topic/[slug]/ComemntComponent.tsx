@@ -12,7 +12,6 @@ interface CommentListProps {
   hasMore: boolean;
   totalReview: number;
   onLoadMore: () => void;
-  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
@@ -21,7 +20,6 @@ const CommentList: React.FC<CommentListProps> = ({
   hasMore,
   totalReview,
   onLoadMore,
-  onEdit,
   onDelete,
 }) => {
   return (
@@ -78,12 +76,6 @@ const CommentList: React.FC<CommentListProps> = ({
                 </div>
               </div>
               <div className="flex gap-2 items-center">
-                <div
-                  className="w-fit cursor-pointer"
-                  onClick={() => onEdit(comment.id)}
-                >
-                  <BiEdit size={23} className="text-emerald-700" />
-                </div>
                 <div
                   className="w-fit cursor-pointer"
                   onClick={() => onDelete(comment.id)}
