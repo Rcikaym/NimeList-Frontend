@@ -124,36 +124,32 @@ export default function MostPopular() {
       <div className="pl-12 pr-12">
         <Slider {...settings}>
           {animes.map((anime: AnimeType) => (
-            <div
-              key={anime.id}
-              className="h-full w-full justify-items-center pb-6"
-            >
-              <div className="w-[13.75rem]">
+            <div key={anime.id} className="h-full w-full justify-items-center pb-6">
+            <div className="w-[13.75rem]">
+              <Link href={`/anime/${anime.slug}`}>
+                <Image
+                  className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover transition-transform duration-300 transform hover:scale-105"
+                  src={`${api}/${anime.photo_cover}`}
+                  alt={anime.title}
+                  width={220}
+                  height={300}
+                />
+              </Link>
+              <div className="mt-3 mb-3 mr-3">
                 <Link href={`/anime/${anime.slug}`}>
-                  <Image
-                    className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
-                    src={`${api}/${anime.photo_cover}`}
-                    alt={anime.title}
-                    width={220}
-                    height={300}
-                  />
+                  <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                    {anime.title}
+                  </h5>
                 </Link>
-                <div className="mt-3 mb-3 mr-3">
-                  <Link href={`/anime/${anime.slug}`}>
-                    <h5 className="truncate mb-[2px] text-lg font-bold tracking-tight text-gray-900 dark:text-white ">
-                      {anime.title}
-                    </h5>
-                  </Link>
-                  <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">
-                    {anime.type}
-                  </p>
-                  <p className="flex items-center font-semibold">
-                    <StarFilled className="text-yellow-500 mr-1" />{" "}
-                    {anime.weighted_rating}
-                  </p>
-                </div>
+                <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">
+                  {anime.type}
+                </p>
+                <p className="flex items-center font-semibold">
+                  <StarFilled className="text-yellow-500 mr-1" /> {anime.weighted_rating}
+                </p>
               </div>
             </div>
+          </div>          
           ))}
         </Slider>
       </div>

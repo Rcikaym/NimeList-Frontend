@@ -130,7 +130,7 @@ export default function NewlyArrived() {
                   href={`/anime/${anime.slug}`}
                 >
                   <Image
-                    className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
+                    className="select-none justify-center w-full h-[18.75rem] rounded border-10 hover:border-[#1a7b4e] object-cover transition-transform duration-300 transform hover:scale-105"
                     src={`${api}/${anime.photo_cover}`}
                     alt={anime.title}
                     width={220}
