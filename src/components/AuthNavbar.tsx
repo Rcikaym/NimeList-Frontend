@@ -130,7 +130,7 @@ const AuthNavbar = () => {
     <>
       <Navbar
         onMenuOpenChange={setIsMenuOpen}
-        className="bg-transparent pt-3 overflow-x-hidden"
+        className="bg-transparent pt-3 overflow-hidden backdrop-blur-sm z-50"
         maxWidth="full"
       >
         <NavbarContent justify="start">
@@ -308,7 +308,7 @@ const AuthNavbar = () => {
             </Dropdown>
           </div>
         </NavbarContent>
-        <NavbarMenu className={`${isMenuOpen ? "bg-black" : ""}`}>
+        <NavbarMenu className={`${isMenuOpen ? "bg-transparent" : ""}`}>
           {menuItems.map((item) => (
             <NavbarMenuItem key={item.key}>{item.label}</NavbarMenuItem>
           ))}
