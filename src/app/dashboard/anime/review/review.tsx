@@ -19,7 +19,9 @@ import apiUrl from "@/hooks/api";
 import dynamic from "next/dynamic";
 import { DataDetailReview, DataTypeReview } from "./types";
 
-const ReviewDetailModal = dynamic(() => import("./ReviewDetailModal"));
+const ReviewDetailModal = dynamic(() => import("./ReviewDetailModal"), {
+  ssr: false,
+});
 
 const ReviewList: React.FC = () => {
   const api = process.env.NEXT_PUBLIC_API_URL;
