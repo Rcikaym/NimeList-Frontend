@@ -10,7 +10,7 @@ import {
 import { DataPremiumType } from "./premium";
 import { Option } from "antd/es/mentions";
 
-export const PremiumModalForm: React.FC<{
+const PremiumModalForm: React.FC<{
   visible: boolean;
   mode: "post" | "edit";
   form: FormInstance;
@@ -68,3 +68,5 @@ export const PremiumModalForm: React.FC<{
     </Form>
   </Modal>
 );
+
+export default PremiumModalForm;

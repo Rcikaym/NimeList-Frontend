@@ -17,7 +17,11 @@ import renderDateTime from "@/utils/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import apiUrl from "@/hooks/api";
 import { Option } from "antd/es/mentions";
-import { PremiumModalForm } from "./ModalPremiumComponent";
+import dynamic from "next/dynamic";
+
+const PremiumModalForm = dynamic(() => import("./PremiumModalForm"), {
+  ssr: false,
+});
 
 export interface DataPremiumType {
   id: string;
@@ -200,13 +204,7 @@ const PremiumList: React.FC = () => {
     {
       title: "Price",
       dataIndex: "price",
-      render: (price: number) => {
-        return (
-          <>
-            <span className="gap-1 flex items-center">{`Rp.${price}`}</span>
-          </>
-        );
-      },
+      render: (price: number) => `Rp ${price.toLocaleString("id-ID")}`,
     },
     {
       title: "Duration",

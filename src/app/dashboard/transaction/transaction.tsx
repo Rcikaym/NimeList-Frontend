@@ -122,9 +122,7 @@ const TransactionList = () => {
       {
         title: "Total",
         dataIndex: "total",
-        render: (total: number) => (
-          <span>{`Rp${new Intl.NumberFormat("id-ID").format(total)}`}</span>
-        ),
+        render: (total: number) => `Rp ${total.toLocaleString("id-ID")}`,
       },
       {
         title: "Created At",
