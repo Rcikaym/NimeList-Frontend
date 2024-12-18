@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { Dropdown, Layout, message } from "antd";
+import { Avatar, Dropdown, Layout } from "antd";
 import type { MenuProps } from "antd";
 import Image from "next/image";
 import { getAccessToken, logout } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/navigation";
 import { BiHomeAlt, BiLogOut, BiSolidUserDetail } from "react-icons/bi";
 import apiUrl from "@/hooks/api";
-import { span } from "framer-motion/client";
 
 const { Header } = Layout;
 
@@ -16,7 +14,6 @@ const Navbar: React.FC = () => {
   const [name, setName] = useState<string>("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const api = process.env.NEXT_PUBLIC_API_URL;
-  const router = useRouter();
 
   useEffect(() => {
     const token = getAccessToken();
@@ -80,17 +77,21 @@ const Navbar: React.FC = () => {
         justifyContent: "flex-end",
       }}
     >
-      <span className="mr-3 text-white">{name}</span>
+      <span className="text-white">{name}</span>
       <Dropdown menu={{ items }} placement="bottomRight">
-        <div className="flex items-center mr-3 w-8 h-8">
-          <Image
-            src={`${api}/${photoUrl}`}
-            alt="User Profile"
-            width={32}
-            height={32}
-            className="rounded-full object-cover hover:cursor-pointer"
-          />
-        </div>
+        <Avatar
+          src={
+            <Image
+              src={`${api}/${photoUrl}`}
+              alt="User Profile"
+              width={32}
+              height={32}
+              className="rounded-full object-cover hover:cursor-pointer"
+            />
+          }
+          size="large"
+          className="mx-3"
+        />
       </Dropdown>
     </Header>
   );

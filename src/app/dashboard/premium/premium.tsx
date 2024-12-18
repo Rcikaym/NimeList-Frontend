@@ -30,6 +30,7 @@ export interface DataPremiumType {
   duration: number;
   transactions: number;
   status: string;
+  description: string;
 }
 
 const PremiumList: React.FC = () => {
@@ -187,10 +188,14 @@ const PremiumList: React.FC = () => {
   const showEditConfirm = (values: DataPremiumType) => {
     confirm({
       centered: true,
-      title: "Do you want to add " + values.name + " premium?",
+      title: "Do you want to update this premium?",
       icon: <ExclamationCircleFilled />,
+      okText: "Yes",
       onOk() {
         handleEditPremium(values);
+      },
+      onCancel() {
+        showModal("edit");
       },
     });
   };
@@ -265,7 +270,7 @@ const PremiumList: React.FC = () => {
           <a
             onClick={() => {
               showModal("edit");
-              setDataEdit(record);
+              setDataEdit(record.id);
             }}
           >
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
@@ -303,7 +308,9 @@ const PremiumList: React.FC = () => {
             <AppstoreFilled style={{ fontSize: 18 }} />
           </Link>
           <span> / </span>
-          <span className="text-lg font-semibold"> Manage Premium </span>
+          <Link href="/dashboard/premium" className="hover:text-emerald-700">
+            <span className="text-lg font-semibold"> Premium </span>
+          </Link>
         </div>
       </div>
       <div className="mb-3 flex justify-between">
@@ -335,8 +342,8 @@ const PremiumList: React.FC = () => {
       <CustomTable
         loading={loading}
         columns={columns}
-        pagination={pagination} // Jumlah data yang ditampilkan
-        data={data} // Data yang sudah difilter
+        pagination={pagination}
+        data={data}
       />
       <PremiumModalForm
         visible={modalVisible}

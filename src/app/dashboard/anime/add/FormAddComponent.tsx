@@ -178,9 +178,9 @@ export default function AddAnime() {
   const handlePhotosUpload = (info: any) => {
     const { file, fileList } = info;
 
-    setFileList(fileList);
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
+      setFileList(fileList);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
     }
@@ -189,9 +189,9 @@ export default function AddAnime() {
   const handleCoverUpload = (info: any) => {
     const { file, fileList } = info;
 
-    setFileCover(fileList);
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
+      setFileCover(fileList);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
     }
@@ -204,9 +204,9 @@ export default function AddAnime() {
       if (!isJpgOrPng) {
         message.error("You can only upload JPG/PNG file!");
       }
-      const isLt2M = file.size / 1024 / 1024 < 5;
+      const isLt2M = file.size / 1024 / 1024 < 2;
       if (!isLt2M) {
-        message.error("Image must smaller than 5MB!");
+        message.error("Image must smaller than 2MB!");
       }
       return isJpgOrPng && isLt2M;
     },

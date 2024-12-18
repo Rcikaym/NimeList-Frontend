@@ -224,6 +224,13 @@ export default function AnimeEdit({ slug }: { slug: string }) {
       message.success(`${file.name} file uploaded successfully`);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
+
+      // Hapus file dengan status "error" setelah state di-update
+      setTimeout(() => {
+        setFileList((currentList) =>
+          currentList.filter((f: any) => f.uid !== file.uid)
+        );
+      }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
     }
   };
 
@@ -232,25 +239,82 @@ export default function AnimeEdit({ slug }: { slug: string }) {
 
     setFileCover(fileList);
     if (file.status === "done") {
+      setFileList(fileList.filter((f: any) => f.status === "done"));
       message.success(`${file.name} file uploaded successfully`);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
+
+      // Hapus file dengan status "error" setelah state di-update
+      setTimeout(() => {
+        setFileCover((currentList) =>
+          currentList.filter((f: any) => f.uid !== file.uid)
+        );
+      }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
     }
   };
 
-  const uploadProps: UploadProps = {
+  const uploadPropsList: UploadProps = {
     beforeUpload: (file) => {
       const isJpgOrPng =
         file.type === "image/jpeg" || file.type === "image/png";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
       if (!isJpgOrPng) {
         message.error("You can only upload JPG/PNG file!");
+        // Hapus file dengan status "error" setelah state di-update
+        setTimeout(() => {
+          setFileList((currentList) =>
+            currentList.filter((f: any) => f.uid !== file.uid)
+          );
+        }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
-      const isLt2M = file.size / 1024 / 1024 < 5;
+
       if (!isLt2M) {
-        message.error("Image must smaller than 5MB!");
+        message.error("Image must smaller than 2MB!");
+        // Hapus file dengan status "error" setelah state di-update
+        setTimeout(() => {
+          setFileList((currentList) =>
+            currentList.filter((f: any) => f.uid !== file.uid)
+          );
+        }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
+
       return isJpgOrPng && isLt2M;
     },
+    onChange: handlePhotosUpload,
+  };
+
+  const uploadPropsCover: UploadProps = {
+    beforeUpload: (file) => {
+      const isJpgOrPng =
+        file.type === "image/jpeg" || file.type === "image/png";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJpgOrPng) {
+        message.error("You can only upload JPG/PNG file!");
+
+        // Hapus file dengan status "error" setelah state di-update
+        setTimeout(() => {
+          setFileCover((currentList) =>
+            currentList.filter((f: any) => f.uid !== file.uid)
+          );
+        }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
+      }
+
+      if (!isLt2M) {
+        message.error("Image must smaller than 2MB!");
+
+        // Hapus file dengan status "error" setelah state di-update
+        setTimeout(() => {
+          setFileCover((currentList) =>
+            currentList.filter((f: any) => f.uid !== file.uid)
+          );
+        }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
+      }
+
+      return isJpgOrPng && isLt2M;
+    },
+    onChange: handleCoverUpload,
   };
 
   return (
@@ -266,37 +330,82 @@ export default function AnimeEdit({ slug }: { slug: string }) {
       >
         <div className="rounded-sm shadow-md p-4">
           {/* Form Items */}
-          <Form.Item
-            name="title"
-            label="Title"
-            rules={[{ required: true, message: "Please input title" }]}
-          >
-            <Input placeholder="Input title" />
-          </Form.Item>
+          <div className="grid grid-cols-3 gap-7">
+            <div>
+              <Form.Item
+                name="title"
+                label="Title"
+                rules={[{ required: true, message: "Please input title" }]}
+              >
+                <Input placeholder="Input title" />
+              </Form.Item>
 
-          <Form.Item
-            name="release_date"
-            label="Release Date"
-            rules={[{ required: true, message: "Please input date" }]}
-          >
-            <Input placeholder="yyyy-mm-dd" />
-          </Form.Item>
+              <Form.Item
+                name="release_date"
+                label="Release Date (yyyy-mm-dd)"
+                rules={[{ required: true, message: "Please input date" }]}
+              >
+                <Input placeholder="yyyy-mm-dd" />
+              </Form.Item>
+            </div>
+            <div>
+              <Form.Item
+                name="trailer_link"
+                label="Trailer Link"
+                rules={[
+                  { required: true, message: "Please input trailer link" },
+                ]}
+              >
+                <Input placeholder="yyyy-mm-dd" />
+              </Form.Item>
 
-          <Form.Item
-            name="trailer_link"
-            label="Trailer Link"
-            rules={[{ required: true, message: "Please input trailer link" }]}
-          >
-            <Input placeholder="yyyy-mm-dd" />
-          </Form.Item>
+              <Form.Item
+                label="Watch Link"
+                name="watch_link"
+                rules={[{ required: true, message: "Please input watch link" }]}
+              >
+                <Input placeholder="Input watch link" />
+              </Form.Item>
+            </div>
+            <div>
+              {/* Select type */}
+              <Form.Item
+                label="Type"
+                name="type"
+                rules={[{ required: true, message: "Please select type" }]}
+              >
+                <Select
+                  placeholder="Select type"
+                  allowClear
+                  onChange={(value) => setType(value)} // Set nilai type saat berubah
+                  filterOption={(input, option) =>
+                    (option?.children as unknown as string)
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                >
+                  <Option value="movie">movie</Option>
+                  <Option value="series">series</Option>
+                </Select>
+              </Form.Item>
 
-          <Form.Item
-            label="Watch Link"
-            name="watch_link"
-            rules={[{ required: true, message: "Please input watch link" }]}
-          >
-            <Input placeholder="Input watch link" />
-          </Form.Item>
+              {/* Input total episode */}
+              <Form.Item
+                name="episodes"
+                label="Episode"
+                rules={[{ required: true, message: "Please input episode" }]}
+              >
+                <InputNumber
+                  min={1}
+                  value={episodes} // Gunakan state episode sebagai nilai
+                  onChange={(value) => setEpisodes(value)} // Update nilai episode jika series
+                  disabled={type === "movie"} // Disable input jika type adalah movie
+                  placeholder="Input total episode"
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+            </div>
+          </div>
 
           <Form.Item
             name="synopsis"
@@ -328,51 +437,13 @@ export default function AnimeEdit({ slug }: { slug: string }) {
             ></Select>
           </Form.Item>
 
-          {/* Select type */}
-          <Form.Item
-            label="Type"
-            name="type"
-            rules={[{ required: true, message: "Please select type" }]}
-          >
-            <Select
-              placeholder="Select type"
-              allowClear
-              onChange={(value) => setType(value)} // Set nilai type saat berubah
-              filterOption={(input, option) =>
-                (option?.children as unknown as string)
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-            >
-              <Option value="movie">movie</Option>
-              <Option value="series">series</Option>
-            </Select>
-          </Form.Item>
-
-          {/* Input total episode */}
-          <Form.Item
-            name="episodes"
-            label="Episode"
-            rules={[{ required: true, message: "Please input episode" }]}
-          >
-            <InputNumber
-              min={1}
-              value={episodes} // Gunakan state episode sebagai nilai
-              onChange={(value) => setEpisodes(value)} // Update nilai episode jika series
-              disabled={type === "movie"} // Disable input jika type adalah movie
-              placeholder="Input total episode"
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-
           {/* Upload Cover */}
           <Form.Item name="photo_cover" label="Update Cover Image">
             <Upload
-              {...uploadProps}
+              {...uploadPropsCover}
               listType="picture"
               maxCount={1}
               fileList={fileCover}
-              onChange={(info) => handleCoverUpload(info)}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
@@ -380,12 +451,11 @@ export default function AnimeEdit({ slug }: { slug: string }) {
 
           <Form.Item name="photos_anime" label="Upload Photo Anime">
             <Upload
-              {...uploadProps}
+              {...uploadPropsList}
               listType="picture-card"
               maxCount={4}
               multiple
               fileList={fileList}
-              onChange={(info) => handlePhotosUpload(info)}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
