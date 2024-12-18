@@ -97,19 +97,12 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
     reader.readAsDataURL(file);
   };
 
-  // Menghandle perubahan pada file upload
-  const beforeUpload = (file: any) => {
-    handlePreview(file); // Tampilkan preview saat file dipilih
-    return true; // Izinkan file di-upload
-  };
-
   const handlePhotoUpload = (info: any) => {
-    console.log(info);
     const { file, fileList } = info;
 
-    setPhoto(fileList);
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
+      setPhoto(fileList);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
     }
@@ -126,8 +119,17 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
       if (!isLt2M) {
         message.error("Image must smaller than 2MB!");
       }
-      return isJpgOrPng && isLt2M;
+
+      if (isJpgOrPng && isLt2M) {
+        handlePreview(file); // Tampilkan preview jika validasi berhasil
+        return true;
+      }
+
+      return false; // Jangan upload jika gagal validasi
     },
+    maxCount: 1,
+    showUploadList: false,
+    onChange: handlePhotoUpload,
   };
 
   return (
@@ -135,13 +137,7 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
       <h3 className="text-xl font-bold mb-4">Edit Profile</h3>
       <Form layout="vertical" form={form} onFinish={showUpdateConfirm}>
         <Form.Item name="photo_profile">
-          <Upload
-            {...uploadProps}
-            maxCount={1}
-            showUploadList={false}
-            onChange={handlePhotoUpload}
-            beforeUpload={beforeUpload}
-          >
+          <Upload {...uploadProps}>
             <div className="mt-4 relative w-44 h-44">
               <Image
                 src={previewImage ? previewImage : `${api}/${photoUrl}`}

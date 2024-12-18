@@ -65,6 +65,9 @@ const PremiumModalForm: React.FC<{
           </Select>
         </Form.Item>
       )}
+      <Form.Item name="description" label="Description">
+        <Input.TextArea rows={4} showCount maxLength={100} />
+      </Form.Item>
     </Form>
   </Modal>
 );

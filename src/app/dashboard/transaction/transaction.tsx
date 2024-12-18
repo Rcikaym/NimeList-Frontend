@@ -175,14 +175,15 @@ const TransactionList = () => {
           </div>
         </div>
         <div className="items-center flex gap-3">
-          <Link href="/dashboard">
-            <div className="hover:text-emerald-700">
-              <AppstoreFilled style={{ fontSize: 18 }} />
-            </div>
+          <Link href="/dashboard" className="hover:text-emerald-700">
+            <AppstoreFilled style={{ fontSize: 18 }} />
           </Link>
           <span> / </span>
-          <Link href="/dashboard/users">
-            <h2 className="text-lg hover:text-emerald-700 mt-2">Transaction</h2>
+          <Link
+            href="/dashboard/transaction"
+            className="hover:text-emerald-700"
+          >
+            <span className="text-lg font-semibold">Transaction</span>
           </Link>
         </div>
       </div>
