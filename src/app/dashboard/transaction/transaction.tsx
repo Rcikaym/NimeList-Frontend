@@ -11,9 +11,13 @@ import renderDateTime from "@/utils/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import { SorterResult } from "antd/es/table/interface";
 import { DataType, TransactionDetails } from "./types";
-import ModalDetailTransaction from "@/app/dashboard/transaction/ModalDetailTransactionComponent";
-import FilterModal from "@/app/dashboard/transaction/ModalFilterTransactionComponent";
 import apiUrl from "@/hooks/api";
+import dynamic from "next/dynamic";
+
+const FilterModal = dynamic(() => import("./ModalFilterTransactionComponent"));
+const ModalDetailTransaction = dynamic(
+  () => import("./ModalDetailTransactionComponent")
+);
 
 const TransactionList = () => {
   const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
@@ -63,7 +67,7 @@ const TransactionList = () => {
 
   useEffect(() => {
     fetchTransaction(); // Panggil fungsi fetchTransaction saat komponen dimuat
-  }, [JSON.stringify(pagination), debounceText, filterString]);
+  }, [pagination.current, debounceText !== "", filterString]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
     pagination: TablePaginationConfig,
@@ -118,9 +122,7 @@ const TransactionList = () => {
       {
         title: "Total",
         dataIndex: "total",
-        render: (total: number) => (
-          <span>{`Rp${new Intl.NumberFormat("id-ID").format(total)}`}</span>
-        ),
+        render: (total: number) => `Rp ${total.toLocaleString("id-ID")}`,
       },
       {
         title: "Created At",
@@ -154,6 +156,7 @@ const TransactionList = () => {
   );
 
   const handleApplyFilter = (filterResult: string) => {
+    setPagination({ ...pagination, current: 1 });
     setFilterString(filterResult);
   };
 
@@ -172,14 +175,15 @@ const TransactionList = () => {
           </div>
         </div>
         <div className="items-center flex gap-3">
-          <Link href="/dashboard">
-            <div className="hover:text-emerald-700">
-              <AppstoreFilled style={{ fontSize: 18 }} />
-            </div>
+          <Link href="/dashboard" className="hover:text-emerald-700">
+            <AppstoreFilled style={{ fontSize: 18 }} />
           </Link>
           <span> / </span>
-          <Link href="/dashboard/users">
-            <h2 className="text-lg hover:text-emerald-700 mt-2">Transaction</h2>
+          <Link
+            href="/dashboard/transaction"
+            className="hover:text-emerald-700"
+          >
+            <span className="text-lg font-semibold">Transaction</span>
           </Link>
         </div>
       </div>

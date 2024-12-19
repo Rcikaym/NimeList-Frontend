@@ -12,23 +12,29 @@ import {
 } from "react-icons/ai";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
-import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
+import { CustomTable } from "@/components/CustomTable";
 import renderDateTime from "@/utils/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
 import apiUrl from "@/hooks/api";
 import { Option } from "antd/es/mentions";
+import dynamic from "next/dynamic";
 
-interface DataType {
+const PremiumModalForm = dynamic(() => import("./PremiumModalForm"), {
+  ssr: false,
+});
+
+export interface DataPremiumType {
   id: string;
   name: string;
   price: number;
   duration: number;
   transactions: number;
   status: string;
+  description: string;
 }
 
 const PremiumList: React.FC = () => {
-  const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
+  const [data, setData] = useState<DataPremiumType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
   const { confirm } = Modal;
   const [mode, setMode] = useState<"post" | "edit">();
@@ -81,7 +87,7 @@ const PremiumList: React.FC = () => {
   const handleOk = () => {
     form
       .validateFields()
-      .then((values: DataType) => {
+      .then((values: DataPremiumType) => {
         if (mode === "post") {
           showPostConfirm(values);
         } else if (mode === "edit") {
@@ -94,7 +100,7 @@ const PremiumList: React.FC = () => {
       });
   };
 
-  const handlePostPremium = async (values: DataType) => {
+  const handlePostPremium = async (values: DataPremiumType) => {
     setLoading(true);
     try {
       const res = await apiUrl.post(
@@ -113,12 +119,12 @@ const PremiumList: React.FC = () => {
     }
   };
 
-  const setDataEdit = async (values: DataType) => {
+  const setDataEdit = async (values: DataPremiumType) => {
     setId(values.id);
     form.setFieldsValue(values);
   };
 
-  const handleEditPremium = async (values: DataType) => {
+  const handleEditPremium = async (values: DataPremiumType) => {
     setLoading(true);
     try {
       const res = await apiUrl.put(
@@ -168,7 +174,7 @@ const PremiumList: React.FC = () => {
     });
   };
 
-  const showPostConfirm = (values: DataType) => {
+  const showPostConfirm = (values: DataPremiumType) => {
     confirm({
       centered: true,
       title: "Do you want to add this premium?",
@@ -179,19 +185,23 @@ const PremiumList: React.FC = () => {
     });
   };
 
-  const showEditConfirm = (values: DataType) => {
+  const showEditConfirm = (values: DataPremiumType) => {
     confirm({
       centered: true,
-      title: "Do you want to add " + values.name + " premium?",
+      title: "Do you want to update this premium?",
       icon: <ExclamationCircleFilled />,
+      okText: "Yes",
       onOk() {
         handleEditPremium(values);
+      },
+      onCancel() {
+        showModal("edit");
       },
     });
   };
 
   // Kolom table
-  const columns: TableColumnsType<DataType> = [
+  const columns: TableColumnsType<DataPremiumType> = [
     {
       title: "Name",
       dataIndex: "name",
@@ -199,13 +209,7 @@ const PremiumList: React.FC = () => {
     {
       title: "Price",
       dataIndex: "price",
-      render: (price: number) => {
-        return (
-          <>
-            <span className="gap-1 flex items-center">{`Rp.${price}`}</span>
-          </>
-        );
-      },
+      render: (price: number) => `Rp ${price.toLocaleString("id-ID")}`,
     },
     {
       title: "Duration",
@@ -261,12 +265,12 @@ const PremiumList: React.FC = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: (text: string, record: DataType) => (
+      render: (text: string, record: DataPremiumType) => (
         <div className="flex gap-3">
           <a
             onClick={() => {
               showModal("edit");
-              setDataEdit(record);
+              setDataEdit(record.id);
             }}
           >
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
@@ -304,7 +308,9 @@ const PremiumList: React.FC = () => {
             <AppstoreFilled style={{ fontSize: 18 }} />
           </Link>
           <span> / </span>
-          <span className="text-lg font-semibold"> Manage Premium </span>
+          <Link href="/dashboard/premium" className="hover:text-emerald-700">
+            <span className="text-lg font-semibold"> Premium </span>
+          </Link>
         </div>
       </div>
       <div className="mb-3 flex justify-between">
@@ -336,112 +342,16 @@ const PremiumList: React.FC = () => {
       <CustomTable
         loading={loading}
         columns={columns}
-        pagination={pagination} // Jumlah data yang ditampilkan
-        data={data} // Data yang sudah difilter
+        pagination={pagination}
+        data={data}
       />
-      <Modal
-        title={`${mode === "post" ? "Add" : "Edit"} Premium`}
-        centered
-        open={modalVisible}
-        onOk={handleOk}
+      <PremiumModalForm
+        visible={modalVisible}
+        mode={mode === "post" ? "post" : "edit"}
+        form={form}
+        onSubmit={handleOk}
         onCancel={handleCancel}
-      >
-        {mode === "edit" ? (
-          <Form form={form} layout="vertical" className="mt-3">
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[
-                { required: true, message: "Please input premium name!" },
-              ]}
-            >
-              <Input type="text"></Input>
-            </Form.Item>
-            <Form.Item
-              name="price"
-              label="Price"
-              rules={[
-                { required: true, message: "Please input premium price!" },
-              ]}
-            >
-              <InputNumber
-                prefix="Rp."
-                min={0}
-                style={{ width: "100%" }}
-              ></InputNumber>
-            </Form.Item>
-            <Form.Item
-              name="duration"
-              label="Duration"
-              rules={[
-                { required: true, message: "Please input premium duration!" },
-              ]}
-            >
-              <InputNumber
-                suffix="Days"
-                min={1}
-                style={{ width: "100%" }}
-              ></InputNumber>
-            </Form.Item>
-            <Form.Item
-              name="status"
-              label="Status"
-              rules={[
-                { required: true, message: "Please input premium status!" },
-              ]}
-            >
-              <Select defaultValue>
-                <Option value="active">Active</Option>
-                <Option value="inactive">Inactive</Option>
-              </Select>
-            </Form.Item>
-          </Form>
-        ) : (
-          ""
-        )}
-
-        {mode === "post" ? (
-          <Form form={form} layout="vertical" className="mt-3">
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[
-                { required: true, message: "Please input premium name!" },
-              ]}
-            >
-              <Input type="text"></Input>
-            </Form.Item>
-            <Form.Item
-              name="price"
-              label="Price"
-              rules={[
-                { required: true, message: "Please input premium price!" },
-              ]}
-            >
-              <InputNumber
-                prefix="Rp."
-                min={0}
-                style={{ width: "100%" }}
-              ></InputNumber>
-            </Form.Item>
-            <Form.Item
-              name="duration"
-              label="Duration"
-              rules={[
-                { required: true, message: "Please input premium duration!" },
-              ]}
-            >
-              <InputNumber
-                suffix="Days"
-                min={1}
-                style={{ width: "100%" }}
-              ></InputNumber>
-            </Form.Item>
-          </Form>
-        ) : (
-          ""
-        )}
-      </Modal>
+      />
     </>
   );
 };

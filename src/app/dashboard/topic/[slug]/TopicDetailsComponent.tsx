@@ -5,8 +5,6 @@ import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Form, Input, message, Modal } from "antd";
 import { CommentDataType, CommentType, TopicType } from "./types";
 import apiUrl from "@/hooks/api";
-import { BiArrowBack } from "react-icons/bi";
-import Link from "next/link";
 import CommentList from "./ComemntComponent";
 import { TopicMetadata } from "./TopicMetadata";
 import PhotoGalleryTopic from "./PhotoGalleryComponent";
@@ -17,10 +15,7 @@ export default function TopicDetails({ slug }: { slug: string }) {
   const [topic, setTopic] = useState<TopicType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [form] = Form.useForm();
-  const [idComment, setIdComment] = useState<string>("");
   const { confirm } = Modal;
-  const [modalEdit, setModalEdit] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [comments, setComments] = useState<CommentDataType[]>([]);
@@ -74,60 +69,6 @@ export default function TopicDetails({ slug }: { slug: string }) {
     }
   }, [page, topic?.id]);
 
-  const setModalAndDataForUpdate = async (id: string) => {
-    setModalEdit(true);
-    setIdComment(id);
-
-    const res = await apiUrl.get(`/comment/get/${id}`);
-    const data = await res.data;
-    form.setFieldsValue({
-      comment: data.comment,
-    });
-  };
-
-  const handleEditComment = async () => {
-    try {
-      const updatedData = form.getFieldsValue();
-      const res = await apiUrl.put(`/comment/update/${idComment}`, updatedData);
-
-      // Proses berhasil
-      message.success(res.data.message);
-      form.resetFields();
-
-      // Perbarui comment di state
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id === idComment
-            ? {
-                ...comment,
-                ...updatedData,
-                updated_at: new Date().toISOString(),
-              }
-            : comment
-        )
-      );
-    } catch (error) {
-      message.error("Failed to update comment");
-    }
-  };
-
-  const showEditConfirm = async () => {
-    setModalEdit(false);
-    confirm({
-      title: "Are you sure edit this comment?",
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: "Yes",
-      okType: "danger",
-      onOk() {
-        handleEditComment();
-      },
-      onCancel() {
-        setModalEdit(true);
-      },
-    });
-  };
-
   const handleDeleteComment = async (id: string) => {
     try {
       const res = await apiUrl.delete(`/comment/delete/${id}`);
@@ -170,24 +111,6 @@ export default function TopicDetails({ slug }: { slug: string }) {
 
   return (
     <>
-      <Modal
-        title="Update Review"
-        centered
-        open={modalEdit}
-        onOk={showEditConfirm}
-        onCancel={() => setModalEdit(false)}
-      >
-        <Form form={form} layout="vertical">
-          {/* Input review */}
-          <Form.Item
-            label="Comment"
-            name="comment"
-            rules={[{ required: true, message: "Please input comment" }]}
-          >
-            <Input.TextArea showCount maxLength={9999} autoSize />
-          </Form.Item>
-        </Form>
-      </Modal>
       <div className="p-2 text-lg font-semibold mb-3 rounded-lg bg-[#005b50] text-white">
         Topic Details
       </div>
@@ -207,10 +130,9 @@ export default function TopicDetails({ slug }: { slug: string }) {
         {/* Comment List */}
         <CommentList
           comments={comments}
-          hasMore={hasMore}
+          hasMore={hasMore && comments.length < totalComment}
           totalReview={totalComment}
           onLoadMore={() => setPage((prev) => prev + 1)}
-          onEdit={setModalAndDataForUpdate}
           onDelete={showDeleteConfirm}
         />
       </div>

@@ -17,8 +17,9 @@ import { CustomTable } from "@/components/CustomTable";
 import { TablePaginationConfig } from "antd/es/table";
 import useDebounce from "@/utils/useDebounce";
 import apiUrl from "@/hooks/api";
+import GenreModalForm from "./GenreModalForm";
 
-interface DataType {
+export interface DataGenreType {
   id: string;
   name: string;
   created_at: string;
@@ -26,8 +27,8 @@ interface DataType {
 }
 
 const AnimeGenre: React.FC = () => {
-  const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
-  const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
+  const [data, setData] = useState<DataGenreType[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [form] = Form.useForm();
   const [modalMode, setMode] = useState<"edit" | "post">();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -40,7 +41,6 @@ const AnimeGenre: React.FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
   const { confirm } = Modal;
-  const api = process.env.NEXT_PUBLIC_API_URL;
 
   const showModal = (modalMode: "edit" | "post") => {
     setMode(modalMode);
@@ -55,7 +55,7 @@ const AnimeGenre: React.FC = () => {
   const handleOk = () => {
     form
       .validateFields()
-      .then((values: DataType) => {
+      .then((values: DataGenreType) => {
         if (modalMode === "post") {
           showPostConfirm(values);
         } else if (modalMode === "edit") {
@@ -69,7 +69,7 @@ const AnimeGenre: React.FC = () => {
   };
 
   // Fungsi untuk melakukan post data genre
-  const handlePostGenre = async (values: DataType) => {
+  const handlePostGenre = async (values: DataGenreType) => {
     setLoading(true);
     try {
       const res = await apiUrl.post(`/genre/post`, values); // Melakukan POST ke server
@@ -85,15 +85,15 @@ const AnimeGenre: React.FC = () => {
     }
   };
 
+  // Fungsi untuk set data ke dalam form edit
   const setDataEdit = async (name: string) => {
-    // Set data ke dalam form
     form.setFieldsValue({
       name: name,
     });
   };
 
   // Fungsi untuk melakukan edit data genre
-  const handleEditGenre = async (values: DataType) => {
+  const handleEditGenre = async (values: DataGenreType) => {
     setLoading(true);
     try {
       const res = await apiUrl.put(`/genre/update/${idGenre}`, values); // Melakukan PUT ke server
@@ -101,6 +101,7 @@ const AnimeGenre: React.FC = () => {
 
       // Fetch ulang data setelah post
       fetchGenre();
+      form.resetFields(); // Reset form setelah submit
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -125,7 +126,7 @@ const AnimeGenre: React.FC = () => {
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showPostConfirm = (values: DataType) => {
+  const showPostConfirm = (values: DataGenreType) => {
     form
       .validateFields() // Validasi input form terlebih dahulu
       .then(() => {
@@ -149,7 +150,7 @@ const AnimeGenre: React.FC = () => {
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showEditConfirm = (values: DataType) => {
+  const showEditConfirm = (values: DataGenreType) => {
     form
       .validateFields() // Validasi input form terlebih dahulu
       .then(() => {
@@ -203,7 +204,7 @@ const AnimeGenre: React.FC = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: (text: string, record: DataType) => (
+      render: (text: string, record: DataGenreType) => (
         <div className="flex gap-3">
           <button
             type="button"
@@ -218,6 +219,7 @@ const AnimeGenre: React.FC = () => {
             onClick={() => {
               showModal("edit");
               setDataEdit(record.name);
+              setIdGenre(record.id);
             }}
           >
             <AiOutlineEdit style={{ fontSize: 20 }} />
@@ -252,7 +254,7 @@ const AnimeGenre: React.FC = () => {
     fetchGenre();
   }, [JSON.stringify(pagination), debounceText]);
 
-  const handleTableChange: TableProps<DataType>["onChange"] = (
+  const handleTableChange: TableProps<DataGenreType>["onChange"] = (
     pagination: TablePaginationConfig
   ) => {
     setPagination({
@@ -315,41 +317,13 @@ const AnimeGenre: React.FC = () => {
         onChange={handleTableChange}
         data={data} // Data dari state
       />
-      <Modal
-        title={modalMode === "post" ? "Add Genre" : "Edit Genre"}
-        centered
-        open={modalVisible}
-        onOk={handleOk}
+      <GenreModalForm
+        visible={modalVisible}
+        mode={modalMode === "post" ? "post" : "edit"}
+        form={form}
+        onSubmit={handleOk}
         onCancel={handleCancel}
-      >
-        {modalMode === "edit" ? (
-          <Form form={form} layout="vertical" className="mt-3">
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[{ required: true, message: "Please input genre name!" }]}
-            >
-              <Input type="text"></Input>
-            </Form.Item>
-          </Form>
-        ) : (
-          ""
-        )}
-
-        {modalMode === "post" ? (
-          <Form form={form} layout="vertical" className="mt-3">
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[{ required: true, message: "Please input genre name!" }]}
-            >
-              <Input type="text"></Input>
-            </Form.Item>
-          </Form>
-        ) : (
-          ""
-        )}
-      </Modal>
+      />
     </>
   );
 };

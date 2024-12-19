@@ -124,6 +124,10 @@ const IncomeData: React.FC = () => {
         picker="year"
         value={dayjs(selectedYear, "YYYY")}
         onChange={handleYearChange}
+        disabledDate={(current) => {
+          // Disable all dates after the current year
+          return current && current.year() > dayjs().year();
+        }}
       />
       <div className="w-full h-full my-7">
         {loading ? (

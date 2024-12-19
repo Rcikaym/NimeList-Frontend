@@ -1,50 +1,31 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Form, Input, message, Modal, Typography } from "antd";
+import { Input, message, Modal } from "antd";
 import type { TableColumnsType, TablePaginationConfig, TableProps } from "antd";
 import {
-  AiOutlineClockCircle,
   AiOutlineComment,
   AiOutlineDelete,
-  AiOutlineEdit,
   AiOutlineEye,
-  AiOutlineHeart,
   AiOutlineSearch,
-  AiOutlineTag,
-  AiOutlineTool,
 } from "react-icons/ai";
 import { AppstoreFilled, ExclamationCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 import { CustomTable } from "@/components/CustomTable";
 import renderDateTime from "@/utils/FormatDateTime";
-import DisplayLongText from "@/components/DisplayLongText";
 import useDebounce from "@/utils/useDebounce";
 import apiUrl from "@/hooks/api";
+import dynamic from "next/dynamic";
+import { CommentType, DataCommentType } from "./types";
 
-const { Text } = Typography;
-
-interface DataType {
-  id: string;
-  topic: string;
-  user: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface DataEdit {
-  comment: string;
-}
+const CommentModal = dynamic(() => import("./CommentModal"), { ssr: false });
 
 const TopicCommentList: React.FC = () => {
-  const [data, setData] = useState<DataType[]>([]); // Data diisi dengan api
+  const [data, setData] = useState<DataCommentType[]>([]); // Data diisi dengan api
   const [loading, setLoading] = useState<boolean>(true); // Untuk status loading
-  const [detailComment, setDetailComment] = useState<any>(null);
-  const [modalMode, setMode] = useState<"edit" | "detail">();
+  const [detailComment, setDetailComment] = useState({} as CommentType);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [idComment, setId] = useState<string>("");
   const { confirm } = Modal;
-  const [form] = Form.useForm();
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 10,
@@ -53,86 +34,20 @@ const TopicCommentList: React.FC = () => {
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1500);
 
-  const showModal = (modalMode: "edit" | "detail") => {
-    setMode(modalMode);
-    setModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-    form.resetFields();
-  };
-
-  const handleOk = () => {
-    if (modalMode === "detail") {
-      setModalVisible(false); // Untuk mode detail, tidak perlu submit
-      return;
-    }
-    form
-      .validateFields()
-      .then((values: any) => {
-        if (modalMode === "edit") {
-          showEditConfirm(values);
-        }
-        setModalVisible(false);
-        form.resetFields();
-      })
-      .catch(() => {
-        message.error("Please complete the form before submitting!");
-      });
-  };
-
   // Set data detail comment
   const setDataDetail = async (id: string) => {
-    const res = await apiUrl.get(`/comment/get/${id}`);
-    setDetailComment(await res.data);
-  };
-
-  const setDataEdit = async (id: string) => {
-    setId(id);
-    const res = await apiUrl.get(`/comment/get/${id}`);
-    const { comment } = await res.data;
-    // Set data ke dalam form
-    form.setFieldsValue({
-      comment: comment,
-    });
-  };
-
-  const handleEditComment = async (values: DataEdit) => {
+    setModalVisible(true);
     setLoading(true);
     try {
-      const res = await apiUrl.put(`/comment/update/${idComment}`, values); // Melakukan PUT ke server
-      message.success(res.data.message);
-      setModalVisible(false);
-
-      // Fetch ulang data setelah update
-      fetchComment();
-      form.resetFields(); // Reset form setelah submit
-
-      setLoading(false);
+      const res = await apiUrl.get(`/comment/get/${id}`);
+      setDetailComment(await res.data);
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
     } catch (error) {
+      console.error("Error fetching users:", error);
       setLoading(false);
-      message.error("Failed to update comment");
     }
-  };
-
-  const showEditConfirm = (values: DataEdit) => {
-    confirm({
-      centered: true,
-      title: "Do you want to update this comment ?",
-      icon: <ExclamationCircleFilled />,
-      onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handleEditComment(values)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
-      },
-    });
   };
 
   const fetchComment = async () => {
@@ -158,7 +73,7 @@ const TopicCommentList: React.FC = () => {
     fetchComment();
   }, [JSON.stringify(pagination), debounceText]);
 
-  const handleTableChange: TableProps<DataType>["onChange"] = (
+  const handleTableChange: TableProps<DataCommentType>["onChange"] = (
     pagination: TablePaginationConfig
   ) => {
     setPagination({
@@ -203,7 +118,7 @@ const TopicCommentList: React.FC = () => {
   }
 
   // Kolom table
-  const columns: TableColumnsType<DataType> = [
+  const columns: TableColumnsType<DataCommentType> = [
     {
       title: "Title Topic",
       dataIndex: "topic",
@@ -226,27 +141,16 @@ const TopicCommentList: React.FC = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: (text: string, record: DataType) => (
+      render: (text: string, record: DataCommentType) => (
         <div className="flex gap-3">
           <button
             type="button"
             className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800"
             onClick={() => {
-              showModal("detail");
               setDataDetail(record.id);
             }}
           >
             <AiOutlineEye style={{ fontSize: 20 }} />
-          </button>
-          <button
-            type="button"
-            className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800"
-            onClick={() => {
-              showModal("edit");
-              setDataEdit(record.id);
-            }}
-          >
-            <AiOutlineEdit style={{ fontSize: 20 }} />
           </button>
           <button
             type="button"
@@ -305,73 +209,13 @@ const TopicCommentList: React.FC = () => {
         data={data} // Data dari state
       />
 
-      {/* Modal dynamic mode */}
-      <Modal
-        title={`${modalMode === "detail" ? "Detail" : "Edit"} Comment Topic`}
-        centered
-        open={modalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        cancelButtonProps={{
-          style: modalMode === "detail" ? { display: "none" } : {},
-        }}
-        okButtonProps={{
-          style: modalMode === "detail" ? { display: "none" } : {},
-        }}
-      >
-        {modalMode === "detail" && detailComment ? (
-          <div className="flex flex-col w-full h-full">
-            <div className="flex flex-col gap-3 mb-3">
-              <div className="flex gap-2 items-center">
-                <AiOutlineTag size={19} />
-                <div className="break-words w-full">
-                  <span> {detailComment.topic}</span>
-                </div>
-              </div>
-              <div className="flex gap-2 items-center">
-                <AiOutlineHeart size={19} />
-                <Text>{detailComment.likes}</Text>
-              </div>
-            </div>
-
-            <div className="bg-gray-100 p-3 w-full h-full rounded-md">
-              <DisplayLongText text={detailComment.comment} />
-            </div>
-
-            <div className="flex gap-2 mt-3">
-              <div className="flex gap-2 items-center">
-                <AiOutlineClockCircle size={15} />
-                <Text type="secondary">
-                  {renderDateTime(detailComment.created_at)}
-                </Text>
-              </div>
-              <div className="flex gap-2 items-center">
-                <AiOutlineTool size={15} />
-                <Text type="secondary">
-                  {renderDateTime(detailComment.updated_at)}
-                </Text>
-              </div>
-            </div>
-          </div>
-        ) : (
-          ""
-        )}
-
-        {modalMode === "edit" ? (
-          <Form form={form} layout="vertical" className="w-full p-3">
-            {/* Input review */}
-            <Form.Item
-              label="Comment"
-              name="comment"
-              rules={[{ required: true, message: "Please input comment" }]}
-            >
-              <Input.TextArea showCount maxLength={9999} autoSize />
-            </Form.Item>
-          </Form>
-        ) : (
-          ""
-        )}
-      </Modal>
+      {/* Detail Modal Comment */}
+      <CommentModal
+        visible={modalVisible}
+        detailComment={detailComment || null}
+        onCancel={() => setModalVisible(false)}
+        loading={loading}
+      />
     </>
   );
 };
