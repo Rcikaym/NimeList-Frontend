@@ -5,6 +5,7 @@ import apiUrl from "@/hooks/api";
 import { LoadingOutlined } from "@ant-design/icons";
 import { message } from "antd";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BiDiamond } from "react-icons/bi";
 
@@ -60,11 +61,7 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
           <div className="flex justify-start items-center w-full">
             <div className="w-40 h-40 relative">
               <Image
-                src={
-                  profile.photo_profile === null
-                    ? "/images/logo-admin.jpeg"
-                    : `${api}/${profile.photo_profile}`
-                }
+                src={`${api}/${profile.photo_profile}`}
                 alt="Profile"
                 className="rounded-full border-2 border-gray-300 m-0"
                 loading="lazy"
@@ -82,14 +79,14 @@ const ProfileAdminDetail = ({ username }: { username: string }) => {
               <span className="text-sm">{`@${profile.username}`}</span>
             </div>
             <div className="ml-24">
-              <a
+              <Link
                 href={`/dashboard/profile/edit/${profile.username}`}
                 className="border border-emerald-600 rounded-md hover:bg-emerald-50 flex items-center justify-center px-7 py-2"
               >
                 <span className="text-lg font-sans font-semibold text-emerald-700">
                   Edit Profile
                 </span>
-              </a>
+              </Link>
             </div>
           </div>
           <div className="mt-10">

@@ -115,7 +115,7 @@ const SidebarMenu = () => {
             <Link href="/dashboard/topic">Topic</Link>
           </Menu.Item>
           <Menu.Item key="8" className={styles.menuItem}>
-            <Link href="/dashboard/topic/comment">Comment Topic</Link>
+            <Link href="/dashboard/topic/comment">Topic Comment</Link>
           </Menu.Item>
         </SubMenu>
         <Menu.Item

@@ -1,11 +1,10 @@
 "use client";
 
 import apiUrl from "@/hooks/api";
-import {
-  CameraOutlined,
-  ExclamationCircleFilled,
-} from "@ant-design/icons";
+import { setAccessToken } from "@/utils/auth";
+import { CameraOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { Button, Form, Input, message, Modal, Upload, UploadProps } from "antd";
+import { jwtDecode } from "jwt-decode";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -64,7 +63,13 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
       const update = await apiUrl.put(`/user/update-profile`, formData);
       const res = await update.data;
       message.success(res.message);
-      router.push(`/dashboard/profile/${username}`);
+
+      if (res.access_token) {
+        const { exp } = jwtDecode(res.access_token);
+        setAccessToken(res.access_token, exp);
+      }
+
+      router.push(`/dashboard/profile/${values.username}`);
     } catch (error) {
       message.error("Failed to update profile");
       console.log(error);
@@ -100,19 +105,12 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
     reader.readAsDataURL(file);
   };
 
-  // Menghandle perubahan pada file upload
-  const beforeUpload = (file: any) => {
-    handlePreview(file); // Tampilkan preview saat file dipilih
-    return true; // Izinkan file di-upload
-  };
-
   const handlePhotoUpload = (info: any) => {
-    console.log(info);
     const { file, fileList } = info;
 
-    setPhoto(fileList);
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
+      setPhoto(fileList);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
     }
@@ -129,8 +127,17 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
       if (!isLt2M) {
         message.error("Image must smaller than 2MB!");
       }
-      return isJpgOrPng && isLt2M;
+
+      if (isJpgOrPng && isLt2M) {
+        handlePreview(file); // Tampilkan preview jika validasi berhasil
+        return true;
+      }
+
+      return false; // Jangan upload jika gagal validasi
     },
+    maxCount: 1,
+    showUploadList: false,
+    onChange: handlePhotoUpload,
   };
 
   return (
@@ -138,55 +145,19 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
       <h3 className="text-xl font-bold mb-4">Edit Profile</h3>
       <Form layout="vertical" form={form} onFinish={showUpdateConfirm}>
         <Form.Item name="photo_profile">
-          <Upload
-            {...uploadProps}
-            maxCount={1}
-            showUploadList={false}
-            onChange={handlePhotoUpload}
-            beforeUpload={beforeUpload}
-          >
-            {previewImage ? (
-              <div className="mt-4 relative w-44 h-44">
-                <Image
-                  src={previewImage}
-                  alt="Profile Preview"
-                  className="rounded-full object-cover"
-                  layout="fill"
-                />
-                {/* Ikon kamera saat hover */}
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
-                  <CameraOutlined className="text-white text-4xl" />
-                </div>
+          <Upload {...uploadProps}>
+            <div className="mt-4 relative w-44 h-44">
+              <Image
+                src={previewImage ? previewImage : `${api}/${photoUrl}`}
+                alt="Profile"
+                className="rounded-full object-cover"
+                layout="fill"
+              />
+              {/* Ikon kamera saat hover */}
+              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
+                <CameraOutlined className="text-white text-4xl" />
               </div>
-            ) : photoUrl ? (
-              photoUrl && (
-                <div className="mt-4 relative w-44 h-44">
-                  <Image
-                    src={`${api}/${photoUrl}`}
-                    alt="Profile"
-                    className="rounded-full object-cover"
-                    layout="fill"
-                  />
-                  {/* Ikon kamera saat hover */}
-                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
-                    <CameraOutlined className="text-white text-4xl" />
-                  </div>
-                </div>
-              )
-            ) : (
-              <div className="mt-4 relative w-44 h-44">
-                <Image
-                  src="/images/logo-admin.jpeg"
-                  alt="Profile"
-                  className="rounded-full object-cover"
-                  layout="fill"
-                />
-                {/* Ikon kamera saat hover */}
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer transition-opacity duration-300">
-                  <CameraOutlined className="text-white text-4xl" />
-                </div>
-              </div>
-            )}
+            </div>
           </Upload>
         </Form.Item>
         <span className="text-sm text-gray-400">

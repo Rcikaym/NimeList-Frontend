@@ -80,13 +80,17 @@ const AnimeList: React.FC = () => {
 
   // Fungsi untuk melakukan delete data genre
   const handleDeleteAnime = async (id: string) => {
+    setLoading(true);
     try {
       await apiUrl.delete(`/anime/delete/${id}`); // Melakukan DELETE ke server
       message.success("Anime deleted successfully!");
 
+      setLoading(false);
+
       // Fetch ulang data setelah post
       fetchAnime();
     } catch (error) {
+      setLoading(false);
       message.error("Failed to delete anime");
     }
   };
@@ -100,15 +104,7 @@ const AnimeList: React.FC = () => {
       okText: "Yes",
       okType: "danger",
       onOk() {
-        setLoading(true); // Set status loading pada tombol OK
-
-        return handleDeleteAnime(id)
-          .then(() => {
-            setLoading(false); // Set loading ke false setelah selesai
-          })
-          .catch(() => {
-            setLoading(false); // Set loading ke false jika terjadi error
-          });
+        handleDeleteAnime(id);
       },
     });
   };

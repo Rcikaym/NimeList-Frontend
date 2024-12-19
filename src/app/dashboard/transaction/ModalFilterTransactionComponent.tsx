@@ -48,6 +48,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
     <Modal
       title="Transaction and Premium Filter"
       visible={isOpen}
+      centered
       onCancel={onClose}
       footer={
         <>
@@ -103,14 +104,16 @@ const FilterModal: React.FC<FilterModalProps> = ({
           className="w-[30%]"
           onChange={setSelectedPlatform}
           options={paymentPlatformOptions}
+          listHeight={paymentPlatformOptions.length * 40}
           showSearch
           filterOption={(input, option: any) =>
             option.label.toLowerCase().includes(input.toLowerCase())
           }
           dropdownStyle={{
-            maxHeight: 100,
+            maxHeight: 130,
             overflow: "auto",
             scrollbarWidth: "none",
+            scrollbarColor: "none",
             msOverflowStyle: "none",
           }}
         />

@@ -35,6 +35,8 @@ const ModalDetailTransaction: React.FC<ModalDetailTransactionProps> = ({
       .join(" ");
   }
 
+  const premiumData = data.premium;
+
   return (
     <Modal
       title="Transaction Details"
@@ -91,13 +93,11 @@ const ModalDetailTransaction: React.FC<ModalDetailTransactionProps> = ({
                     <span>Price</span>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <span>{data.premium?.name}</span>
-                    <span>{data.premium?.duration} days</span>
-                    <span>
-                      {`Rp${new Intl.NumberFormat("id-ID").format(
-                        data.premium?.price
-                      )}`}
-                    </span>
+                    <span>{premiumData?.name}</span>
+                    <span>{premiumData?.duration} days</span>
+                    <span>{`Rp ${premiumData?.price.toLocaleString(
+                      "id-ID"
+                    )}`}</span>
                   </div>
                 </div>
               </div>

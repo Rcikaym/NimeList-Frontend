@@ -6,12 +6,12 @@ import {
   BiCart,
   BiCommentDetail,
   BiCrown,
-  BiDiamond,
   BiGlobe,
   BiHappyAlt,
 } from "react-icons/bi";
+import { AiOutlinePicRight } from "react-icons/ai";
 
-const UserDetailComponent = ({ data }: { data: UserDetail }) => {
+const UserDetailModal = ({ data }: { data: UserDetail }) => {
   const api = process.env.NEXT_PUBLIC_API_URL;
   const sizeIcon = 25;
 
@@ -39,7 +39,7 @@ const UserDetailComponent = ({ data }: { data: UserDetail }) => {
     {
       title: "Topics Created",
       value: data.topic_created,
-      icon: <BiAlignLeft size={sizeIcon} />,
+      icon: <AiOutlinePicRight style={{ fontSize: sizeIcon }} />,
     },
   ];
 
@@ -104,4 +104,4 @@ const UserDetailComponent = ({ data }: { data: UserDetail }) => {
   );
 };
 
-export default UserDetailComponent;
+export default UserDetailModal;

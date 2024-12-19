@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Input, message, Modal, Select } from "antd";
+import { Input, message, Select } from "antd";
 import { TablePaginationConfig } from "antd/es/table";
-import type { TableColumnsType, TableProps } from "antd";
+import type { TableColumnsType } from "antd";
 import {
   AiOutlineReload,
   AiOutlineSearch,
@@ -14,10 +14,14 @@ import Link from "next/link";
 import { CustomTable, getColumnSearchProps } from "@/components/CustomTable";
 import renderDateTime from "@/utils/FormatDateTime";
 import useDebounce from "@/utils/useDebounce";
-import { SorterResult } from "antd/es/table/interface";
 import { Option } from "antd/es/mentions";
 import apiUrl from "@/hooks/api";
-import UserDetailComponent from "./userDetailComponent";
+import dynamic from "next/dynamic";
+
+const UserDetailComponent = dynamic(() => import("./UserDetailModal"), {
+  ssr: false,
+});
+const Modal = dynamic(() => import("antd/es/modal"), { ssr: false });
 
 interface DataType {
   username: string;
@@ -195,14 +199,12 @@ const UserList = () => {
           </div>
         </div>
         <div className="items-center flex gap-3">
-          <Link href="/dashboard">
-            <div className="hover:text-emerald-700">
-              <AppstoreFilled style={{ fontSize: 18 }} />
-            </div>
+          <Link href="/dashboard" className="hover:text-emerald-700">
+            <AppstoreFilled style={{ fontSize: 18 }} />
           </Link>
           <span> / </span>
-          <Link href="/dashboard/users">
-            <h2 className="text-lg hover:text-emerald-700 mt-2">Users</h2>
+          <Link href="/dashboard/users" className="hover:text-emerald-700">
+            <span className="text-lg font-semibold">Users</span>
           </Link>
         </div>
       </div>
