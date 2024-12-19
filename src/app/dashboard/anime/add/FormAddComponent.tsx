@@ -183,33 +183,96 @@ export default function AddAnime() {
       setFileList(fileList);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
+
+      // Hapus file dengan status "error" setelah state di-update
+      setTimeout(() => {
+        setFileList((currentList) =>
+          currentList.filter((f: any) => f.uid !== file.uid)
+        );
+      }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
     }
   };
 
   const handleCoverUpload = (info: any) => {
     const { file, fileList } = info;
 
+    setFileCover(fileList);
     if (file.status === "done") {
       message.success(`${file.name} file uploaded successfully`);
-      setFileCover(fileList);
     } else if (file.status === "error") {
       message.error(`${file.name} file upload failed.`);
+
+      // Hapus file dengan status "error" setelah state di-update
+      setTimeout(() => {
+        setFileCover((currentList) =>
+          currentList.filter((f: any) => f.uid !== file.uid)
+        );
+      }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
     }
   };
 
-  const uploadProps: UploadProps = {
+  const uploadPropsList: UploadProps = {
     beforeUpload: (file) => {
       const isJpgOrPng =
         file.type === "image/jpeg" || file.type === "image/png";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
       if (!isJpgOrPng) {
         message.error("You can only upload JPG/PNG file!");
+        // Hapus file dengan status "error" setelah state di-update
+        setTimeout(() => {
+          setFileList((currentList) =>
+            currentList.filter((f: any) => f.uid !== file.uid)
+          );
+        }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
-      const isLt2M = file.size / 1024 / 1024 < 2;
+
       if (!isLt2M) {
         message.error("Image must smaller than 2MB!");
+        // Hapus file dengan status "error" setelah state di-update
+        setTimeout(() => {
+          setFileList((currentList) =>
+            currentList.filter((f: any) => f.uid !== file.uid)
+          );
+        }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
+
       return isJpgOrPng && isLt2M;
     },
+    onChange: handlePhotosUpload,
+  };
+
+  const uploadPropsCover: UploadProps = {
+    beforeUpload: (file) => {
+      const isJpgOrPng =
+        file.type === "image/jpeg" || file.type === "image/png";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJpgOrPng) {
+        message.error("You can only upload JPG/PNG file!");
+
+        // Hapus file dengan status "error" setelah state di-update
+        setTimeout(() => {
+          setFileCover((currentList) =>
+            currentList.filter((f: any) => f.uid !== file.uid)
+          );
+        }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
+      }
+
+      if (!isLt2M) {
+        message.error("Image must smaller than 2MB!");
+
+        // Hapus file dengan status "error" setelah state di-update
+        setTimeout(() => {
+          setFileCover((currentList) =>
+            currentList.filter((f: any) => f.uid !== file.uid)
+          );
+        }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
+      }
+
+      return isJpgOrPng && isLt2M;
+    },
+    onChange: handleCoverUpload,
   };
 
   return (
@@ -345,11 +408,10 @@ export default function AddAnime() {
             rules={[{ required: true, message: "Please upload cover image" }]}
           >
             <Upload
-              {...uploadProps}
+              {...uploadPropsCover}
               listType="picture"
               maxCount={1}
               fileList={fileCover}
-              onChange={(info) => handleCoverUpload(info)}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
@@ -358,12 +420,11 @@ export default function AddAnime() {
           {/* Upload Image */}
           <Form.Item label="Upload Photo Anime">
             <Upload
-              {...uploadProps}
+              {...uploadPropsList}
               listType="picture"
               maxCount={4}
               multiple
               fileList={fileList}
-              onChange={(info) => handlePhotosUpload(info)}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
