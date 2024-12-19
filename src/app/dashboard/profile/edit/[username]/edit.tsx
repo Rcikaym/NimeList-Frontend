@@ -1,8 +1,10 @@
 "use client";
 
 import apiUrl from "@/hooks/api";
+import { setAccessToken } from "@/utils/auth";
 import { CameraOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { Button, Form, Input, message, Modal, Upload, UploadProps } from "antd";
+import { jwtDecode } from "jwt-decode";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -61,7 +63,13 @@ const ProfileAdminEdit = ({ username }: { username: string }) => {
       const update = await apiUrl.put(`/user/update-profile`, formData);
       const res = await update.data;
       message.success(res.message);
-      router.push(`/dashboard/profile/${username}`);
+
+      if (res.access_token) {
+        const { exp } = jwtDecode(res.access_token);
+        setAccessToken(res.access_token, exp);
+      }
+
+      router.push(`/dashboard/profile/${values.username}`);
     } catch (error) {
       message.error("Failed to update profile");
       console.log(error);
