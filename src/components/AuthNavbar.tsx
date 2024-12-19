@@ -7,9 +7,9 @@ import React from "react";
 import { BiChevronDown, BiLogIn, BiLogOut } from "react-icons/bi";
 import {
   FaCrown,
-  FaRegBookmark,
   FaMagnifyingGlass,
   FaStar,
+  FaRegHeart,
 } from "react-icons/fa6";
 import {
   Dropdown,
@@ -199,7 +199,7 @@ const AuthNavbar = () => {
             </li>
             <li>
               <Link href="/favorites">
-                <FaRegBookmark className="cursor-pointer w-6 h-6" />
+                <FaRegHeart className="cursor-pointer w-6 h-6" />
               </Link>
             </li>
             <li>
