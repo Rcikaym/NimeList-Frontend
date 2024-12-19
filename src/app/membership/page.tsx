@@ -3,13 +3,16 @@ import DisplayLongText from "@/components/DisplayLongText";
 import { RiMedalFill } from "react-icons/ri";
 import { IoCreate } from "react-icons/io5";
 import { BsFillPeopleFill } from "react-icons/bs";
+import PageTitle from "@/components/TitlePage";
+import MembershipPlans from "./MembershipPlans";
 
 export default function Membership() {
   return (
     <>
+      <PageTitle title={`NimeList - Membership`} />
       <div className="min-h-screen bg-gradient-to-b from-[#009951] via-[#050505] via-70% to-[#050505]">
         <AuthNavbar />
-        <header className="py-12 text-center">
+        <header className="py-12 text-center mt-9">
           <div className="text-center mt-10 px-4 sm:px-8 md:px-12">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
               NimeList Membership.
@@ -53,9 +56,16 @@ export default function Membership() {
             </div>
           </div>
         </header>
-        <section>
-          <div className="flex flex-col md:flex-row justify-between "></div>
-        </section>
+          <section className="mt-48">
+            <div className="text-center mt-10 px-4 sm:px-8 md:px-12">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+                Choose Your Membership Plan
+              </h1>
+              <div className="mt-24 md:mt-32 flex flex-wrap md:flex-row gap-10 justify-center">
+                <MembershipPlans />
+              </div>
+            </div>
+          </section>
       </div>
     </>
   );

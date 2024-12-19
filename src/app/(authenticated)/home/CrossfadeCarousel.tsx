@@ -1,7 +1,8 @@
 "use client";
 import { PlayIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
-import { BiBookmarkHeart, BiBookmarkPlus } from "react-icons/bi";
+import { FaRegHeart } from "react-icons/fa6";
+import { FaHeart } from "react-icons/fa6";
 import { TiChevronRight, TiChevronLeft } from "react-icons/ti";
 import { AnimeType } from "./types";
 import {
@@ -58,7 +59,7 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
 
     return () => clearInterval(timer);
   }, [currentIndex, animeData.length, interval]);
-  
+
   const handleNext = () => {
     setCurrentIndex((currentIndex + 1) % animeData.length);
   };
@@ -99,7 +100,6 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
       console.error(error.message);
     }
   };
-
 
   if (animeData.length === 0) return <div>Loading...</div>;
 
@@ -163,15 +163,15 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
 
           {animeFav.includes(currentAnime.id) && isLogin ? (
             <button onClick={() => handleDelFavorite(currentAnime.id)}>
-              <BiBookmarkHeart className="text-2xl text-gray-400" />
+              <FaHeart className="text-2xl text-rose-600" />
             </button>
           ) : isLogin ? (
             <button onClick={() => handleAddFavorite(currentAnime.id)}>
-              <BiBookmarkPlus className="text-2xl text-gray-400" />
+              <FaRegHeart className="text-2xl text-gray-400" />
             </button>
           ) : (
             <a href="/login">
-              <BiBookmarkPlus className="text-2xl text-gray-400" />
+              <FaRegHeart className="text-2xl text-gray-400" />
             </a>
           )}
         </div>
