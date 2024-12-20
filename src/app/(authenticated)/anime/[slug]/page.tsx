@@ -39,14 +39,13 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
   const [animeData, setAnimeData] = useState<AnimeType | null>(null); // State for anime data
   const [genres, setGenres] = useState<GenreType[]>([]); // State for genres
   const [reviews, setReviews] = useState<ReviewDataType[]>([]);
-  const [favorite, setFavorite] = useState<string[]>([]);
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [isLogin, setIsLogin] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [username, setUsername] = useState("");
   const [totalReview, setTotalReview] = useState(0);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const token = getAccessToken();
 
   const { confirm } = Modal;
   const api = process.env.NEXT_PUBLIC_API_URL;
@@ -96,16 +95,17 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
   }, [slug]);
 
   useEffect(() => {
+    const token = getAccessToken();
     if (token) {
       const decodedToken: { username: string } = jwtDecode(token);
       console.log(decodedToken);
       setUsername(decodedToken.username);
       setIsLogin(true);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
-    // Panggil getFav jika animeData sudah ada
+    // Lakukan eksekusi ini ketika animeData telah siap dan sudah login
     if (animeData?.anime?.id && isLogin) {
       getFav();
       getUserRating();
@@ -164,9 +164,12 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
 
   const getFav = async () => {
     try {
-      const response = await apiUrl.get(`/favorite-anime/user-favorites`);
-      console.log(response.data);
-      setFavorite(await response.data);
+      const response = await apiUrl.get(`/favorite-anime/is-favorite`, {
+        params: {
+          id_anime: animeData?.anime?.id,
+        },
+      });
+      setIsFavorite(await response.data);
     } catch (error) {
       console.error("Error:", error);
       return null;
@@ -205,6 +208,45 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
     );
   }
 
+  const renderFavoriteButton = () => {
+    if (isLogin) {
+      return isFavorite ? (
+        <Button
+          size="lg"
+          radius="sm"
+          startContent={<BiMinus />}
+          className="w-[300px] mt-3 text-white bg-[#014A42]"
+          onClick={() => handleDelFavorite(animeData.anime.id)}
+        >
+          Delete To Favorite
+        </Button>
+      ) : (
+        <Button
+          size="lg"
+          radius="sm"
+          startContent={<BiPlus />}
+          // color="success"
+          className="w-[300px] mt-3 text-white bg-[#014A42]"
+          onClick={() => handleAddFavorite(animeData.anime.id)}
+        >
+          Add To Favorite
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          size="lg"
+          radius="sm"
+          startContent={<BiPlus />}
+          // color="success"
+          className="w-[300px] mt-3 text-white bg-[#014A42]"
+        >
+          <Link href="/login">Add To Favorite</Link>
+        </Button>
+      );
+    }
+  };
+
   return (
     <>
       <div className="container mx-auto mt-6">
@@ -224,38 +266,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
               className="object-cover w-full"
               alt={animeData.anime.title}
             />
-            {favorite.includes(animeData.anime.id) && isLogin ? (
-              <Button
-                size="lg"
-                radius="sm"
-                startContent={<BiMinus />}
-                // color="success"
-                onClick={() => handleDelFavorite(animeData.anime.id)}
-                className="w-[300px] mt-3 text-white bg-[#014A42]"
-              >
-                Delete To Favorite
-              </Button>
-            ) : isLogin ? (
-              <Button
-                size="lg"
-                radius="sm"
-                startContent={<BiPlus />}
-                // color="success"
-                onClick={() => handleAddFavorite(animeData.anime.id)}
-                className="w-[300px] mt-3 text-white bg-[#014A42]"
-              >
-                Add To Favorite
-              </Button>
-            ) : (
-              <Button
-                size="lg"
-                radius="sm"
-                startContent={<BiPlus />}
-                className="w-[300px] mt-3 text-white bg-[#014A42]"
-              >
-                <Link href="/login">Add To Favorite</Link>
-              </Button>
-            )}
+            {renderFavoriteButton()}
           </div>
           <Spacer x={5} />
           <div className="h-full">

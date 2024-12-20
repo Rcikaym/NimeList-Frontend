@@ -270,7 +270,7 @@ const PremiumList: React.FC = () => {
           <a
             onClick={() => {
               showModal("edit");
-              setDataEdit(record.id);
+              setDataEdit(record);
             }}
           >
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">
