@@ -56,16 +56,53 @@ export default function Membership() {
             </div>
           </div>
         </header>
-          <section className="mt-48">
-            <div className="text-center mt-10 px-4 sm:px-8 md:px-12">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
-                Choose Your Membership Plan
+        <section className="mt-48">
+          <div className="text-center mt-10 px-4 sm:px-8 md:px-12">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+              Choose Your Membership Plan
+            </h1>
+            <div className="mt-24 md:mt-32 flex flex-wrap md:flex-row gap-10 justify-center">
+              <MembershipPlans />
+            </div>
+          </div>
+        </section>
+        <section className="mt-48">
+          <div className="w-full px-9 py-8 lg:py-12 lg:px-36 flex flex-col lg:flex-row justify-between items-center lg:items-start">
+            {/* Left Content */}
+            <div className="w-full lg:w-1/2 lg:max-w-lg text-justify">
+              <h1 className="font-bold text-2xl lg:text-3xl mb-4">
+                Earn Your Exclusive Badges
               </h1>
-              <div className="mt-24 md:mt-32 flex flex-wrap md:flex-row gap-10 justify-center">
-                <MembershipPlans />
+              <p className="text-white text-opacity-80 leading-relaxed">
+                You can earn unique, anime-inspired badges that show support to
+                our web. Display these badges proudly on your profile to
+                highlight your journey. Collect them all and let your
+                achievements shine!
+              </p>
+            </div>
+            {/* Right Content */}
+            <div className="w-full lg:w-1/2 flex justify-end mt-8 lg:mt-0">
+              <div className="w-80 h-32 bg-black rounded-3xl border border-gray-300 p-4 flex items-center">
+                {/* Badge Icon */}
+                <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
+                  <img
+                    src="/images/shikiya.jpg"
+                    alt="Badge Icon"
+                    className="w-full h-full object-cover blur-sm"
+                  />
+                </div>
+                {/* Badge Content */}
+                <div className="flex-1">
+                  <p className="text-yellow-400 font-bold text-sm mb-2">
+                    👑 Yearly Champion
+                  </p>
+                  <div className="w-full h-4 bg-gray-600 rounded mb-2"></div>
+                  <div className="w-3/4 h-4 bg-gray-600 rounded"></div>
+                </div>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
       </div>
     </>
   );
