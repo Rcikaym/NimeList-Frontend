@@ -135,8 +135,8 @@ const PremiumList: React.FC = () => {
 
       // Fetch ulang data setelah edit
       fetchPremium();
-
       setLoading(false);
+      form.resetFields(); // Reset form setelah submit
     } catch (error) {
       setLoading(false);
       message.error("Failed to edit premium");
