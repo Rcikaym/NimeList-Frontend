@@ -132,7 +132,7 @@ export default function Membership() {
                   />
                   <FaMousePointer className="absolute w-8 h-8 ml-52 mt-6 text-white" />
                 </div>
-                <div className="w-full flex gap-2 border-1 rounded-t border-gray-400">
+                <div className="w-full flex gap-2 border-1 border-b-0 rounded-t border-gray-400">
                   <button className="w-8 h-8 flex justify-center items-center text-white">
                     <FaBold />
                   </button>
@@ -210,7 +210,7 @@ export default function Membership() {
                   />
                 </div>
                 <div className="flex-1">
-                  <p className="text-white text-sm font-bold">@Yuni</p>
+                  <p className="text-white text-sm font-bold">@Yunli</p>
                   <p className="text-white text-opacity-80 text-sm mt-1">
                     IT IS!!!!!!
                   </p>
