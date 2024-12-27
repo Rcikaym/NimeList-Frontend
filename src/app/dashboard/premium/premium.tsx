@@ -152,13 +152,18 @@ const PremiumList: React.FC = () => {
       ); // Melakukan DELETE ke server
       message.success(res.data.message);
 
-      // Fetch ulang data setelah post
+      // Fetch ulang data setelah delete
       fetchPremium();
 
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
-      message.error("Failed to delete premium");
+
+      // Mengambil pesan dari response error
+      const errorMessage =
+        error.response?.data?.message || "Failed to delete premium";
+
+      message.error(errorMessage);
     }
   };
 
