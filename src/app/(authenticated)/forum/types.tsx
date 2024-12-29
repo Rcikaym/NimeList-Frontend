@@ -4,8 +4,8 @@ export interface TopicType {
     body: string;
     created_at: string;
     updated_at: string;
-    totalLikes: number;
-    totalDislikes: number;
+    likes: number;
+    dislikes: number;
     username: string;
     anime: string;
     badge: string[];

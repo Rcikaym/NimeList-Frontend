@@ -14,10 +14,10 @@ export default function ForumPage() {
 
   const handleCheckEnableAccess = async () => {
     try {
-      const isPremium = await checkPremium();
-      const isAdmin = checkAdminRole();
+      const isPremium = checkPremium();
+      // const isAdmin = checkAdminRole();
 
-      if (!isPremium && !isAdmin) {
+      if (!isPremium ) {
         router.push("/membership");
       }
 
