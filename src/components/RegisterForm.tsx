@@ -49,7 +49,7 @@ const RegisterForm: React.FC = () => {
       const { exp } = jwtDecode(data.access_token);
       setAccessToken(data.access_token, exp);
       message.success("Registration successful");
-      router.push("/home");
+      router.push("/login");
     } else {
       setError(data.message || "Registration failed");
     }
