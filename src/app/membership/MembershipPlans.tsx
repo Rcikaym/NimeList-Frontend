@@ -1,11 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
 import PaymentModal from "./PaymentModal";
+import { get } from "http";
+import { getAccessToken } from "@/utils/auth";
+
+const buttonText = ["Join Monthly", "Get 6 Months", "Join For a Year"];
+const api = process.env.NEXT_PUBLIC_API_URL;
+const token = getAccessToken();
+
 export default function MembershipPlans() {
   const [plans, setPlans] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const api = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchPlans = async () => {
     try {
@@ -16,11 +22,9 @@ export default function MembershipPlans() {
     }
   };
 
-  const buttonText = ["Join Monthly", "Get 6 Months", "Join For a Year"];
-
   useEffect(() => {
     fetchPlans();
-  });
+  }, []);
 
   // function untuk format duration
   const formatDuration = (days: number): string => {
@@ -70,13 +74,20 @@ export default function MembershipPlans() {
               }).format(plan.price)}
             </h2>
             {/* CTA Button */}
-            <button onClick={() => handleOpenModal(plan)} className="mt-6 w-64 font-semibold border border-green-400 text-green-400 py-2 rounded-full hover:bg-green-400 hover:text-black transition">
+            <button
+              onClick={() =>
+                token
+                  ? handleOpenModal(plan)
+                  : (window.location.href = "/login")
+              }
+              className="mt-6 w-64 font-semibold border border-green-400 text-green-400 py-2 rounded-full hover:bg-green-400 hover:text-black transition"
+            >
               {buttonText[index]}
             </button>
           </div>
         </div>
       ))}
-        <PaymentModal
+      <PaymentModal
         show={modalVisible}
         handleClose={handleCloseModal}
         selectedPlan={selectedPlan}
