@@ -8,6 +8,8 @@ import TitlePage from "@/components/TitlePage";
 import { Input } from "@nextui-org/react";
 import { IoIosSearch, IoMdChatboxes } from "react-icons/io";
 import TopicComponents from "./TopicComponents";
+import TrendingTopics from "./TrendingTopics";
+import Link from "next/link";
 
 export default function ForumPage() {
   const router = useRouter();
@@ -17,7 +19,7 @@ export default function ForumPage() {
       const isPremium = checkPremium();
       // const isAdmin = checkAdminRole();
 
-      if (!isPremium ) {
+      if (!isPremium) {
         router.push("/membership");
       }
 
@@ -95,25 +97,16 @@ export default function ForumPage() {
 
                 {/* Sidebar */}
                 <div className="bg-black">
-                  <button className="w-full bg-green-500 text-black px-4 py-2 rounded-lg font-medium hover:bg-green-600 transition mb-6">
-                    Create New Topic
-                  </button>
-                  <div className="p-4 border border-green-500 rounded-lg"> 
+                  <Link href="/forum/add/testing">
+                    <button className="w-full bg-green-500 text-black px-4 py-2 rounded-lg font-medium hover:bg-green-600 transition mb-6">
+                      Create New Topic
+                    </button>
+                  </Link>
+                  <div className="p-4 border border-green-500 rounded-lg">
                     <h2 className="text-xl font-bold mb-4 text-center">
                       Top Trending Topics of the Month
                     </h2>
-                    {/* <ul className="list-decimal list-inside space-y-1 text-sm">
-                    {Array(20)
-                      .fill("We supply a series of design principles...")
-                      .map((item, index) => (
-                        <li
-                          key={index}
-                          className="truncate hover:underline cursor-pointer"
-                        >
-                          {item}
-                        </li>
-                      ))}
-                  </ul> */}
+                    <TrendingTopics />
                   </div>
                 </div>
               </div>

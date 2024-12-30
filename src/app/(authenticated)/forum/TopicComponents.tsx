@@ -6,6 +6,8 @@ import { BiLike, BiSolidLike, BiDislike, BiSolidDislike } from "react-icons/bi";
 import apiUrl from "@/hooks/api";
 import { Spinner } from "@nextui-org/react";
 import { label } from "framer-motion/client";
+import renderDateTime from "@/utils/FormatDateTime";
+import timeToDay from "@/utils/TimeToDay";
 
 const TopicComponents: React.FC = () => {
   const [topics, setTopics] = useState<TopicType[]>([]);
@@ -112,14 +114,14 @@ const TopicComponents: React.FC = () => {
   return (
     <div className="grid grid-cols-1 gap-1">
       {loading ? (
-        <div className="flex justify-center items-center space-x-4 mt-20">
+        <div className="flex justify-center items-center space-x-4 h-screen">
           {/* Loading Spinner */}
           <Spinner
             color="primary"
             labelColor="foreground"
             label="Loading Topics..."
             size="lg"
-            classNames={{label: "text-white"}}
+            classNames={{ label: "text-white" }}
           />
         </div>
       ) : (
@@ -140,6 +142,15 @@ const TopicComponents: React.FC = () => {
                   <span>{topic.badge}</span>
                 </div>
               </div>
+              {topic.created_at === topic.updated_at ? (
+                <span className="text-gray-400 text-sm ml-3">
+                  {timeToDay(topic.created_at)}
+                </span>
+              ) : (
+                <span className="text-gray-400 text-sm ml-3">{`${timeToDay(
+                  topic.updated_at
+                )} (Edited)`}</span>
+              )}
             </div>
             <p className="text-gray-300 p-2 pl-3 ml-12 mb-0">{topic.title}</p>
             <div className="flex justify-between items-center mt-4 text-gray-400 text-sm">
@@ -164,7 +175,7 @@ const TopicComponents: React.FC = () => {
                   <BiDislike className="mr-1 w-5 h-5" /> {topic.dislikes || "0"}
                 </button>
               </div>
-              <span>{topic.created_at}</span>
+              <span>{renderDateTime(topic.created_at)}</span>
             </div>
           </div>
         ))
