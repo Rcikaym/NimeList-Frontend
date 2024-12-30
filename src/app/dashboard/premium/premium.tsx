@@ -135,8 +135,8 @@ const PremiumList: React.FC = () => {
 
       // Fetch ulang data setelah edit
       fetchPremium();
-
       setLoading(false);
+      form.resetFields(); // Reset form setelah submit
     } catch (error) {
       setLoading(false);
       message.error("Failed to edit premium");
@@ -152,13 +152,18 @@ const PremiumList: React.FC = () => {
       ); // Melakukan DELETE ke server
       message.success(res.data.message);
 
-      // Fetch ulang data setelah post
+      // Fetch ulang data setelah delete
       fetchPremium();
 
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
-      message.error("Failed to delete premium");
+
+      // Mengambil pesan dari response error
+      const errorMessage =
+        error.response?.data?.message || "Failed to delete premium";
+
+      message.error(errorMessage);
     }
   };
 
@@ -270,7 +275,7 @@ const PremiumList: React.FC = () => {
           <a
             onClick={() => {
               showModal("edit");
-              setDataEdit(record.id);
+              setDataEdit(record);
             }}
           >
             <div className="bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center hover:bg-emerald-800 w-fit h-fit">

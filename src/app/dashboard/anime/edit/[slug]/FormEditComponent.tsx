@@ -183,7 +183,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
   };
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
-  const showPostConfirm = async () => {
+  const showEditConfirm = async () => {
     form
       .validateFields() // Validasi input form terlebih dahulu
       .then((values: DataAnime) => {
@@ -325,7 +325,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
       <Form
         form={form}
         layout="vertical"
-        onFinish={showPostConfirm}
+        onFinish={showEditConfirm}
         onValuesChange={onValuesChange}
       >
         <div className="rounded-sm shadow-md p-4">

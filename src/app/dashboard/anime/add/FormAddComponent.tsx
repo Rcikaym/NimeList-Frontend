@@ -281,72 +281,103 @@ export default function AddAnime() {
         Add Anime
       </div>
       <Form
-        layout="vertical"
         form={form}
+        layout="vertical"
         onFinish={showPostConfirm}
         onValuesChange={onValuesChange}
       >
         <div className="rounded-sm shadow-md p-4">
-          {/* Input title */}
-          <Form.Item
-            label="Title"
-            name="title"
-            rules={[{ required: true, message: "Please input title" }]}
-          >
-            <Input placeholder="Input title" />
-          </Form.Item>
+          {/* Form Items */}
+          <div className="grid grid-cols-3 gap-7">
+            <div>
+              <Form.Item
+                name="title"
+                label="Title"
+                rules={[{ required: true, message: "Please input title" }]}
+              >
+                <Input placeholder="Input title" />
+              </Form.Item>
 
-          {/* Input release date */}
-          <Form.Item
-            label="Release Date (yyyy-mm-dd)"
-            name="release_date"
-            rules={[{ required: true, message: "Please input date" }]}
-          >
-            <Input placeholder="Input date" />
-          </Form.Item>
+              <Form.Item
+                name="release_date"
+                label="Release Date (yyyy-mm-dd)"
+                rules={[{ required: true, message: "Please input date" }]}
+              >
+                <Input placeholder="yyyy-mm-dd" />
+              </Form.Item>
+            </div>
+            <div>
+              <Form.Item
+                name="trailer_link"
+                label="Trailer Link"
+                rules={[
+                  { required: true, message: "Please input trailer link" },
+                ]}
+              >
+                <Input placeholder="yyyy-mm-dd" />
+              </Form.Item>
 
-          {/* Input tariler link */}
-          <Form.Item
-            label="Trailer Link"
-            name="trailer_link"
-            rules={[{ required: true, message: "Please input trailer link" }]}
-          >
-            <Input placeholder="Input trailer link" />
-          </Form.Item>
+              <Form.Item
+                label="Watch Link"
+                name="watch_link"
+                rules={[{ required: true, message: "Please input watch link" }]}
+              >
+                <Input placeholder="Input watch link" />
+              </Form.Item>
+            </div>
+            <div>
+              {/* Select type */}
+              <Form.Item
+                label="Type"
+                name="type"
+                rules={[{ required: true, message: "Please select type" }]}
+              >
+                <Select
+                  placeholder="Select type"
+                  allowClear
+                  onChange={(value) => setType(value)} // Set nilai type saat berubah
+                  filterOption={(input, option) =>
+                    (option?.children as unknown as string)
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                >
+                  <Option value="movie">movie</Option>
+                  <Option value="series">series</Option>
+                </Select>
+              </Form.Item>
 
-          {/* Input watch link */}
-          <Form.Item
-            label="Watch Link"
-            name="watch_link"
-            rules={[{ required: true, message: "Please input watch link" }]}
-          >
-            <Input placeholder="Input watch link" />
-          </Form.Item>
+              {/* Input total episode */}
+              <Form.Item
+                name="episodes"
+                label="Episode"
+                rules={[{ required: true, message: "Please input episode" }]}
+              >
+                <InputNumber
+                  min={1}
+                  value={episodes} // Gunakan state episode sebagai nilai
+                  onChange={(value) => setEpisodes(value)} // Update nilai episode jika series
+                  disabled={type === "movie"} // Disable input jika type adalah movie
+                  placeholder="Input total episode"
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+            </div>
+          </div>
 
-          {/* Input synopsis */}
           <Form.Item
             name="synopsis"
             label="Synopsis"
             rules={[{ required: true, message: "Please input synopsis" }]}
           >
-            <Input.TextArea
-              showCount
-              maxLength={9999}
-              autoSize
-              placeholder="Input synopsis"
-            />
+            <Input.TextArea autoSize />
           </Form.Item>
 
-          {/* Select genre */}
+          {/* Genres */}
           <Form.Item
-            label="Genre (Select More Than One)"
             name="genres"
-            rules={[
-              {
-                required: true,
-                message: "Please select genre minimal 2",
-              },
-            ]}
+            label="Genres"
+            rules={[{ required: true, message: "Please select genres" }]}
           >
             <Select
               placeholder="Select genres"
@@ -364,48 +395,11 @@ export default function AddAnime() {
             ></Select>
           </Form.Item>
 
-          {/* Select type */}
+          {/* Upload Cover */}
           <Form.Item
-            label="Type"
-            name="type"
-            rules={[{ required: true, message: "Please select type" }]}
-          >
-            <Select
-              placeholder="Select type"
-              allowClear
-              onChange={(value) => setType(value)} // Set nilai type saat berubah
-              filterOption={(input, option) =>
-                (option?.children as unknown as string)
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-            >
-              <Option value="movie">movie</Option>
-              <Option value="series">series</Option>
-            </Select>
-          </Form.Item>
-
-          {/* Input total episode */}
-          <Form.Item
-            name="episodes"
-            label="Episode"
-            rules={[{ required: true, message: "Please input episode" }]}
-          >
-            <InputNumber
-              min={1}
-              value={episodes} // Gunakan state episode sebagai nilai
-              onChange={(value) => setEpisodes(value)} // Update nilai episode jika series
-              disabled={type === "movie"} // Disable input jika type adalah movie
-              placeholder="Input total episode"
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-
-          {/* Upload Image Cover */}
-          <Form.Item
-            label="Upload Cover Image"
             name="photo_cover"
-            rules={[{ required: true, message: "Please upload cover image" }]}
+            label="Upload Cover Image"
+            rules={[{ required: true, message: "Please upload cover" }]}
           >
             <Upload
               {...uploadPropsCover}
@@ -417,11 +411,10 @@ export default function AddAnime() {
             </Upload>
           </Form.Item>
 
-          {/* Upload Image */}
-          <Form.Item label="Upload Photo Anime">
+          <Form.Item name="photos_anime" label="Upload Photo Anime">
             <Upload
               {...uploadPropsList}
-              listType="picture"
+              listType="picture-card"
               maxCount={4}
               multiple
               fileList={fileList}
@@ -430,6 +423,7 @@ export default function AddAnime() {
             </Upload>
           </Form.Item>
         </div>
+
         <div className="mt-2 bg-[#005B50] p-2 gap-2 rounded-md justify-between flex">
           <Link
             href="/dashboard/anime"
@@ -438,7 +432,7 @@ export default function AddAnime() {
             <BiArrowBack style={{ fontSize: "20px" }} />
           </Link>
           <Button type="primary" htmlType="submit" loading={loading}>
-            <span>Create</span>
+            <span>Submit</span>
           </Button>
         </div>
       </Form>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Radio, Select } from "antd";
+import dayjs from "dayjs";
 
 interface FilterModalProps {
   isOpen: boolean;
@@ -13,7 +14,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
   onApply,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedPremium, setSelectedPremium] = useState("");
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState("");
+  const [timePeriod, setTimePeriod] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState(null);
 
   // Fungsi untuk menghandle perubahan pilihan
@@ -21,13 +23,30 @@ const FilterModal: React.FC<FilterModalProps> = ({
     setSelectedStatus(status);
   };
 
-  const handlePremiumChange = (premium: string) => {
-    setSelectedPremium(premium);
+  const handleTimePeriodChange = (value: string) => {
+    setSelectedTimePeriod(value);
+    switch (value) {
+      case "this-year":
+        setTimePeriod(dayjs().startOf("year").format("YYYY-MM-DD").toString());
+        break;
+      case "this-month":
+        setTimePeriod(dayjs().startOf("month").format("YYYY-MM-DD").toString());
+        break;
+      case "this-week":
+        setTimePeriod(dayjs().startOf("week").format("YYYY-MM-DD").toString());
+        break;
+      case "today":
+        setTimePeriod(dayjs().startOf("day").format("YYYY-MM-DD").toString());
+        break;
+      default:
+        setTimePeriod("");
+        break;
+    }
   };
 
   // Mengaplikasikan filter dan menggabungkan hasil menjadi satu string
   const applyFilter = () => {
-    const filterResult = `status=${selectedStatus}&premium=${selectedPremium}&platform=${selectedPlatform}`;
+    const filterResult = `status=${selectedStatus}&period=${timePeriod}&platform=${selectedPlatform}`;
     onApply(filterResult);
     onClose();
   };
@@ -46,7 +65,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   return (
     <Modal
-      title="Transaction and Premium Filter"
+      title={
+        <>
+          <span className="text-xl font-semibold">Filter Transaction</span>
+        </>
+      }
       visible={isOpen}
       centered
       onCancel={onClose}
@@ -57,7 +80,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               type="button"
               onClick={() => {
                 setSelectedStatus("");
-                setSelectedPremium("");
+                setSelectedTimePeriod("");
                 setSelectedPlatform(null);
               }}
               className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
@@ -69,54 +92,64 @@ const FilterModal: React.FC<FilterModalProps> = ({
               onClick={applyFilter}
               className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600"
             >
-              Terapkan
+              Apply
             </button>
           </div>
         </>
       }
     >
-      <h4>Transaction Status</h4>
-      <Radio.Group
-        onChange={(e) => handleStatusChange(e.target.value)}
-        value={selectedStatus}
-        optionType="button"
-      >
-        <Radio value="success">Success</Radio>
-        <Radio value="pending">Pending</Radio>
-        <Radio value="failed">Failed</Radio>
-      </Radio.Group>
+      <div className="grid grid-cols-1 gap-5 mt-5">
+        {/* Filter status */}
+        <div>
+          <h4>Transaction Status</h4>
+          <Radio.Group
+            onChange={(e) => handleStatusChange(e.target.value)}
+            value={selectedStatus}
+            optionType="button"
+          >
+            <Radio value="success">Success</Radio>
+            <Radio value="pending">Pending</Radio>
+            <Radio value="failed">Failed</Radio>
+          </Radio.Group>
+        </div>
 
-      <h4 style={{ marginTop: "16px" }}>Premium Type</h4>
-      <Radio.Group
-        onChange={(e) => handlePremiumChange(e.target.value)}
-        value={selectedPremium}
-        optionType="button"
-      >
-        <Radio value="One-Month Heroes">One-Month Heroes</Radio>
-        <Radio value="Six-Month Heroes">Six-Month Heroes</Radio>
-        <Radio value="Yearly Heroes">Yearly Heroes</Radio>
-      </Radio.Group>
-      <div style={{ marginTop: "16px" }}>
-        <h4>Payment Platform</h4>
-        <Select
-          value={selectedPlatform}
-          placeholder="Select Payment Platform"
-          className="w-[30%]"
-          onChange={setSelectedPlatform}
-          options={paymentPlatformOptions}
-          listHeight={paymentPlatformOptions.length * 40}
-          showSearch
-          filterOption={(input, option: any) =>
-            option.label.toLowerCase().includes(input.toLowerCase())
-          }
-          dropdownStyle={{
-            maxHeight: 130,
-            overflow: "auto",
-            scrollbarWidth: "none",
-            scrollbarColor: "none",
-            msOverflowStyle: "none",
-          }}
-        />
+        {/* Filter periode waktu */}
+        <div>
+          <h4>Time Period</h4>
+          <Radio.Group
+            onChange={(e) => handleTimePeriodChange(e.target.value)}
+            value={selectedTimePeriod}
+            optionType="button"
+          >
+            <Radio value="this-year">This Year</Radio>
+            <Radio value="this-month">This Month</Radio>
+            <Radio value="this-week">This Week</Radio>
+            <Radio value="today">Today</Radio>
+          </Radio.Group>
+        </div>
+
+        <div>
+          <h4>Payment Platform</h4>
+          <Select
+            value={selectedPlatform}
+            placeholder="Select Payment Platform"
+            className="w-[30%]"
+            onChange={setSelectedPlatform}
+            options={paymentPlatformOptions}
+            listHeight={paymentPlatformOptions.length * 40}
+            showSearch
+            filterOption={(input, option: any) =>
+              option.label.toLowerCase().includes(input.toLowerCase())
+            }
+            dropdownStyle={{
+              maxHeight: 130,
+              overflow: "auto",
+              scrollbarWidth: "none",
+              scrollbarColor: "none",
+              msOverflowStyle: "none",
+            }}
+          />
+        </div>
       </div>
     </Modal>
   );
