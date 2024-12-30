@@ -55,7 +55,7 @@ const PaymentModal = ({ show, handleClose, selectedPlan }: any) => {
         centered
         footer={[
           <Button key="back" onClick={handleClose} disabled={loading}>
-            Batal
+            Cancel
           </Button>,
           <Button
             key="submit"
@@ -63,7 +63,7 @@ const PaymentModal = ({ show, handleClose, selectedPlan }: any) => {
             onClick={handlePaymentConfirmation} // Updated to handlePaymentConfirmation
             disabled={loading}
           >
-            {loading ? <Spin /> : "Bayar"}
+            {loading ? <Spin /> : "Continue"}
           </Button>,
         ]}
       >
