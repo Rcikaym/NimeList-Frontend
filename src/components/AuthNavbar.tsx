@@ -35,6 +35,8 @@ import { getAccessToken, logout } from "@/utils/auth";
 import { message } from "antd";
 import { jwtDecode } from "jwt-decode";
 import { MdOutlineForum } from "react-icons/md";
+import apiUrl from "@/hooks/api";
+import { s } from "framer-motion/client";
 
 const inter = Inter({ subsets: ["latin"] });
 const url =
@@ -95,6 +97,12 @@ const AuthNavbar = () => {
   const [IsPremium, setIsPremium] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
 
+  const fetchPremiumStatus = async () => {
+    const response = await apiUrl.get(`/user/check-premium`);
+
+    setIsPremium(await response.data);
+  };
+
   // Ensure dynamic content only renders on the client
   useEffect(() => {
     const token = getAccessToken();
@@ -115,34 +123,8 @@ const AuthNavbar = () => {
       setName(decodedToken.name);
       setDescription(decodedToken.email);
       setIsLogin(true);
+      fetchPremiumStatus();
     }
-
-    const fetchPremiumStatus = async () => {
-      try {
-        const token = localStorage.getItem("access_token"); // Retrieve the user token from localStorage (or other storage)
-
-        const response = await fetch(`${api}/user/check-premium`, {
-          method: "GET", // Use GET or the method required by the API
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch premium status");
-        }
-
-        const data = await response.json();
-        // setIsPremium(data.isPremium || false);
-        if (data === true) {
-          setIsPremium(true);
-        }
-      } catch (error) {
-        console.error("Error fetching premium status:", error);
-        message.error("Failed to fetch premium status");
-      }
-    };
 
     const fetchGenres = async () => {
       try {
@@ -155,7 +137,6 @@ const AuthNavbar = () => {
     };
 
     fetchGenres();
-    fetchPremiumStatus();
   }, []);
 
   return (

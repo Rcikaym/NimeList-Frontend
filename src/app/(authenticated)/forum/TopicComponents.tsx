@@ -137,9 +137,9 @@ const TopicComponents: React.FC = () => {
                 className="w-12 h-12 rounded-full mr-3 mt-3"
               />
               <div className="flex text-center space-x-2">
-                <p className="text-lg font-bold my-auto">{`@${topic.username}`}</p>
+                <p className="text-lg font-bold my-auto">{`@${topic.user_username}`}</p>
                 <div className="flex items-center text-sm bg-[#001f12] text-[#00ff88] px-2 py-1 rounded-md">
-                  <span>{topic.badge}</span>
+                  <span>{topic.user_badge}</span>
                 </div>
               </div>
               {topic.created_at === topic.updated_at ? (

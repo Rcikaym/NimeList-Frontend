@@ -44,11 +44,8 @@ const RegisterForm: React.FC = () => {
 
     const data = await response.json();
 
-    if (data.access_token && response.ok) {
-      // Simpan token di localStorage
-      const { exp } = jwtDecode(data.access_token);
-      setAccessToken(data.access_token, exp);
-      message.success("Registration successful");
+    if (response.ok) {
+      message.success(data.message);
       router.push("/login");
     } else {
       setError(data.message || "Registration failed");
