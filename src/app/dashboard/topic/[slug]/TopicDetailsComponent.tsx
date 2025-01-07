@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, memo } from "react";
 import { ExclamationCircleOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Form, Input, message, Modal } from "antd";
+import { message, Modal } from "antd";
 import { CommentDataType, CommentType, TopicType } from "./types";
 import apiUrl from "@/hooks/api";
 import CommentList from "./ComemntComponent";
@@ -10,12 +10,12 @@ import { TopicMetadata } from "./TopicMetadata";
 import PhotoGalleryTopic from "./PhotoGalleryComponent";
 import TopicBody from "./TopicBodyComponent";
 
+const { confirm } = Modal;
+
 export default function TopicDetails({ slug }: { slug: string }) {
-  const api = process.env.NEXT_PUBLIC_API_URL;
   const [topic, setTopic] = useState<TopicType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { confirm } = Modal;
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [comments, setComments] = useState<CommentDataType[]>([]);
@@ -107,7 +107,7 @@ export default function TopicDetails({ slug }: { slug: string }) {
   if (error) return <div>Error: {error}</div>;
   if (!topic) return <div>No topic data found</div>;
 
-  const { title, body, photos, created_at, updated_at } = topic;
+  const { title, body, photos } = topic;
 
   return (
     <>
@@ -119,7 +119,7 @@ export default function TopicDetails({ slug }: { slug: string }) {
           <h1 className="text-3xl font-bold">{title}</h1>
           <TopicMetadata topic={topic} />
           <div className="mt-4">
-            <PhotoGalleryTopic photos={photos} title={title} />
+            <PhotoGalleryTopic photos={photos} slug={slug} />
           </div>
         </div>
 
