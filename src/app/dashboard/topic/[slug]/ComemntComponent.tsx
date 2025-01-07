@@ -61,11 +61,11 @@ const CommentList: React.FC<CommentListProps> = ({
                     <span className="text-white">{comment.name}</span>
                     <BiCrown size={15} className="text-yellow-300" />
                   </div>
-                  <p className="text-[0.75rem] text-gray-500">
+                  <span className="text-[0.75rem] text-gray-500">
                     {comment.created_at === comment.updated_at
                       ? renderDateTime(comment.created_at)
                       : `${renderDateTime(comment.created_at)} (diedit)`}
-                  </p>
+                  </span>
                 </div>
                 <div className="my-2">
                   <DisplayLongText text={comment.comment} />
