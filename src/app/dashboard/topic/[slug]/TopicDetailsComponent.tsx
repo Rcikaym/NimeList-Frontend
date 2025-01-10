@@ -42,7 +42,7 @@ export default function TopicDetails({ slug }: { slug: string }) {
   const fetchComment = async (page: number, id_topic?: string) => {
     try {
       const response = await apiUrl.get(
-        `/comment/get/by-topic/${id_topic}?page=${page}&limit=5`
+        `/comment/get/by-topic/${id_topic}?page=${page}`
       );
       const res: CommentType = await response.data;
       console.log(res.data.length);
