@@ -32,6 +32,7 @@ export interface ReviewDataType {
   created_at: string;
   updated_at: string;
   status_premium: string;
+  user_photo: string;
 }
 
 export interface ReviewType {
