@@ -19,6 +19,7 @@ export interface CommentDataType {
   created_at: string;
   updated_at: string;
   total_likes: number;
+  user_photo: string;
 }
 
 export interface CommentType {

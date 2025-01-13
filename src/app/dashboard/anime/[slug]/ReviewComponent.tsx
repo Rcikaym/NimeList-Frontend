@@ -4,6 +4,8 @@ import { BiCrown, BiGlobe, BiEdit, BiTrashAlt } from "react-icons/bi"; // Ikon t
 import renderDateTime from "@/utils/FormatDateTime";
 import { ReviewDataType } from "./types";
 import DisplayLongText from "@/components/DisplayLongText";
+import Link from "next/link";
+import Image from "next/image";
 
 // Dynamic import untuk komponen berat
 const Rate = dynamic(() => import("antd/lib/rate"), { ssr: false });
@@ -24,6 +26,8 @@ interface ReviewListProps {
   onDelete: (id: string) => void;
 }
 
+const api = process.env.NEXT_PUBLIC_API_URL;
+
 const ReviewList: React.FC<ReviewListProps> = ({
   reviews,
   hasMore,
@@ -34,9 +38,7 @@ const ReviewList: React.FC<ReviewListProps> = ({
   return (
     <div className="mt-6 p-6">
       <div className="flex justify-between">
-        <h2 className="text-xl font-semibold select-none">
-          {totalReview} REVIEWS
-        </h2>
+        <h2 className="text-xl font-semibold">{totalReview} REVIEWS</h2>
       </div>
       {reviews.length === 0 ? (
         <p>No reviews yet.</p>
@@ -64,33 +66,46 @@ const ReviewList: React.FC<ReviewListProps> = ({
               key={review.id}
               className="border rounded-lg border-emerald-500 p-5 my-3 flex items-center justify-between"
             >
-              <div>
-                <div className="flex items-center gap-2">
-                  <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md">
-                    <span className="text-white">{review.name}</span>
-                    {review.status_premium === "active" ? (
-                      <BiCrown size={15} className="text-yellow-300" />
-                    ) : (
-                      <BiGlobe size={15} className="text-[#05E5CB]" />
-                    )}
+              <div className="flex">
+                <div>
+                  <Link href={`/profile/${review.username}`}>
+                    <Image
+                      src={`${api}/${review.user_photo}`}
+                      alt="User Profile"
+                      width={32}
+                      height={32}
+                      className="rounded-full object-cover hover:cursor-pointer mr-4"
+                    />
+                  </Link>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="font-bold bg-[#005B50] p-2 flex items-center gap-2 w-fit rounded-md">
+                      <span className="text-white">{review.name}</span>
+                      {review.status_premium === "active" ? (
+                        <BiCrown size={15} className="text-yellow-300" />
+                      ) : (
+                        <BiGlobe size={15} className="text-[#05E5CB]" />
+                      )}
+                    </div>
+                    <span className="text-[0.75rem] text-gray-500">
+                      {review.created_at === review.updated_at
+                        ? renderDateTime(review.created_at)
+                        : `${renderDateTime(review.created_at)} (edited)`}
+                    </span>
                   </div>
-                  <span className="text-[0.75rem] text-gray-500">
-                    {review.created_at === review.updated_at
-                      ? renderDateTime(review.created_at)
-                      : `${renderDateTime(review.created_at)} (edited)`}
-                  </span>
+                  <div className="my-3">
+                    <DisplayLongText text={review.review} />
+                  </div>
+                  <Rate
+                    count={10}
+                    disabled
+                    allowHalf
+                    defaultValue={0}
+                    value={review.rating}
+                    className="text-small"
+                  />
                 </div>
-                <div className="my-3">
-                  <DisplayLongText text={review.review} />
-                </div>
-                <Rate
-                  count={10}
-                  disabled
-                  allowHalf
-                  defaultValue={0}
-                  value={review.rating}
-                  className="text-small"
-                />
               </div>
               <div className="flex gap-2 items-center">
                 <div

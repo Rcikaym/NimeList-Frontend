@@ -7,6 +7,7 @@ import {
   AiOutlineHeart,
   AiOutlineTag,
   AiOutlineTool,
+  AiOutlineUser,
 } from "react-icons/ai";
 import DisplayLongText from "@/components/DisplayLongText";
 import renderDateTime from "@/utils/FormatDateTime";
@@ -41,6 +42,10 @@ const CommentModal: React.FC<CommentModalProps> = ({
       ) : (
         <div className="flex flex-col w-full h-full">
           <div className="flex flex-col gap-3">
+            <div className="flex gap-2 items-center">
+              <AiOutlineUser size={19} />
+              <span>{detailComment.user}</span>
+            </div>
             <div className="flex gap-2 items-center">
               <AiOutlineTag size={19} />
               <div className="break-words w-full">

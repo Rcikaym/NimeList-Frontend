@@ -41,9 +41,7 @@ const TopicCommentList: React.FC = () => {
     try {
       const res = await apiUrl.get(`/comment/get/${id}`);
       setDetailComment(await res.data);
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
       setLoading(false);

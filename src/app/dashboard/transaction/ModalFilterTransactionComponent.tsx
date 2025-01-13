@@ -16,7 +16,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedTimePeriod, setSelectedTimePeriod] = useState("");
   const [timePeriod, setTimePeriod] = useState("");
-  const [selectedPlatform, setSelectedPlatform] = useState(null);
+  const [selectedPlatform, setSelectedPlatform] = useState("");
 
   // Fungsi untuk menghandle perubahan pilihan
   const handleStatusChange = (status: string) => {
@@ -81,7 +81,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
               onClick={() => {
                 setSelectedStatus("");
                 setSelectedTimePeriod("");
-                setSelectedPlatform(null);
+                setTimePeriod("");
+                setSelectedPlatform("");
               }}
               className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
             >
@@ -131,7 +132,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
         <div>
           <h4>Payment Platform</h4>
           <Select
-            value={selectedPlatform}
+            value={selectedPlatform || null}
             placeholder="Select Payment Platform"
             className="w-[30%]"
             onChange={setSelectedPlatform}
