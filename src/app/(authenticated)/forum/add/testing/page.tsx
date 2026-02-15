@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Select } from "antd";
 import PageTitle from "@/components/TitlePage";
 
 export default function CreateTopic() {
@@ -9,38 +8,51 @@ export default function CreateTopic() {
     body: "",
     id_anime: "",
   });
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [photos, setPhotos] = useState<FileList | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [animeOptions, setAnimeOptions] = useState<{ id: string; title: string }[]>([]);
+  const [animeOptions, setAnimeOptions] = useState<
+    { id: string; title: string }[]
+  >([]);
 
   // Simulasikan access token (seharusnya didapatkan dari proses login)
-  const accessToken = localStorage.getItem("access_token"); // Simpan token di localStorage saat login
+ // Load token first
+useEffect(() => {
+  const token = localStorage.getItem("access_token");
+  setAccessToken(token);
+}, []);
 
-  // Fetch anime data saat komponen dimuat
-  useEffect(() => {
-    const fetchAnimeOptions = async () => {
-      try {
-        const response = await fetch("http://localhost:4321/anime/get-newest", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`, // Tambahkan token jika diperlukan
-          },
-        });
+// Fetch anime data when token is available
+useEffect(() => {
+  if (!accessToken) return; // Don't fetch if no token yet
+  
+  const fetchAnimeOptions = async () => {
+    try {
+      const response = await fetch("http://localhost:4321/anime/get-newest", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch anime options.");
-        }
-
-        const data = await response.json();
-        setAnimeOptions(data.data); // Data diasumsikan berupa array dengan id dan title
-      } catch (err: any) {
-        setError(err.message);
+      if (!response.ok) {
+        throw new Error("Failed to fetch anime options.");
       }
-    };
 
-    fetchAnimeOptions();
-  }, [accessToken]);
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const data = await response.json();
+      setAnimeOptions(data.data);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  fetchAnimeOptions();
+}, [accessToken]);
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -176,7 +188,10 @@ export default function CreateTopic() {
           ></textarea>
         </div>
         <div>
-        <label htmlFor="id_anime" className="block text-sm font-medium text-gray-300">
+          <label
+            htmlFor="id_anime"
+            className="block text-sm font-medium text-gray-300"
+          >
             Select Anime
           </label>
           <select

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import AuthNavbar from "@/components/AuthNavbar";
 import { RiMedalFill } from "react-icons/ri";
 import { IoCreate } from "react-icons/io5";
