@@ -4,15 +4,7 @@ import apiUrl from "@/hooks/api";
 import { Button, Modal, message, Spin } from "antd";
 
 const PaymentModal = ({ show, handleClose, selectedPlan }: any) => {
-  const api = process.env.NEXT_PUBLIC_API_URL;
   const [loading, setLoading] = useState(false);
-  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
-
-  const handlePaymentConfirmation = () => {
-    // Close Payment Modal and Open Confirmation Modal
-    handleClose();
-    setConfirmModalVisible(true);
-  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -33,16 +25,15 @@ const PaymentModal = ({ show, handleClose, selectedPlan }: any) => {
       document.body.appendChild(script);
       script.onload = () => {
         window.snap.pay(token, {
-          onSuccess: () => (window.location.href = "/payment"),
-          onPending: () => (window.location.href = "/payment"),
+          onSuccess: () => (window.location.href = "/membership"),
+          onPending: () => (window.location.href = "/membership"),
         });
       };
       setLoading(false);
-      setConfirmModalVisible(false);
+      handleClose();
     } catch (err: any) {
-      message.warning("Error creating transaction:", err);
       setLoading(false);
-      setConfirmModalVisible(false);
+      message.warning("Error creating transaction:", err);
     }
   };
 
@@ -60,7 +51,7 @@ const PaymentModal = ({ show, handleClose, selectedPlan }: any) => {
           <Button
             key="submit"
             type="primary"
-            onClick={handlePaymentConfirmation} // Updated to handlePaymentConfirmation
+            onClick={handleSubmit} // Updated to handlePaymentConfirmation
             disabled={loading}
           >
             {loading ? <Spin /> : "Continue"}
@@ -89,33 +80,6 @@ const PaymentModal = ({ show, handleClose, selectedPlan }: any) => {
           Enjoy exclusive benefits and features tailored to your needs by
           subscribing to this premium package today!
         </p>
-      </Modal>
-
-      {/* Confirmation Modal */}
-      <Modal
-        title="Confirm Payment"
-        open={confirmModalVisible}
-        onCancel={() => setConfirmModalVisible(false)}
-        centered
-        footer={[
-          <Button
-            key="cancel"
-            onClick={() => setConfirmModalVisible(false)}
-            disabled={loading}
-          >
-            Cancel
-          </Button>,
-          <Button
-            key="confirm"
-            type="primary"
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? <Spin /> : "Confirm"}
-          </Button>,
-        ]}
-      >
-        <p>Are you sure you want to proceed with the payment?</p>
       </Modal>
     </>
   );
