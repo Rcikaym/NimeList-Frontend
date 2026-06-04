@@ -61,7 +61,7 @@ const TableTop10Anime = () => {
       try {
 
         const res = await apiUrl.get(
-          "http://localhost:4321/dashboard/top-10-anime"
+          "/dashboard/top-10-anime"
         );
         setData(await res.data);
         setLoading(false);
@@ -80,6 +80,7 @@ const TableTop10Anime = () => {
         dataSource={data}
         loading={loading}
         columns={columnsAnimeTop}
+        scroll={{ x: "max-content" }}
         pagination={{ position: ["none"] }}
         title={() => (
           <h3 className="font-semibold text-lg flex items-center gap-2">

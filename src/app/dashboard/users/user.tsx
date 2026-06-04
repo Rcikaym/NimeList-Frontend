@@ -175,7 +175,7 @@ const UserList = () => {
         ),
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -222,21 +222,22 @@ const UserList = () => {
           </button>
         </div>
         <div className="flex items-center gap-3">
-          <Input
-            addonBefore={<AiOutlineSearch />}
+          <Input.Search
             placeholder="Search User"
             onChange={(e) => setSearchText(e.target.value)}
+            prefix={<AiOutlineSearch />}
           />
           <div>
             <Select
               defaultValue={filterStatus}
               style={{ width: 120 }}
               onChange={(value) => setStatus(value)}
-            >
-              <Option value="all">All</Option>
-              <Option value="active">Active</Option>
-              <Option value="inactive">Inactive</Option>
-            </Select>
+              options={[
+                { value: "all", label: "All" },
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+              ]}
+            />
           </div>
         </div>
       </div>

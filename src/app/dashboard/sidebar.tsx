@@ -12,11 +12,87 @@ import {
 } from "react-icons/ai";
 import styles from "@/styles/sidebar.module.css";
 import Image from "next/image";
+import type { MenuProps } from "antd";
+
+type MenuItem = Required<MenuProps>["items"][number];
+
+const menuItems: MenuItem[] = [
+  {
+    key: "1",
+    icon: <AiOutlineAppstore size={22} />,
+    label: <Link href="/dashboard">Dashboard</Link>,
+    className: styles.menuItem,
+  },
+  {
+    key: "2",
+    icon: <AiOutlineUser size={22} />,
+    label: <Link href="/dashboard/users">User</Link>,
+    className: styles.menuItem,
+  },
+  {
+    key: "sub1",
+    icon: <AiOutlineVideoCamera size={22} />,
+    label: "Manage Anime",
+    className: styles.submenu,
+    children: [
+      {
+        key: "3",
+        label: <Link href="/dashboard/anime">Anime</Link>,
+        className: styles.menuItem,
+      },
+      {
+        key: "4",
+        label: <Link href="/dashboard/anime/genre">Anime Genre</Link>,
+        className: styles.menuItem,
+      },
+      {
+        key: "5",
+        label: <Link href="/dashboard/anime/review">Anime Review</Link>,
+        className: styles.menuItem,
+      },
+    ],
+  },
+  {
+    key: "sub2",
+    icon: <AiOutlinePicRight size={22} />,
+    label: "Manage Topic",
+    className: styles.submenu,
+    children: [
+      {
+        key: "7",
+        label: <Link href="/dashboard/topic">Topic</Link>,
+        className: styles.menuItem,
+      },
+      {
+        key: "8",
+        label: <Link href="/dashboard/topic/comment">Topic Comment</Link>,
+        className: styles.menuItem,
+      },
+    ],
+  },
+  {
+    key: "10",
+    icon: <AiOutlineShoppingCart size={22} />,
+    label: <Link href="/dashboard/transaction">Transaction</Link>,
+    className: styles.menuItem,
+  },
+  {
+    key: "11",
+    icon: <AiOutlineRuby size={22} />,
+    label: <Link href="/dashboard/premium">Premium</Link>,
+    className: styles.menuItem,
+  },
+];
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;
 
-const SidebarMenu = () => {
+interface SidebarMenuProps {
+  collapsed: boolean;
+  onCollapse: (collapsed: boolean) => void;
+}
+
+const SidebarMenu: React.FC<SidebarMenuProps> = ({ collapsed, onCollapse }) => {
   const pathname = usePathname();
 
   const getSelectedKeys = () => {
@@ -44,6 +120,11 @@ const SidebarMenu = () => {
 
   return (
     <Sider
+      collapsible
+      collapsed={collapsed}
+      onCollapse={onCollapse}
+      breakpoint="lg"
+      collapsedWidth={80}
       style={{
         position: "fixed",
         height: "100vh",
@@ -64,75 +145,20 @@ const SidebarMenu = () => {
               className="brightness-0 invert"
             />
           </div>
-          <span className="text-emerald-700 text-xl font-bold tracking-wide">
-            NimeList
-          </span>
+          {!collapsed && (
+            <span className="text-emerald-700 text-xl font-bold tracking-wide">
+              NimeList
+            </span>
+          )}
         </Link>
       </div>
       <Menu
-        mode="inline"
-        selectedKeys={getSelectedKeys()}
-        defaultOpenKeys={getOpenKeys()}
-        className={styles.sidebarMenu}
-      >
-        <Menu.Item
-          key="1"
-          icon={<AiOutlineAppstore size={22} />}
-          className={styles.menuItem}
-        >
-          <Link href="/dashboard">Dashboard</Link>
-        </Menu.Item>
-        <Menu.Item
-          key="2"
-          icon={<AiOutlineUser size={22} />}
-          className={styles.menuItem}
-        >
-          <Link href="/dashboard/users">User</Link>
-        </Menu.Item>
-        <SubMenu
-          key="sub1"
-          icon={<AiOutlineVideoCamera size={22} />}
-          title="Manage Anime"
-          className={styles.submenu}
-        >
-          <Menu.Item key="3" className={styles.menuItem}>
-            <Link href="/dashboard/anime">Anime</Link>
-          </Menu.Item>
-          <Menu.Item key="4" className={styles.menuItem}>
-            <Link href="/dashboard/anime/genre">Anime Genre</Link>
-          </Menu.Item>
-          <Menu.Item key="5" className={styles.menuItem}>
-            <Link href="/dashboard/anime/review">Anime Review</Link>
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu
-          key="sub2"
-          icon={<AiOutlinePicRight size={22} />}
-          title="Manage Topic"
-          className={styles.submenu}
-        >
-          <Menu.Item key="7" className={styles.menuItem}>
-            <Link href="/dashboard/topic">Topic</Link>
-          </Menu.Item>
-          <Menu.Item key="8" className={styles.menuItem}>
-            <Link href="/dashboard/topic/comment">Topic Comment</Link>
-          </Menu.Item>
-        </SubMenu>
-        <Menu.Item
-          key="10"
-          icon={<AiOutlineShoppingCart size={22} />}
-          className={styles.menuItem}
-        >
-          <Link href="/dashboard/transaction">Transaction</Link>
-        </Menu.Item>
-        <Menu.Item
-          key="11"
-          icon={<AiOutlineRuby size={22} />}
-          className={styles.menuItem}
-        >
-          <Link href="/dashboard/premium">Premium</Link>
-        </Menu.Item>
-      </Menu>
+  mode="inline"
+  selectedKeys={getSelectedKeys()}
+  defaultOpenKeys={getOpenKeys()}
+  className={styles.sidebarMenu}
+  items={menuItems}
+/>
     </Sider>
   );
 };

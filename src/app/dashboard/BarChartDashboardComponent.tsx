@@ -49,7 +49,7 @@ const IncomeData: React.FC = () => {
     setLoading(true);
     try {
       const response = await apiUrl.get(
-        `http://localhost:4321/dashboard/income-data?year=${year}`
+        `/dashboard/income-data?year=${year}`
       );
       const data: IncomeItem[] = await response.data;
       setIncomeData(data);
@@ -137,10 +137,10 @@ const IncomeData: React.FC = () => {
         ) : incomeData.length > 0 ? (
           <>
             <div className="flex flex-col gap-8">
-              <div className="w-full h-[37.5rem]">
+              <div className="w-full" style={{ height: "clamp(16rem, 50vw, 37.5rem)" }}>
                 <Bar data={incomeChartData} options={options} />
               </div>
-              <div className="w-full h-[37.5rem]">
+              <div className="w-full" style={{ height: "clamp(16rem, 50vw, 37.5rem)" }}>
                 <Bar data={transactionsChartData} options={options} />
               </div>
             </div>

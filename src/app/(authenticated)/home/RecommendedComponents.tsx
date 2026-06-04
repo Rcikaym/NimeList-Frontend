@@ -82,6 +82,7 @@ export default function Recommended() {
         settings: {
           slidesToShow: 4,
           slidesToScroll: 2,
+          arrows: false,
         },
       },
       {
@@ -89,6 +90,7 @@ export default function Recommended() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 2,
+          arrows: false,
         },
       },
       {
@@ -96,6 +98,7 @@ export default function Recommended() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
       {
@@ -103,6 +106,7 @@ export default function Recommended() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
       {
@@ -118,14 +122,14 @@ export default function Recommended() {
 
   return (
     <>
-      <div className="pl-12 pr-12">
+      <div className="px-4 md:px-12">
         <Slider {...settings}>
           {animes.map((anime: AnimeType) => (
             <div
               key={anime.id}
               className="w-full h-full pb-6 justify-items-center"
             >
-              <div className="w-[13.75rem]">
+              <div className="w-[13.75rem] mx-auto">
                 <Link
                   href={`/anime/${anime.slug}`}
                 >

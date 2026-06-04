@@ -16,7 +16,7 @@ import dynamic from "next/dynamic";
 
 const FilterModal = dynamic(() => import("./ModalFilterTransactionComponent"));
 const ModalDetailTransaction = dynamic(
-  () => import("./ModalDetailTransactionComponent")
+  () => import("./ModalDetailTransactionComponent"),
 );
 
 const TransactionList = () => {
@@ -32,10 +32,10 @@ const TransactionList = () => {
   const debounceText = useDebounce(searchText, 1500);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailTransaction, setDetailTransaction] = useState(
-    {} as TransactionDetails
+    {} as TransactionDetails,
   );
   const [filterString, setFilterString] = useState(
-    "status=&premium=&platform="
+    "status=&premium=&platform=",
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const api = process.env.NEXT_PUBLIC_API_URL;
@@ -49,7 +49,7 @@ const TransactionList = () => {
   const fetchTransaction = async () => {
     try {
       const response = await apiUrl.get(
-        `${api}/transactions/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&${filterString}`
+        `/transactions/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&${filterString}`,
       );
       const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
@@ -67,12 +67,12 @@ const TransactionList = () => {
 
   useEffect(() => {
     fetchTransaction(); // Panggil fungsi fetchTransaction saat komponen dimuat
-  }, [pagination.current, debounceText !== "", filterString]);
+  }, [pagination.current, debounceText, filterString]);
 
   const handleTableChange: TableProps<DataType>["onChange"] = (
     pagination: TablePaginationConfig,
     filters,
-    sorter
+    sorter,
   ) => {
     const sortParsed = sorter as SorterResult<DataType>;
     setPagination({
@@ -152,7 +152,7 @@ const TransactionList = () => {
         ),
       },
     ],
-    []
+    [],
   );
 
   const handleApplyFilter = (filterResult: string) => {
@@ -189,10 +189,10 @@ const TransactionList = () => {
       </div>
       <div className="flex justify-end mb-3">
         <div className="flex gap-3">
-          <Input
-            addonBefore={<SearchOutlined />}
+          <Input.Search
             placeholder="Only user and order id"
             onChange={(e) => setSearchText(e.target.value)}
+            prefix={<SearchOutlined />}
           />
           <button
             type="button"

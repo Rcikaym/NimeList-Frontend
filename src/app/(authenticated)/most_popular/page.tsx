@@ -9,7 +9,9 @@ import ClientPagination from "@/components/ClientPagination";
 import { useSearchParams } from "next/navigation"; // Next.js hook to manage query params
 import { AnimeType } from "./types";
 
-export default function MostPopular() {
+import { Suspense } from "react";
+
+function MostPopularContent() {
   const [anime, setAnime] = useState<AnimeType[]>([]); // Using AnimeType[] for anime list
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0); // State to store the total number of items
@@ -47,11 +49,11 @@ export default function MostPopular() {
   if (loading) return <Skeleton active />;
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto px-4 md:px-8">
       <h1 className="w-fit font-jakarta text-3xl font-black p-8 bg-gradient-to-r from-[#05E1C6] to-[#008576b7] bg-clip-text text-transparent">
         Most Popular
       </h1>
-      <ul className="place-items-center grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <ul className="place-items-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {/* Sort the anime list by rating in descending order */}
         {anime.map((anime: AnimeType) => (
           <li
@@ -63,8 +65,7 @@ export default function MostPopular() {
             >
               <Image
                 className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
-                // src="/images/the-wind-rise.jpg" // Temporary image, you may want to use anime.photo_cover
-                src={`http://localhost:4321/${anime.photo_cover.replace(
+                src={`${api}/${anime.photo_cover.replace(
                   /\\/g,
                   "/"
                 )}`}
@@ -98,5 +99,13 @@ export default function MostPopular() {
         <ClientPagination currentPage={currentPage} total={total} />
       </div>
     </div>
+  );
+}
+
+export default function MostPopular() {
+  return (
+    <Suspense fallback={<Skeleton active />}>
+      <MostPopularContent />
+    </Suspense>
   );
 }

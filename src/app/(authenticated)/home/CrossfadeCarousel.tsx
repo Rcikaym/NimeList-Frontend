@@ -113,7 +113,7 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
           {animeData.map((data, index) => (
             <img
               key={index}
-              src={`${api}/${currentAnime.photo_cover}`}
+              src={`${api}/${data.photo_cover}`}
               alt={`Carousel item ${index}`}
               className={`absolute w-full h-full object-cover transition-opacity duration-1000 ease-in-out transform ${
                 index === currentIndex
@@ -127,10 +127,23 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
             />
           ))}
         </div>
+        {/* Navigation buttons inside the image container */}
+        <button
+          className="absolute top-1/2 transform -translate-y-1/2 left-2 text-white bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full p-2 z-10"
+          onClick={handlePrev}
+        >
+          <TiChevronLeft className="w-6 h-6" />
+        </button>
+        <button
+          className="absolute top-1/2 transform -translate-y-1/2 right-2 text-white bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full p-2 z-10"
+          onClick={handleNext}
+        >
+          <TiChevronRight className="w-6 h-6" />
+        </button>
       </div>
 
       {/* Right content */}
-      <div className="flex flex-col items-start justify-center w-full lg:w-1/2 p-4 md:p-6 lg:p-10 text-center lg:text-left">
+      <div className="flex flex-col items-center lg:items-start justify-center w-full lg:w-1/2 p-4 md:p-6 lg:p-10 text-center lg:text-left">
         <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-white mb-2 select-none">
           {currentAnime.title}
         </h1>
@@ -176,20 +189,6 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
           )}
         </div>
       </div>
-
-      {/* Navigation buttons */}
-      <button
-        className="absolute top-1/2 transform -translate-y-1/2 left-1 text-white bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full p-2"
-        onClick={handlePrev}
-      >
-        <TiChevronLeft className="w-6 h-6" />
-      </button>
-      <button
-        className="absolute top-1/2 transform -translate-y-1/2 right-1 text-white bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full p-2"
-        onClick={handleNext}
-      >
-        <TiChevronRight className="w-6 h-6" />
-      </button>
 
       {/* Modal */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">

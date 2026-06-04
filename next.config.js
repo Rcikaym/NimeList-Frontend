@@ -10,17 +10,10 @@ const nextConfig = {
       },
     ],
   },
-   eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: false,
   },
-  output: 'standalone', // Better for deployment
-  // Skip these problematic pages for now
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
-  },
+  output: 'standalone',
 };
 
 module.exports = nextConfig;

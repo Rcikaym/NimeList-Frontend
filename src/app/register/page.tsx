@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@nextui-org/react";
 import React from "react";
 import BoxReveal from "@/components/magicui/BoxReveal";
@@ -8,17 +10,17 @@ import Link from "next/link";
 export default function Register() {
   return (
     <>
-      <div className="container flex mx-auto min-h-screen items-center justify-center">
-        <div className="flex justify-center items-center space-x-48">
+      <div className="container flex mx-auto min-h-screen items-center justify-center p-4 sm:p-6 md:p-10">
+        <div className="flex flex-col lg:flex-row items-center justify-center lg:space-x-12 xl:space-x-48 space-y-12 lg:space-y-0 w-full max-w-6xl">
           <div className="flex flex-col items-start justify-center overflow-hidden">
             <BoxReveal boxColor={"#014A42"} duration={0.5}>
-              <p className="text-[3.5rem] font-semibold">
+              <p className="text-[3.5rem] font-semibold leading-tight text-white">
                 NimeList<span className="text-[#05E1C6]">.</span>
               </p>
             </BoxReveal>
 
             <BoxReveal boxColor={"#014A42"} duration={0.5}>
-              <h2 className="mt-[.5rem] text-[1rem]">
+              <h2 className="mt-[.5rem] text-[1rem] text-gray-300">
                 Dive into the world of anime with{" "}
                 <span className="text-[#05E1C6]">NimeList</span>.
               </h2>
@@ -26,7 +28,7 @@ export default function Register() {
 
             <BoxReveal boxColor={"#014A42"} duration={0.5}>
               <div className="mt-[1.5rem]">
-                <p>
+                <p className="leading-relaxed text-gray-300">
                   Discover handpicked anime{" "}
                   <span className="font-semibold text-[#05E1C6]">
                     just for you
@@ -55,7 +57,7 @@ export default function Register() {
             </BoxReveal>
 
             <BoxReveal boxColor={"#014A42"} duration={0.5}>
-              <p className="mt-[1.5rem]">
+              <p className="mt-[1.5rem] text-gray-300">
                 Join over{" "}
                 <span>
                   <NumberTicker

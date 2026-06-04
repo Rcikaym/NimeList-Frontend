@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@nextui-org/react";
 import CrossfadeCarousel from "./CrossfadeCarousel";
 import MostPopular from "./MostPopularComponents";
@@ -7,31 +9,31 @@ import { MdPlayArrow } from "react-icons/md";
 import NewlyArrived from "./NewlyArrivedComponent";
 export default function Home() {
   return (
-    <main>
+    <main className="w-full">
       <section className="flex flex-col px-4 lg:px-8 mb-8 lg:flex-row min-h-screen mx-auto text-white">
         <CrossfadeCarousel interval={10000} />
       </section>
 
-      <section className="w-full h-[56.2vh] mt-[5rem] mx-auto overflow-clip">
+      <section className="w-full h-auto mt-12 md:mt-20 mx-auto px-4 md:px-8 overflow-hidden">
         <div className="w-full h-full">
-          <h1 className="w-fit font-jakarta ml-10 text-3xl font-black select-none p-8 bg-gradient-to-r from-[#05E1C6] to-[#008576b7] bg-clip-text text-transparent sm:text-2xl md:text-3xl lg:text-3xl">
+          <h1 className="w-fit font-jakarta text-2xl md:text-3xl font-black select-none px-4 md:px-8 bg-gradient-to-r from-[#05E1C6] to-[#008576b7] bg-clip-text text-transparent">
             Recommendation
           </h1>
           <Recommended />
         </div>
       </section>
 
-      <section className="w-full h-[56.2vh] mt-20 mx-auto overflow-clip">
+      <section className="w-full h-auto mt-12 md:mt-20 mx-auto px-4 md:px-8 overflow-hidden">
         <div className="w-full h-full">
-          <div className="flex flex-wrap justify-between">
-            <h1 className="w-fit font-jakarta ml-10 text-3xl select-none font-black p-8 bg-gradient-to-r from-[#05E1C6] to-[#008576b7] bg-clip-text text-transparent sm:text-2xl md:text-3xl lg:text-3xl">
+          <div className="flex flex-wrap justify-between items-center px-4 md:px-8 gap-4">
+            <h1 className="w-fit font-jakarta text-2xl md:text-3xl select-none font-black bg-gradient-to-r from-[#05E1C6] to-[#008576b7] bg-clip-text text-transparent">
               Most Popular
             </h1>
             <Link href="/most_popular">
               <Button
                 variant="ghost"
                 color="primary"
-                className="font-jakarta font-bold m-8 mr-16 text-indigo-50 sm:mr-8 md:mr-10 lg:mr-16"
+                className="font-jakarta font-bold text-indigo-50"
               >
                 View More
               </Button>
@@ -41,14 +43,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full h-auto mt-20 mx-auto overflow-clip">
-        <div className="w-full h-full bg-gradient-to-r from-[#050505] via-[#050505] to-[#009951] bg-[length:100%_30%]">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
+      <section className="w-full h-auto mt-12 md:mt-20 mx-auto overflow-hidden">
+        <div className="w-full h-full bg-gradient-to-r from-[#050505] via-[#050505] to-[#009951] bg-[length:100%_30%] px-4 md:px-8">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center px-4 md:px-8 gap-4">
             <div>
-              <h1 className="w-fit font-jakarta ml-10 text-3xl select-none font-black pl-8 bg-gradient-to-r from-[#05E1C6] to-[#009e10] bg-clip-text text-transparent">
+              <h1 className="w-fit font-jakarta text-2xl md:text-3xl select-none font-black bg-gradient-to-r from-[#05E1C6] to-[#009e10] bg-clip-text text-transparent">
                 Newly Arrived
               </h1>
-              <p className="ml-4 lg:ml-10 mb-2 lg:mb-0 font-jakarta text-sm lg:text-base w-full lg:w-fit pl-4 lg:pl-8">
+              <p className="mt-2 font-jakarta text-sm lg:text-base w-full lg:w-fit text-gray-300">
                 Epic Adventures Await: Dive into the Hottest New Anime Releases
                 of the Season!
               </p>
@@ -57,28 +59,28 @@ export default function Home() {
               <Button
                 variant="light"
                 color="primary"
-                className="font-jakarta font-bold m-8 mr-16 text-indigo-50"
+                className="font-jakarta font-bold text-indigo-50 mt-2 lg:mt-0"
                 endContent={<MdPlayArrow />}
               >
                 VIEW ALL
               </Button>
             </Link>
           </div>
-          <div className="mt-2">
+          <div className="mt-6">
             <NewlyArrived />
           </div>
         </div>
       </section>
 
-      <section className="w-full h-[56.2vh] mt-5 mx-auto">
+      <section className="w-full h-auto py-16 mt-12 mx-auto">
         <div className="w-full h-full grid place-content-center">
-          <div className="justify-center text-center place-items-center">
+          <div className="justify-center text-center place-items-center px-4">
             <img
               src="/images/tired-avatar.png"
               alt="man"
-              className="select-none"
+              className="select-none mx-auto mb-4"
             />
-            <p className="font-jakarta text-center font-semibold justify-center">
+            <p className="font-jakarta text-center font-semibold justify-center mb-4 text-gray-300">
               Haven't found what you're looking for?
               <br />
               Explore our full library for more!

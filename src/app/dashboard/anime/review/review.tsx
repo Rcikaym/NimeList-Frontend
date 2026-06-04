@@ -200,8 +200,8 @@ const ReviewList: React.FC = () => {
       </div>
       <div className="mb-3 flex justify-end">
         <div>
-          <Input
-            addonBefore={<AiOutlineSearch />}
+          <Input.Search
+            prefix={<AiOutlineSearch />}
             placeholder="Search Username and Title Anime"
             onChange={(e) => setSearchText(e.target.value)}
           />

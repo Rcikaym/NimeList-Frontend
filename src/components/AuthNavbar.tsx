@@ -208,7 +208,7 @@ const AuthNavbar = () => {
             <li>
               {IsPremium ? (
                 <Link href="/forum" className="block">
-                  <MdOutlineForum className="cursor-pointer w-7 h-8" />
+                  <MdOutlineForum className="cursor-pointer w-7 h-8 text-white" />
                 </Link>
               ) : (
                 <Link href="/membership" className="block">
@@ -218,12 +218,12 @@ const AuthNavbar = () => {
             </li>
             <li>
               <Link href="/favorites">
-                <FaRegHeart className="cursor-pointer w-6 h-6" />
+                <FaRegHeart className="cursor-pointer w-6 h-6 text-pink-500" />
               </Link>
             </li>
             <li>
               <Link href="/search">
-                <FaMagnifyingGlass className="cursor-pointer w-6 h-6" />
+                <FaMagnifyingGlass className="cursor-pointer w-6 h-6 text-white" />
               </Link>
             </li>
           </ul>
@@ -327,7 +327,7 @@ const AuthNavbar = () => {
             </Dropdown>
           </div>
         </NavbarContent>
-        <NavbarMenu className={`${isMenuOpen ? "bg-transparent" : ""}`}>
+        <NavbarMenu className="bg-[#00554B]/95 backdrop-blur-md pt-6">
           {menuItems.map((item) => (
             <NavbarMenuItem key={item.key}>{item.label}</NavbarMenuItem>
           ))}

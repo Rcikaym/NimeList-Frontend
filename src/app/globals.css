@@ -1,7 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
-
-
+@import "antd/dist/reset.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -20,16 +17,19 @@
   }
 }
 
+html {
+  background-color: rgb(var(--background-start-rgb)) !important;
+}
+
 body {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  font-family: var(--font-plus-jakarta);
+  color: rgb(var(--foreground-rgb)) !important;
+  background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb)) !important;
+  background-attachment: fixed !important;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 @layer utilities {
@@ -39,8 +39,10 @@ body {
 }
 
 .custom-dropdown-item:hover {
-  background-color: #00554bc3; /* Hover background color */
-  color: white; /* Optional: Hover text color */
+  background-color: #00554bc3;
+  /* Hover background color */
+  color: white;
+  /* Optional: Hover text color */
 }
 
 .ant-form-item-required {
@@ -49,5 +51,6 @@ body {
 }
 
 .slider-container {
-  overflow: hidden; /* Prevent any overlap */
+  overflow: hidden;
+  /* Prevent any overlap */
 }

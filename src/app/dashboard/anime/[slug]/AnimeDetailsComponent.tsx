@@ -6,7 +6,7 @@ import { AnimeType, ReviewDataType, ReviewType } from "./types";
 import renderDateTime from "@/utils/FormatDateTime";
 import DisplayLongText from "@/components/DisplayLongText";
 import Image from "next/image";
-import { message, Modal } from "antd";
+import { App } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import apiUrl from "@/hooks/api";
 import ReviewList from "./ReviewComponent";
@@ -21,7 +21,8 @@ export default function AnimeDetails({ slug }: { slug: string }) {
   const [totalReview, setTotalReview] = useState(0);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const { confirm } = Modal;
+  const { modal, message } = App.useApp();
+  const confirm = modal.confirm;
   const [error, setError] = useState<string | null>(null);
 
   const fetchAnime = async () => {

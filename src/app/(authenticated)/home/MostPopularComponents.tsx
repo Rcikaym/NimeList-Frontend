@@ -85,6 +85,7 @@ export default function MostPopular() {
         settings: {
           slidesToShow: 4,
           slidesToScroll: 2,
+          arrows: false,
         },
       },
       {
@@ -92,6 +93,7 @@ export default function MostPopular() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 2,
+          arrows: false,
         },
       },
       {
@@ -99,6 +101,7 @@ export default function MostPopular() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
       {
@@ -106,6 +109,7 @@ export default function MostPopular() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
       {
@@ -121,14 +125,14 @@ export default function MostPopular() {
 
   return (
     <>
-      <div className="pl-12 pr-12">
+      <div className="px-4 md:px-12">
         <Slider {...settings}>
           {animes.map((anime: AnimeType) => (
             <div
               key={anime.id}
               className="h-full w-full justify-items-center pb-6 "
             >
-              <div className="w-[13.75rem]">
+              <div className="w-[13.75rem] mx-auto">
                 <Link href={`/anime/${anime.slug}`}>
                   <Image
                     className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover transition-transform duration-300 transform hover:scale-105"

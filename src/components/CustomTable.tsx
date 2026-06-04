@@ -80,6 +80,7 @@ const CustomTable = <T extends object>({
       dataSource={data}
       loading={loading}
       columns={columns}
+      scroll={{ x: "max-content" }}
       pagination={{
         pageSize: pageSize,
         pageSizeOptions: ["10", "20", "50", "100"],

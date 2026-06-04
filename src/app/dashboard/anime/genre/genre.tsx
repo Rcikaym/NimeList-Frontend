@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Form, Input, Modal, message } from "antd";
+import { Form, Input, App } from "antd";
 import type { TableProps } from "antd";
 import {
   AiOutlineDelete,
@@ -27,6 +27,7 @@ export interface DataGenreType {
 }
 
 const AnimeGenre: React.FC = () => {
+  const { modal, message } = App.useApp();
   const [data, setData] = useState<DataGenreType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [form] = Form.useForm();
@@ -40,7 +41,6 @@ const AnimeGenre: React.FC = () => {
   const [idGenre, setIdGenre] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const debounceText = useDebounce(searchText, 1000);
-  const { confirm } = Modal;
 
   const showModal = (modalMode: "edit" | "post") => {
     setMode(modalMode);
@@ -132,7 +132,7 @@ const AnimeGenre: React.FC = () => {
       .then(() => {
         setModalVisible(false); // Tutup modal genre
 
-        confirm({
+        modal.confirm({
           centered: true,
           title: "Do you want to add an " + values.name + " genre?",
           icon: <ExclamationCircleFilled />,
@@ -156,7 +156,7 @@ const AnimeGenre: React.FC = () => {
       .then(() => {
         setModalVisible(false); // Tutup modal genre
 
-        confirm({
+        modal.confirm({
           centered: true,
           title: "Do you want to update this genre?",
           icon: <ExclamationCircleFilled />,
@@ -175,7 +175,7 @@ const AnimeGenre: React.FC = () => {
 
   // Fungsi untuk menampilkan modal konfirmasi sebelum submit
   const showDeleteConfirm = (id: string, name: string) => {
-    confirm({
+    modal.confirm({
       centered: true,
       title: "Do you want to delete " + name + " genre?",
       icon: <ExclamationCircleFilled />,
@@ -303,8 +303,8 @@ const AnimeGenre: React.FC = () => {
           </button>
         </div>
         <div>
-          <Input
-            addonBefore={<AiOutlineSearch />}
+          <Input.Search
+            prefix={<AiOutlineSearch />}
             placeholder="Search Genre Name"
             onChange={(e) => setSearchText(e.target.value)}
           />

@@ -31,14 +31,16 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     }
   });
 
+  const [collapsed, setCollapsed] = useState(false);
+
   if (!isInitialized) {
     return null;
   }
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sidebar />
-      <Layout style={{ marginLeft: 200 }}>
+      <Sidebar collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} />
+      <Layout style={{ marginLeft: collapsed ? 80 : 200, transition: "margin-left 0.2s ease" }}>
         <Navbar />
         <Content
           style={{

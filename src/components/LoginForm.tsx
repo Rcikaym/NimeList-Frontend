@@ -48,61 +48,67 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full max-w-[447px] max-h-[574px] bg-[#050505] border-[#97979733] border-1 rounded-[32px] flex items-center justify-center">
-      <div className="absolute top-0 left-0 m-8 mb-6 mt-10">
-        <p className="font-bold text-5xl mb-0 pb-4 bg-gradient-to-r from-[#05E5CB] to-[#014A42] bg-clip-text text-transparent">
+    <div className="relative w-full max-w-[447px] bg-[#050505] border-[#97979733] border-1 rounded-[32px] flex flex-col items-center justify-center p-6 sm:p-8 md:p-10">
+      <div className="w-full text-left mb-6 mt-4 px-4">
+        <p className="font-bold text-4xl sm:text-5xl mb-0 pb-2 bg-gradient-to-r from-[#05E5CB] to-[#014A42] bg-clip-text text-transparent">
           Log in
         </p>
-        <span className="font-semibold text-sm">For better experience.</span>
+        <span className="font-semibold text-xs sm:text-sm text-gray-400">For better experience.</span>
       </div>
-      <form className="w-[447px] h-[574px] items-center justify-center pt-[9rem]" onSubmit={handleLogin}>
-        <Input
-          className="w-[368px] m-8 select-none"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="text"
-          label="Email"
-          labelPlacement="inside"
-          description="Enter your email"
-        />
-        <Input
-          className="w-[368px] m-8 select-none"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          label="Password"
-          labelPlacement="inside"
-          description="Enter your password"
-          endContent={
-            <button
-              className="focus:outline-none"
-              type="button"
-              onClick={toggleVisibility}
-              aria-label="toggle password visibility"
-            >
-              {isVisible ? (
-                <BiHide className="text-[#050505] w-[24px] h-[24px] my-auto mx-auto pointer-events-none" />
-              ) : (
-                <BiShow className="text-[#050505] w-[24px] h-[24px] my-auto mx-auto pointer-events-none" />
-              )}
-            </button>
-          }
-          type={isVisible ? "text" : "password"}
-        />
+      <form className="w-full flex flex-col items-center justify-center gap-4" onSubmit={handleLogin}>
+        <div className="w-full flex justify-center px-4">
+          <Input
+            className="w-full max-w-[368px] select-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            label="Email"
+            labelPlacement="inside"
+            description="Enter your email"
+          />
+        </div>
+        <div className="w-full flex justify-center px-4">
+          <Input
+            className="w-full max-w-[368px] select-none"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            label="Password"
+            labelPlacement="inside"
+            description="Enter your password"
+            endContent={
+              <button
+                className="focus:outline-none"
+                type="button"
+                onClick={toggleVisibility}
+                aria-label="toggle password visibility"
+              >
+                {isVisible ? (
+                  <BiHide className="text-[#050505] w-[24px] h-[24px] my-auto mx-auto pointer-events-none" />
+                ) : (
+                  <BiShow className="text-[#050505] w-[24px] h-[24px] my-auto mx-auto pointer-events-none" />
+                )}
+              </button>
+            }
+            type={isVisible ? "text" : "password"}
+          />
+        </div>
         {error && <p className="text-red-500 text-center">{error}</p>}
-        <Button
-          className="w-[368px] m-8 mb-2 bg-[#014A42] h-[60px]"
-          size="lg"
-          color="primary"
-          type="submit"
-        >
-          <p className="font-semibold text-2xl m-0 mb-1">Log in </p>
-          <BiRightArrowAlt className="w-[24px] h-[24px]" />
-        </Button>
-        <div className="w-full text-center mb-10">
+        <div className="w-full flex justify-center px-4">
+          <Button
+            className="w-full max-w-[368px] bg-[#014A42] h-[60px]"
+            size="lg"
+            color="primary"
+            type="submit"
+          >
+            <p className="font-semibold text-xl sm:text-2xl m-0 mb-1">Log in </p>
+            <BiRightArrowAlt className="w-[24px] h-[24px]" />
+          </Button>
+        </div>
+        <div className="w-full text-center mt-4 mb-4">
           <p className="text-[#f5f5f5] text-sm m-0">
             Didn't have an account yet?{" "}
             <span>
-              <a href="/register" className="text-[#05E1C6]">
+              <a href="/register" className="text-[#05E1C6] hover:underline">
                 Register Here{" "}
               </a>
             </span>

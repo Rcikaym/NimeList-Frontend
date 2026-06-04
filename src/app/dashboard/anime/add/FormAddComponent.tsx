@@ -6,8 +6,7 @@ import {
   Form,
   Input,
   InputNumber,
-  message,
-  Modal,
+  App,
   Select,
   Upload,
   UploadProps,
@@ -43,6 +42,7 @@ interface DataGenre {
 
 export default function AddAnime() {
   const router = useRouter();
+  const { modal, message } = App.useApp();
   const [form] = Form.useForm(); // Form handler dari Ant Design
   const [genres, setGenres] = useState<DataGenre[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,8 +50,13 @@ export default function AddAnime() {
   const [episodes, setEpisodes] = useState<number | null>(null);
   const [fileList, setFileList] = useState([]);
   const [fileCover, setFileCover] = useState([]);
-  const { confirm } = Modal;
-  const api = process.env.NEXT_PUBLIC_API_URL;
+  const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4321";
+
+  const customRequest = ({ file, onSuccess }: any) => {
+    setTimeout(() => {
+      onSuccess("ok");
+    }, 0);
+  };
 
   useEffect(() => {
     const fetchGenre = async () => {
@@ -85,7 +90,7 @@ export default function AddAnime() {
     function convertToEmbedUrl(url: any) {
       // Regular expression to match YouTube video IDs
       const videoIdMatch = url.match(
-        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
       );
 
       // Check if the video ID was found
@@ -152,7 +157,7 @@ export default function AddAnime() {
     form
       .validateFields() // Validasi input form terlebih dahulu
       .then((values: DataAnime) => {
-        confirm({
+        modal.confirm({
           centered: true,
           title: "Do you want to add an " + values.title + " ?",
           icon: <ExclamationCircleFilled />,
@@ -187,7 +192,7 @@ export default function AddAnime() {
       // Hapus file dengan status "error" setelah state di-update
       setTimeout(() => {
         setFileList((currentList) =>
-          currentList.filter((f: any) => f.uid !== file.uid)
+          currentList.filter((f: any) => f.uid !== file.uid),
         );
       }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
     }
@@ -205,7 +210,7 @@ export default function AddAnime() {
       // Hapus file dengan status "error" setelah state di-update
       setTimeout(() => {
         setFileCover((currentList) =>
-          currentList.filter((f: any) => f.uid !== file.uid)
+          currentList.filter((f: any) => f.uid !== file.uid),
         );
       }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
     }
@@ -222,7 +227,7 @@ export default function AddAnime() {
         // Hapus file dengan status "error" setelah state di-update
         setTimeout(() => {
           setFileList((currentList) =>
-            currentList.filter((f: any) => f.uid !== file.uid)
+            currentList.filter((f: any) => f.uid !== file.uid),
           );
         }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
@@ -232,7 +237,7 @@ export default function AddAnime() {
         // Hapus file dengan status "error" setelah state di-update
         setTimeout(() => {
           setFileList((currentList) =>
-            currentList.filter((f: any) => f.uid !== file.uid)
+            currentList.filter((f: any) => f.uid !== file.uid),
           );
         }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
@@ -254,7 +259,7 @@ export default function AddAnime() {
         // Hapus file dengan status "error" setelah state di-update
         setTimeout(() => {
           setFileCover((currentList) =>
-            currentList.filter((f: any) => f.uid !== file.uid)
+            currentList.filter((f: any) => f.uid !== file.uid),
           );
         }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
@@ -265,7 +270,7 @@ export default function AddAnime() {
         // Hapus file dengan status "error" setelah state di-update
         setTimeout(() => {
           setFileCover((currentList) =>
-            currentList.filter((f: any) => f.uid !== file.uid)
+            currentList.filter((f: any) => f.uid !== file.uid),
           );
         }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
@@ -314,7 +319,7 @@ export default function AddAnime() {
                   { required: true, message: "Please input trailer link" },
                 ]}
               >
-                <Input placeholder="yyyy-mm-dd" />
+                <Input placeholder="https://youtube.com/watch?..." />
               </Form.Item>
 
               <Form.Item
@@ -336,15 +341,16 @@ export default function AddAnime() {
                   placeholder="Select type"
                   allowClear
                   onChange={(value) => setType(value)} // Set nilai type saat berubah
+                  options={[
+                    { value: "movie", label: "movie" },
+                    { value: "series", label: "series" },
+                  ]}
                   filterOption={(input, option) =>
-                    (option?.children as unknown as string)
+                    (option?.label ?? "")
                       .toLowerCase()
                       .includes(input.toLowerCase())
                   }
-                >
-                  <Option value="movie">movie</Option>
-                  <Option value="series">series</Option>
-                </Select>
+                ></Select>
               </Form.Item>
 
               {/* Input total episode */}
@@ -406,6 +412,7 @@ export default function AddAnime() {
               listType="picture"
               maxCount={1}
               fileList={fileCover}
+              customRequest={customRequest}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
@@ -418,6 +425,7 @@ export default function AddAnime() {
               maxCount={4}
               multiple
               fileList={fileList}
+              customRequest={customRequest}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>

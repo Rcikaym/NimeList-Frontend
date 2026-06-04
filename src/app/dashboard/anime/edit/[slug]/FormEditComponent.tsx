@@ -6,8 +6,7 @@ import {
   Form,
   Input,
   InputNumber,
-  message,
-  Modal,
+  App,
   Select,
   Upload,
   UploadProps,
@@ -22,6 +21,7 @@ import Link from "next/link";
 
 export default function AnimeEdit({ slug }: { slug: string }) {
   const router = useRouter();
+  const { modal, message } = App.useApp();
   const [form] = Form.useForm();
   const [animeId, setAnimeId] = useState<string | null>(null);
   const [genres, setGenres] = useState<GenreType[]>([]);
@@ -31,8 +31,13 @@ export default function AnimeEdit({ slug }: { slug: string }) {
   const [fileList, setFileList] = useState([]);
   const [fileCover, setFileCover] = useState([]);
   const [error, setError] = useState<string | null>(null);
-  const { confirm } = Modal;
-  const api = process.env.NEXT_PUBLIC_API_URL;
+  const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4321";
+
+  const customRequest = ({ file, onSuccess }: any) => {
+    setTimeout(() => {
+      onSuccess("ok");
+    }, 0);
+  };
 
   // Fetch anime edit data
   useEffect(() => {
@@ -187,7 +192,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
     form
       .validateFields() // Validasi input form terlebih dahulu
       .then((values: DataAnime) => {
-        confirm({
+        modal.confirm({
           centered: true,
           title: "Do you want to update this anime?",
           icon: <ExclamationCircleFilled />,
@@ -444,6 +449,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
               listType="picture"
               maxCount={1}
               fileList={fileCover}
+              customRequest={customRequest}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
@@ -456,6 +462,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
               maxCount={4}
               multiple
               fileList={fileList}
+              customRequest={customRequest}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>

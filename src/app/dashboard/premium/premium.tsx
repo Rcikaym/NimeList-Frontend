@@ -54,7 +54,7 @@ const PremiumList: React.FC = () => {
   const fetchPremium = async () => {
     try {
       const response = await apiUrl.get(
-        `http://localhost:4321/premium/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&status=${filterStatus}`
+        `/premium/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}&status=${filterStatus}`
       );
       const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
@@ -104,7 +104,7 @@ const PremiumList: React.FC = () => {
     setLoading(true);
     try {
       const res = await apiUrl.post(
-        `http://localhost:4321/premium/post`,
+        `/premium/post`,
         values
       ); // Melakukan POST ke server
       message.success(res.data.message);
@@ -128,7 +128,7 @@ const PremiumList: React.FC = () => {
     setLoading(true);
     try {
       const res = await apiUrl.put(
-        `http://localhost:4321/premium/update/${id}`,
+        `/premium/update/${id}`,
         values
       ); // Melakukan PUT ke server
       message.success(res.data.message);
@@ -148,7 +148,7 @@ const PremiumList: React.FC = () => {
     setLoading(true);
     try {
       const res = await apiUrl.delete(
-        `http://localhost:4321/premium/delete/${id}`
+        `/premium/delete/${id}`
       ); // Melakukan DELETE ke server
       message.success(res.data.message);
 
@@ -298,7 +298,7 @@ const PremiumList: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center mt-3 mb-10 justify-between">
+      <div className="flex flex-wrap items-start md:items-center mt-3 mb-10 gap-3 justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-700 rounded-lg p-3 shadow-lg shadow-gray-300 text-white">
             <AiOutlineRuby style={{ fontSize: 20 }} />
@@ -318,7 +318,7 @@ const PremiumList: React.FC = () => {
           </Link>
         </div>
       </div>
-      <div className="mb-3 flex justify-between">
+      <div className="mb-3 flex flex-wrap gap-2 justify-between">
         <button onClick={() => showModal("post")}>
           <div className="flex items-center gap-1 bg-emerald-700 p-2 text-white rounded-md hover:bg-emerald-800">
             <AiOutlinePlus />
@@ -326,8 +326,8 @@ const PremiumList: React.FC = () => {
           </div>
         </button>
         <div className="flex items-center gap-3">
-          <Input
-            addonBefore={<AiOutlineSearch />}
+          <Input.Search
+            prefix={<AiOutlineSearch />}
             placeholder="Search Premium"
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -336,11 +336,15 @@ const PremiumList: React.FC = () => {
               defaultValue={filterStatus}
               style={{ width: 120 }}
               onChange={(value) => setStatus(value)}
-            >
-              <Option value="">All</Option>
+              options={[
+                { value: "", label: "All" },
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+              ]} 
+            />
+              {/* <Option value="">All</Option>
               <Option value="active">Active</Option>
-              <Option value="inactive">Inactive</Option>
-            </Select>
+              <Option value="inactive">Inactive</Option> */}
           </div>
         </div>
       </div>

@@ -48,7 +48,7 @@ const AnimeList: React.FC = () => {
     setLoading(true);
     try {
       const response = await apiUrl.get(
-        `http://localhost:4321/anime/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
+        `/anime/get-admin?page=${pagination.current}&limit=${pagination.pageSize}&search=${debounceText}`
       );
       const { data, total } = await response.data;
       setData(data); // Mengisi data dengan hasil dari API
@@ -207,8 +207,8 @@ const AnimeList: React.FC = () => {
           </a>
         </div>
         <div>
-          <Input
-            addonBefore={<AiOutlineSearch />}
+          <Input.Search
+            prefix={<AiOutlineSearch />}
             placeholder="Search Anime"
             onChange={(e) => setSearchText(e.target.value)}
           />

@@ -70,7 +70,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
           <span className="text-xl font-semibold">Filter Transaction</span>
         </>
       }
-      visible={isOpen}
+      open={isOpen}
       centered
       onCancel={onClose}
       footer={
@@ -142,7 +142,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             filterOption={(input, option: any) =>
               option.label.toLowerCase().includes(input.toLowerCase())
             }
-            dropdownStyle={{
+            style={{
               maxHeight: 130,
               overflow: "auto",
               scrollbarWidth: "none",

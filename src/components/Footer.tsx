@@ -4,7 +4,7 @@
 import { Inter } from "next/font/google";
 // import "/app/globals.css";
 import Image from "next/image";
-import React from "react";
+// import React from "react";
 import {
   TwitterOutlined,
   GithubOutlined,
@@ -155,7 +155,7 @@ const Footer = () => {
         </div>
         <div className="px-4 py-6 bg-transparent dark:bg-transparent md:flex md:items-center md:justify-center">
           <span className="text-sm text-gray-500 dark:text-gray-150 sm:text-center">
-            © 2024 <Link href="https://localhost.3000/">NimeList™</Link>. All
+            © 2024 <Link href="/home">NimeList™</Link>. All
             Rights Reserved.
           </span>
         </div>

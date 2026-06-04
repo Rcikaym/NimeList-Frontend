@@ -193,8 +193,8 @@ const TopicCommentList: React.FC = () => {
       </div>
       <div className="mb-3 flex justify-end">
         <div>
-          <Input
-            addonBefore={<AiOutlineSearch />}
+          <Input.Search
+            prefix={<AiOutlineSearch />}
             placeholder="Only title topic and username"
             onChange={(e) => setSearchText(e.target.value)}
           />

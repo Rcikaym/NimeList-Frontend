@@ -249,37 +249,39 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
 
   return (
     <>
-      <div className="container mx-auto mt-6">
-        <div className="w-full h-[88px] gap-1">
-          <h1 className="text-5xl font-bold m-0">{animeData.anime.title}</h1>
+      <div className="container mx-auto mt-6 px-4 md:px-8">
+        <div className="w-full h-auto mb-6">
+          <h1 className="text-3xl md:text-5xl font-bold m-0">{animeData.anime.title}</h1>
           <p className="text-gray-500 font-semibold mb-0 mt-3">
             {animeData.anime.type} • {animeData.anime.release_date}
           </p>
         </div>
-        <div className="flex mb-5">
-          {/* <div className="flex flex-col"> */}
-          <div className="pt-3 w-full max-w-xs h-auto">
+        <div className="flex flex-col lg:flex-row gap-6 mb-5 items-center lg:items-start">
+          {/* Column 1: Image & Action */}
+          <div className="flex flex-col items-center lg:items-start pt-3 w-full max-w-xs">
             <Image
               src={`${api}/${animeData.anime.photo_cover}`}
               width={300} // 2:3 aspect ratio (300x450)
               height={450}
-              className="object-cover w-full"
+              className="object-cover w-full rounded-lg"
               alt={animeData.anime.title}
             />
             {renderFavoriteButton()}
           </div>
-          <Spacer x={5} />
-          <div className="h-full">
-            <iframe
-              className="w-[900px] h-[471px] pt-3 select-none"
-              src={animeData.anime.trailer_link}
-              title={animeData.anime.title}
-              allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            />
+          {/* Column 2: Trailer & Details */}
+          <div className="flex-1 w-full flex flex-col pt-3">
+            <div className="w-full aspect-video max-w-[900px] rounded-lg overflow-hidden">
+              <iframe
+                className="w-full h-full select-none"
+                src={animeData.anime.trailer_link}
+                title={animeData.anime.title}
+                allow="autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
             <div className="flex flex-row mt-3">
               {/* Genre Tags */}
-              <div className="flex space-x-2 mb-4">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {genres.map((genre) => (
                   <Chip
                     key={genre.id}
@@ -294,52 +296,51 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                 ))}
               </div>
             </div>
-            <ScrollShadow className="w-[900px] max-h-[150px]" hideScrollBar>
+            <ScrollShadow className="w-full max-w-[900px] max-h-[150px]" hideScrollBar>
               <p className="text-[#f5f5f5] opacity-100 font-medium scroll-smooth tracking-wider">
                 <DisplayLongText text={animeData.anime.synopsis} />
               </p>
             </ScrollShadow>
           </div>
-          <Spacer x={5} />
-          <div className="pt-3 font-jakarta">
-            <div className="mb-1 w-[228px] h-[228px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
+          {/* Column 3: Ratings */}
+          <div className="w-full lg:w-auto flex flex-row lg:flex-col gap-4 items-center justify-center lg:justify-start pt-3">
+            <div className="w-[140px] h-[140px] sm:w-[228px] sm:h-[228px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
               <div className="w-full h-full bg-[#151515] rounded-r-md flex items-center justify-center">
-                <div className="text-center p-4 text-white">
+                <div className="text-center p-2 sm:p-4 text-white">
                   <div className="flex items-center justify-center">
-                    <BiSolidStar className="w-[30px] h-[30px] text-[#ffd500] mr-2" />
-                    <span className="text-4xl font-bold">
+                    <BiSolidStar className="w-[20px] h-[20px] sm:w-[30px] sm:h-[30px] text-[#ffd500] mr-1 sm:mr-2" />
+                    <span className="text-2xl sm:text-4xl font-bold">
                       {animeData.avgRating}
                     </span>
-                    <span className="text-xl font-bold opacity-70">/10</span>
+                    <span className="text-sm sm:text-xl font-bold opacity-70">/10</span>
                   </div>
-                  <p className="text-gray-400 text-sm mt-2">AVG. RATING</p>
+                  <p className="text-gray-400 text-xs sm:text-sm mt-1 sm:mt-2">AVG. RATING</p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-1 w-[228px] h-[228px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
+            <div className="w-[140px] h-[140px] sm:w-[228px] sm:h-[228px] relative rounded-r-md p-[2px] bg-gradient-to-b from-[#00CAB2] to-[#037F71]">
               <div className="w-full h-full bg-[#151515] rounded-r-md flex items-center justify-center">
-                <div className="flex flex-col justify-center text-center items-center p-4 text-white">
-                  <p className="text-xl font-semibold">YOUR RATING</p>
+                <div className="flex flex-col justify-center text-center items-center p-2 sm:p-4 text-white">
+                  <p className="text-xs sm:text-xl font-semibold mb-1">YOUR RATING</p>
                   {userRating > 0 && isLogin ? (
                     <>
-                      <BiSolidStar className="w-[69px] h-[69px] text-[#ffd500]" />
-                      <span className="text-2xl font-bold mt-2">
+                      <BiSolidStar className="w-[40px] h-[40px] sm:w-[69px] sm:h-[69px] text-[#ffd500]" />
+                      <span className="text-sm sm:text-2xl font-bold mt-1">
                         {userRating}/10
                       </span>
-                      <div className="mt-2"></div>
                     </>
                   ) : isLogin ? (
                     <>
-                      <BiStar className="w-[69px] h-[69px] text-[#05E5CB]" />
+                      <BiStar className="w-[40px] h-[40px] sm:w-[69px] sm:h-[69px] text-[#05E5CB]" />
                       <ReviewModal animeId={animeData.anime.id} />
                     </>
                   ) : (
                     <>
-                      <BiStar className="w-[69px] h-[69px] text-[#05E5CB]" />
+                      <BiStar className="w-[40px] h-[40px] sm:w-[69px] sm:h-[69px] text-[#05E5CB]" />
                       <Link
                         href="/login"
-                        className="bg-transparent text-xl font-semibold text-[#05E5CB]"
+                        className="bg-transparent text-sm sm:text-xl font-semibold text-[#05E5CB]"
                       >
                         RATE
                       </Link>

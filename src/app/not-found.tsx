@@ -1,4 +1,3 @@
-// import { Home } from ";
 "use client";
 import { FaHome } from "react-icons/fa";
 import { useState, useEffect } from "react";

@@ -191,8 +191,8 @@ const TopicList: React.FC = () => {
       </div>
       <div className="mb-3 flex items-center justify-end">
         <div>
-          <Input
-            addonBefore={<AiOutlineSearch />}
+          <Input.Search
+            prefix={<AiOutlineSearch />}
             placeholder="Only title, anime and user"
             onChange={(e) => setSearchText(e.target.value)}
           />
