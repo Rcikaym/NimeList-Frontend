@@ -1,15 +1,15 @@
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import { AnimeType } from "./types";
 import Link from "next/link";
 import Image from "next/image";
 import { StarFilled } from "@ant-design/icons";
 
-interface AnimeGenreProps {
-  params: { genreName: string };
-}
+// interface AnimeGenreProps {
+//   params: { genreName: string };
+// }
 
-const Animelist: React.FC<AnimeGenreProps> = ({ params }) => {
+export const Animelist = ({ params }: { params: { genreName: string } }) => {
   const { genreName } = params;
   const api = process.env.NEXT_PUBLIC_API_URL;
   const [anime, setAnime] = useState<AnimeType[]>([]);
