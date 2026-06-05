@@ -40,7 +40,7 @@
 
 ## About The Project
 
-**NimeList** is a full-featured anime platform built for fans who want more than just a list. Discover anime, read and write reviews, rate your favorites, and engage in community discussions — all in one beautifully crafted web experience.
+**NimeList** is a full-featured anime platform built for fans who want more than just a list. Discover anime, read and write reviews, rate your favorites, and engage in community discussions, all in one beautifully crafted web experience.
 
 This repository contains the **frontend** of NimeList. The backend is powered by **NestJS** and **PostgreSQL**, while the frontend leverages the performance of **Next.js 16** with server-side rendering and a polished UI component ecosystem.
 
