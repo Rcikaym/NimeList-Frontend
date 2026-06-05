@@ -16,7 +16,7 @@
 
 <br/>
 
-[Live Demo](https://nime-list-frontend.vercel.app) · [Report Bug](https://github.com/Rcikaym/NimeList-Frontend/issues) · [Request Feature](https://github.com/Rcikaym/NimeList-Frontend/issues)
+[Live Demo](https://nime-list-frontend.vercel.app) · [Report Bug](https://github.com/Rcikaym/NimeList-Frontend/issues)
 
 <br/>
 
@@ -156,7 +156,7 @@ Create a `.env.local` file at the root of the project based on `.env.local.examp
 
 ```env
 # URL of your NimeList backend API (NestJS)
-NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=your_backend_api
 
 # Midtrans client key for payment integration
 NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=your_midtrans_client_key_here
