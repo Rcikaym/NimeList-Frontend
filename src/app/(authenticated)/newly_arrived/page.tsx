@@ -1,20 +1,21 @@
-"use client"; // Enable client-side functionality
+"use client";
 
 import Link from "next/link";
 import { Skeleton } from "antd";
 import { useState, useEffect } from "react";
 import { StarFilled } from "@ant-design/icons";
 import { Image } from "@nextui-org/react";
+import { resolveImageUrl } from "@/mocks/mockApi";
 import ClientPagination from "@/components/ClientPagination";
-import { useSearchParams } from "next/navigation"; // Next.js hook to manage query params
+import { useSearchParams } from "next/navigation";
 import { AnimeType } from "./types";
 
 import { Suspense } from "react";
 
 function NewlyArrivedContent() {
-  const [anime, setAnime] = useState<AnimeType[]>([]); // Using AnimeType[] for anime list
+  const [anime, setAnime] = useState<AnimeType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0); // State to store the total number of items
+  const [total, setTotal] = useState(0); 
   const searchParams = useSearchParams();
   const api = process.env.NEXT_PUBLIC_API_URL;
   const currentPage = searchParams?.get("page")
@@ -61,10 +62,7 @@ function NewlyArrivedContent() {
             >
               <Image
                 className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
-                src={`${api}/${anime.photo_cover.replace(
-                  /\\/g,
-                  "/"
-                )}`}
+                src={resolveImageUrl(api, anime.photo_cover)}
                 alt={anime.title}
                 width={220}
                 height={300}
@@ -81,8 +79,8 @@ function NewlyArrivedContent() {
               <p className="mb-1 font-normal text-gray-700 dark:text-gray-400">
                 {anime.type}
               </p>
-              <p className="flex items-center font-semibold">
-                <StarFilled className="text-yellow-500 mr-1" />{" "}
+              <p className="flex items-center font-semibold text-gray-700 dark:text-gray-400">
+                <StarFilled className="text-yellow-500 mr-1"/>
                 {anime.avgRating}
               </p>
             </div>

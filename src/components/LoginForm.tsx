@@ -7,6 +7,8 @@ import { BiHide, BiShow, BiRightArrowAlt } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import { setAccessToken } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
+import { isMockMode } from "@/mocks/mockApi";
+import { mockLogin } from "@/mocks/mockAuth";
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -21,6 +23,15 @@ const LoginForm: React.FC = () => {
   // Function to handle login
   const handleLogin = async (e: any) => {
     e.preventDefault();
+
+    // Mock mode: auto-login without calling backend
+    if (isMockMode()) {
+      const data = mockLogin();
+      const { exp } = jwtDecode(data.access_token);
+      setAccessToken(data.access_token, exp);
+      router.push("/home");
+      return;
+    }
 
     try {
       const response = await fetch(`${api}/auth/login`, {

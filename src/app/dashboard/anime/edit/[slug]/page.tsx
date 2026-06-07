@@ -1,7 +1,8 @@
 import PageTitle from "@/components/TitlePage";
 import AnimeEdit from "./FormEditComponent";
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default async function Page(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   return (
     <>
       <PageTitle title={`Anime Edit`} />

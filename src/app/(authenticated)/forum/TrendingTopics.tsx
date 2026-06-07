@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { TopicType } from "./types";
-import axios from "axios";
+import apiUrl from "@/hooks/api";
 import { Skeleton } from "@nextui-org/react";
 
 const TrendingTopics: React.FC = () => {
@@ -11,13 +11,7 @@ const TrendingTopics: React.FC = () => {
   const fetchTopics = async () => {
     try {
       setLoading(true); // Start loading
-      const token = localStorage.getItem("access_token");
-
-      const response = await axios.get(`${api}/topic/get-all`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiUrl.get(`/topic/get-all`);
 
       setTopics(response.data);
     } catch (error) {

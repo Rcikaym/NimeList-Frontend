@@ -30,6 +30,9 @@ const withAdmin = (WrappedComponent: React.ComponentType<WithAdminProps>) => {
         }
       } catch (error) {
         console.error("Invalid token:", error);
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("access_token_expiry");
+        localStorage.removeItem("is_mock_auth");
         // Jika token tidak valid, redirect ke login
         router.push("/login");
       }

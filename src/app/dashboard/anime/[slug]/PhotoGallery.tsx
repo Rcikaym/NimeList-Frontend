@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import Image from "next/image";
+import { resolveImageUrl } from "@/mocks/mockApi";
 
 interface PhotoGalleryProps {
   photos: string[];
@@ -14,7 +15,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = memo(({ photos, title }) => {
       {photos?.map((photo, index) => (
         <div key={index}>
           <Image
-            src={`${api}/${photo}`}
+            src={resolveImageUrl(api, photo)}
             alt={`${title} - Photo ${index + 1}`}
             className="rounded-sm shadow-xl hover:shadow-lg hover:shadow-gray-400 transition-shadow"
             height={160}

@@ -5,6 +5,7 @@ import { Skeleton } from "antd";
 import { useState, useEffect } from "react";
 import { StarFilled } from "@ant-design/icons";
 import { Image } from "@nextui-org/react";
+import { resolveImageUrl } from "@/mocks/mockApi";
 import ClientPagination from "@/components/ClientPagination";
 import { useSearchParams } from "next/navigation"; // Next.js hook to manage query params
 import { AnimeType } from "./types";
@@ -65,10 +66,7 @@ function MostPopularContent() {
             >
               <Image
                 className="select-none justify-center w-full h-[18.75rem] rounded border-4 border-[#05E1C6] hover:border-[#1a7b4e] object-cover"
-                src={`${api}/${anime.photo_cover.replace(
-                  /\\/g,
-                  "/"
-                )}`}
+                src={resolveImageUrl(api, anime.photo_cover)}
                 alt={anime.title}
                 width={220}
                 height={300}

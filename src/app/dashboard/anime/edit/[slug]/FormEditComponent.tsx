@@ -18,6 +18,7 @@ import { DataAnime, GenreType, PhotosType } from "./types";
 import apiUrl from "@/hooks/api";
 import { BiArrowBack } from "react-icons/bi";
 import Link from "next/link";
+import { resolveImageUrl } from "@/mocks/mockApi";
 
 export default function AnimeEdit({ slug }: { slug: string }) {
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
             uid: index + 1, // Unique identifier
             name: `${photo}`, // Extract filename from file_path
             status: "done",
-            url: `${api}/${photo}`,
+            url: resolveImageUrl(api, photo),
           }))
         );
 

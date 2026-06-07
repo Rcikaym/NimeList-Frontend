@@ -12,6 +12,7 @@ import apiUrl from "@/hooks/api";
 import ReviewList from "./ReviewComponent";
 import AnimeMetadata from "./AnimeMetaData";
 import PhotoGallery from "./PhotoGallery";
+import { resolveImageUrl } from "@/mocks/mockApi";
 
 export default function AnimeDetails({ slug }: { slug: string }) {
   const api = process.env.NEXT_PUBLIC_API_URL;
@@ -126,7 +127,7 @@ export default function AnimeDetails({ slug }: { slug: string }) {
               <Image
                 alt={title}
                 className="rounded-md shadow-md hover:shadow-lg hover:shadow-gray-400 transition-shadow"
-                src={`${api}/${photo_cover}`}
+                src={resolveImageUrl(api, photo_cover)}
                 height={330}
                 width={200}
               />

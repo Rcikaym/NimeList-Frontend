@@ -6,6 +6,7 @@ import { getAccessToken, logout } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
 import { BiHomeAlt, BiLogOut, BiSolidUserDetail } from "react-icons/bi";
 import apiUrl from "@/hooks/api";
+import { resolveImageUrl } from "@/mocks/mockApi";
 
 const { Header } = Layout;
 
@@ -82,7 +83,7 @@ const Navbar: React.FC = () => {
         <Avatar
           src={
             <Image
-              src={`${api}/${photoUrl}`}
+              src={resolveImageUrl(api, photoUrl)}
               alt="User Profile"
               width={32}
               height={32}

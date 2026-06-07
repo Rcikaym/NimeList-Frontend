@@ -18,13 +18,7 @@ const TopicComponents: React.FC = () => {
   const fetchTopics = async () => {
     try {
       setLoading(true); // Start loading
-      const token = localStorage.getItem("access_token");
-
-      const response = await axios.get(`${api}/topic/get-all`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiUrl.get(`/topic/get-all`);
 
       setTopics(response.data);
       setLoading(false); // End loading

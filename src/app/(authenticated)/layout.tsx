@@ -10,7 +10,7 @@ export default function AuthLayout({
   return (
     <>
       <AuthNavbar />
-      <main className="bg-black overflow-hidden">{children}</main>
+      <main className="bg-black overflow-y-auto">{children}</main>
       <Footer />
     </>
   );

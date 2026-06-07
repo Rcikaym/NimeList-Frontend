@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { Image, message, Modal } from "antd";
 import { Button } from "@nextui-org/react";
 import {
@@ -21,6 +21,7 @@ import DisplayLongText from "@/components/DisplayLongText";
 import { AnimeType, GenreType, ReviewDataType, ReviewType } from "./types";
 import ReviewModal from "./RateComponent";
 import apiUrl from "@/hooks/api";
+import { resolveImageUrl } from "@/mocks/mockApi";
 import { getAccessToken } from "@/utils/auth";
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
@@ -29,12 +30,13 @@ import timeToDay from "@/utils/TimeToDay";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 type AnimeDetailProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
+const AnimeDetail: React.FC<AnimeDetailProps> = props => {
+  const params = use(props.params);
   const { slug } = params;
   const [animeData, setAnimeData] = useState<AnimeType | null>(null); // State for anime data
   const [genres, setGenres] = useState<GenreType[]>([]); // State for genres
@@ -251,7 +253,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
     <>
       <div className="container mx-auto mt-6 px-4 md:px-8">
         <div className="w-full h-auto mb-6">
-          <h1 className="text-3xl md:text-5xl font-bold m-0">{animeData.anime.title}</h1>
+          <h1 className="text-3xl md:text-5xl font-bold m-0 text-white">{animeData.anime.title}</h1>
           <p className="text-gray-500 font-semibold mb-0 mt-3">
             {animeData.anime.type} • {animeData.anime.release_date}
           </p>
@@ -260,7 +262,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
           {/* Column 1: Image & Action */}
           <div className="flex flex-col items-center lg:items-start pt-3 w-full max-w-xs">
             <Image
-              src={`${api}/${animeData.anime.photo_cover}`}
+              src={resolveImageUrl(api, animeData.anime.photo_cover)}
               width={300} // 2:3 aspect ratio (300x450)
               height={450}
               className="object-cover w-full rounded-lg"
@@ -411,7 +413,7 @@ const AnimeDetail: React.FC<AnimeDetailProps> = ({ params }) => {
                             </span>
                           )}
                         </div>
-                        <p>{review.review}</p>
+                        <p className="text-white">{review.review}</p>
                         <p>Rating: {review.rating}/10</p>
                       </div>
                       {isLogin && review.username === username && (

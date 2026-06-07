@@ -19,12 +19,11 @@ export default function Membership() {
     <>
       <PageTitle title={`NimeList - Membership`} />
       <div className="relative min-h-screen bg-gradient-to-b from-[#009951] via-[#050505] via-45% to-[#050505] text-white overflow-hidden">
-        {/* Ambient background glows - optimized using hardware-accelerated radial gradients instead of heavy CPU filters */}
+        <AuthNavbar />
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(0,153,81,0.08)_0%,transparent_70%)] pointer-events-none transform-gpu" />
         <div className="absolute top-[35%] left-[-150px] w-[450px] h-[450px] bg-[radial-gradient(circle_at_center,rgba(34,197,94,0.04)_0%,transparent_70%)] pointer-events-none transform-gpu" />
         <div className="absolute bottom-[25%] right-[-150px] w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.04)_0%,transparent_70%)] pointer-events-none transform-gpu" />
 
-        <AuthNavbar />
         
         <header className="relative py-12 text-center mt-9 z-10">
           <div className="text-center mt-10 px-4 sm:px-8 md:px-12">

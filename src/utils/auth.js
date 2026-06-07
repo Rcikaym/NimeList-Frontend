@@ -1,7 +1,7 @@
-import apiUrl from "@/hooks/api";
-import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { message } from "antd";
+import { isMockMode } from "@/mocks/mockApi";
+import { mockRefreshToken } from "@/mocks/mockAuth";
 
 export const setAccessToken = (accessToken, expiresIn) => {
   // Menghitung masa berlaku access token
@@ -22,6 +22,14 @@ export const isAccessTokenExpired = () => {
 };
 
 export const refreshAccessToken = async () => {
+  // In mock mode, return a fake refreshed token
+  if (isMockMode()) {
+    const data = mockRefreshToken();
+    const decodedToken = jwtDecode(data.access_token);
+    setAccessToken(data.access_token, decodedToken.exp);
+    return data.access_token;
+  }
+
   const token = localStorage.getItem("access_token");
   const payload = jwtDecode(token);
 
@@ -46,9 +54,18 @@ export const refreshAccessToken = async () => {
   }
 };
 
-export const removeAccessToken = async () => {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("access_token_expiry");
+export const logout = async () => {
+  try {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("access_token_expiry");
+    localStorage.removeItem("is_mock_auth");
 
-  return true;
+    message.success("Logout successfully!");
+    setTimeout(() => {
+      window.location.href = "/home";
+      window.location.reload();
+    }, 200);
+  } catch (error) {
+    message.error("Failed to logout");
+  }
 };

@@ -1,8 +1,7 @@
 "use client";
 import { PlayIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
-import { FaRegHeart } from "react-icons/fa6";
-import { FaHeart } from "react-icons/fa6";
+import { FaRegHeart, FaHeart } from "react-icons/fa6";
 import { TiChevronRight, TiChevronLeft } from "react-icons/ti";
 import { AnimeType } from "./types";
 import {
@@ -16,6 +15,7 @@ import {
 import { HeroVideoDialog } from "@/components/magicui/HeroVideoPlayer";
 import apiUrl from "@/hooks/api";
 import { getAccessToken } from "@/utils/auth";
+import { resolveImageUrl } from "@/mocks/mockApi";
 
 interface CarouselProps {
   interval: number;
@@ -24,7 +24,6 @@ interface CarouselProps {
 const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animeData, setAnimeData] = useState<AnimeType[]>([]);
-  const [Static, setStatic] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [animeFav, setAnimeFav] = useState<string[]>([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -40,7 +39,6 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
         console.error("Error fetching anime data:", error);
       }
     };
-
     fetchAnimeData();
   }, []);
 
@@ -53,25 +51,22 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
   }, []);
 
   useEffect(() => {
+    if (animeData.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentIndex((currentIndex + 1) % animeData.length);
+      setCurrentIndex((prev) => (prev + 1) % animeData.length);
     }, interval);
-
     return () => clearInterval(timer);
   }, [currentIndex, animeData.length, interval]);
 
-  const handleNext = () => {
-    setCurrentIndex((currentIndex + 1) % animeData.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((currentIndex - 1 + animeData.length) % animeData.length);
-  };
+  const handleNext = () =>
+    setCurrentIndex((prev) => (prev + 1) % animeData.length);
+  const handlePrev = () =>
+    setCurrentIndex((prev) => (prev - 1 + animeData.length) % animeData.length);
 
   const getAnimeFavorited = async () => {
     try {
       const response = await apiUrl.get("/favorite-anime/user-favorites");
-      setAnimeFav(await response.data);
+      setAnimeFav(response.data);
     } catch (error) {
       console.error("Error fetching favorite:", error);
     }
@@ -79,9 +74,7 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
 
   const handleAddFavorite = async (id_anime: string) => {
     try {
-      await apiUrl.post("/favorite-anime/post", {
-        id_anime: id_anime,
-      });
+      await apiUrl.post("/favorite-anime/post", { id_anime });
       getAnimeFavorited();
     } catch (error: any) {
       console.error(error.message);
@@ -90,70 +83,92 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
 
   const handleDelFavorite = async (id_anime: string) => {
     try {
-      await apiUrl.delete("/favorite-anime/delete/", {
-        data: {
-          id_anime: id_anime,
-        },
-      });
+      await apiUrl.delete("/favorite-anime/delete/", { data: { id_anime } });
       getAnimeFavorited();
     } catch (error: any) {
       console.error(error.message);
     }
   };
 
-  if (animeData.length === 0) return <div>Loading...</div>;
+  if (animeData.length === 0)
+    return (
+      <div className="w-full h-[320px] md:h-[420px] rounded-xl bg-white/5 animate-pulse" />
+    );
 
   const currentAnime = animeData[currentIndex];
 
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-center relative w-full h-auto overflow-hidden">
-      {/* Left content (carousel) */}
-      <div className="w-full lg:w-1/2 h-[350px] lg:h-[57.934rem] relative overflow-hidden shadow-lg rounded-lg">
-        <div className="flex justify-center items-center h-full">
-          {animeData.map((data, index) => (
-            <img
-              key={index}
-              src={`${api}/${data.photo_cover}`}
-              alt={`Carousel item ${index}`}
-              className={`absolute w-full h-full object-cover transition-opacity duration-1000 ease-in-out transform ${
-                index === currentIndex
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-90"
-              } shadow-lg rounded-lg`}
-              style={{
-                transform: index === currentIndex ? "scale(1.05)" : "scale(1)",
-                transition: "transform 0.3s ease, opacity 0.3s ease",
-              }}
+    <div className="flex flex-col lg:flex-row items-stretch gap-0 w-full rounded-xl overflow-hidden">
+
+      {/* ── Image panel ── */}
+      <div className="relative w-full lg:w-[45%] h-[280px] sm:h-[360px] md:h-[420px] lg:h-[520px] shrink-0 overflow-hidden">
+        {animeData.map((data, index) => (
+          <img
+            key={index}
+            src={resolveImageUrl(api, data.photo_cover)}
+            alt={data.title}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              opacity: index === currentIndex ? 1 : 0,
+              transform: index === currentIndex ? "scale(1.04)" : "scale(1)",
+              transition: "opacity 0.6s ease, transform 0.6s ease",
+            }}
+          />
+        ))}
+
+        {/* gradient overlay at bottom for mobile text bleed */}
+        <div
+          aria-hidden
+          className="absolute bottom-0 inset-x-0 h-24 lg:hidden"
+          style={{
+            background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
+          }}
+        />
+
+        {/* nav buttons */}
+        <button
+          aria-label="Previous"
+          className="absolute top-1/2 left-3 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 rounded-full p-1.5 z-10 transition"
+          onClick={handlePrev}
+        >
+          <TiChevronLeft className="w-5 h-5" />
+        </button>
+        <button
+          aria-label="Next"
+          className="absolute top-1/2 right-3 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 rounded-full p-1.5 z-10 transition"
+          onClick={handleNext}
+        >
+          <TiChevronRight className="w-5 h-5" />
+        </button>
+
+        {/* dot indicators */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+          {animeData.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Slide ${i + 1}`}
+              onClick={() => setCurrentIndex(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === currentIndex
+                  ? "w-5 h-2 bg-[#05E1C6]"
+                  : "w-2 h-2 bg-white/40"
+              }`}
             />
           ))}
         </div>
-        {/* Navigation buttons inside the image container */}
-        <button
-          className="absolute top-1/2 transform -translate-y-1/2 left-2 text-white bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full p-2 z-10"
-          onClick={handlePrev}
-        >
-          <TiChevronLeft className="w-6 h-6" />
-        </button>
-        <button
-          className="absolute top-1/2 transform -translate-y-1/2 right-2 text-white bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full p-2 z-10"
-          onClick={handleNext}
-        >
-          <TiChevronRight className="w-6 h-6" />
-        </button>
       </div>
 
-      {/* Right content */}
-      <div className="flex flex-col items-center lg:items-start justify-center w-full lg:w-1/2 p-4 md:p-6 lg:p-10 text-center lg:text-left">
-        <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-white mb-2 select-none">
+      {/* ── Info panel ── */}
+      <div className="flex flex-col justify-center w-full lg:w-[55%] px-5 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 select-none leading-tight">
           {currentAnime.title}
         </h1>
-        <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
+
+        <div className="flex flex-wrap gap-2 mb-4">
           {currentAnime.genres.map((genre) => (
             <Chip
               key={genre}
-              classNames={{
-                base: "bg-[#008576b7] text-white font-medium m-0",
-              }}
+              classNames={{ base: "bg-[#008576b7] text-white font-medium" }}
               radius="sm"
               variant="flat"
               size="sm"
@@ -162,35 +177,48 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
             </Chip>
           ))}
         </div>
-        <p className="text-gray-300 mb-6 text-sm lg:text-base px-4 lg:px-0 line-clamp-4">
+
+        <p className="text-gray-300 text-sm lg:text-base leading-relaxed line-clamp-4 mb-6">
           {currentAnime.synopsis}
         </p>
-        <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
+
+        <div className="flex items-center gap-4">
           <Button
             onPress={onOpen}
-            className="bg-[#1ecab6] text-black font-semibold py-2 px-4 rounded-lg hover:bg-[#00BFA3] transition duration-300"
-            startContent={<PlayIcon className="w-5 h-5" />}
+            className="bg-[#1ecab6] text-black font-semibold rounded-lg hover:bg-[#00BFA3] transition"
+            startContent={<PlayIcon className="w-4 h-4" />}
+            size="md"
           >
-            WATCH THE TRAILER
+            Watch Trailer
           </Button>
 
-          {animeFav.includes(currentAnime.id) && isLogin ? (
-            <button onClick={() => handleDelFavorite(currentAnime.id)}>
-              <FaHeart className="text-2xl text-rose-600" />
-            </button>
-          ) : isLogin ? (
-            <button onClick={() => handleAddFavorite(currentAnime.id)}>
-              <FaRegHeart className="text-2xl text-gray-400" />
-            </button>
+          {isLogin ? (
+            animeFav.includes(currentAnime.id) ? (
+              <button
+                aria-label="Remove from favorites"
+                onClick={() => handleDelFavorite(currentAnime.id)}
+                className="p-2 rounded-full hover:bg-white/10 transition"
+              >
+                <FaHeart className="text-xl text-rose-500" />
+              </button>
+            ) : (
+              <button
+                aria-label="Add to favorites"
+                onClick={() => handleAddFavorite(currentAnime.id)}
+                className="p-2 rounded-full hover:bg-white/10 transition"
+              >
+                <FaRegHeart className="text-xl text-gray-400 hover:text-white transition" />
+              </button>
+            )
           ) : (
-            <a href="/login">
-              <FaRegHeart className="text-2xl text-gray-400" />
+            <a href="/login" aria-label="Log in to favorite" className="p-2 rounded-full hover:bg-white/10 transition">
+              <FaRegHeart className="text-xl text-gray-400" />
             </a>
           )}
         </div>
       </div>
 
-      {/* Modal */}
+      {/* ── Trailer modal ── */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
         <ModalContent>
           <ModalBody>
@@ -200,7 +228,7 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
               thumbnailSrc={
                 currentAnime.backdrop === null
                   ? "https://startup-template-sage.vercel.app/hero-light.png"
-                  : `${api}/${currentAnime.backdrop}`
+                  : resolveImageUrl(api, currentAnime.backdrop)
               }
             />
           </ModalBody>
