@@ -58,7 +58,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
             name: `${photo}`, // Extract filename from file_path
             status: "done",
             url: resolveImageUrl(api, photo),
-          }))
+          })),
         );
 
         // Set data ke dalam form
@@ -112,7 +112,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
     function convertToEmbedUrl(url: string) {
       // Regular expression to match YouTube video IDs
       const videoIdMatch = url.match(
-        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|.+\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
       );
 
       // Check if the video ID was found
@@ -162,7 +162,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
       formData.append("existing_photos", "");
     } else {
       existing_photos.forEach((file: any) =>
-        formData.append("existing_photos", file)
+        formData.append("existing_photos", file),
       );
     }
 
@@ -177,7 +177,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
     try {
       const update = await apiUrl.put(
         `${api}/anime/update/${animeId}`,
-        formData
+        formData,
       );
       const res = await update.data;
       router.push("/dashboard/anime");
@@ -234,7 +234,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
       // Hapus file dengan status "error" setelah state di-update
       setTimeout(() => {
         setFileList((currentList) =>
-          currentList.filter((f: any) => f.uid !== file.uid)
+          currentList.filter((f: any) => f.uid !== file.uid),
         );
       }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
     }
@@ -253,7 +253,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
       // Hapus file dengan status "error" setelah state di-update
       setTimeout(() => {
         setFileCover((currentList) =>
-          currentList.filter((f: any) => f.uid !== file.uid)
+          currentList.filter((f: any) => f.uid !== file.uid),
         );
       }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
     }
@@ -270,7 +270,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
         // Hapus file dengan status "error" setelah state di-update
         setTimeout(() => {
           setFileList((currentList) =>
-            currentList.filter((f: any) => f.uid !== file.uid)
+            currentList.filter((f: any) => f.uid !== file.uid),
           );
         }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
@@ -280,7 +280,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
         // Hapus file dengan status "error" setelah state di-update
         setTimeout(() => {
           setFileList((currentList) =>
-            currentList.filter((f: any) => f.uid !== file.uid)
+            currentList.filter((f: any) => f.uid !== file.uid),
           );
         }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
@@ -302,7 +302,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
         // Hapus file dengan status "error" setelah state di-update
         setTimeout(() => {
           setFileCover((currentList) =>
-            currentList.filter((f: any) => f.uid !== file.uid)
+            currentList.filter((f: any) => f.uid !== file.uid),
           );
         }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
@@ -313,7 +313,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
         // Hapus file dengan status "error" setelah state di-update
         setTimeout(() => {
           setFileCover((currentList) =>
-            currentList.filter((f: any) => f.uid !== file.uid)
+            currentList.filter((f: any) => f.uid !== file.uid),
           );
         }, 1000); // Tambahkan jeda 1 detik untuk memastikan efek UI
       }
@@ -384,15 +384,16 @@ export default function AnimeEdit({ slug }: { slug: string }) {
                   placeholder="Select type"
                   allowClear
                   onChange={(value) => setType(value)} // Set nilai type saat berubah
+                  options={[
+                    { value: "movie", label: "movie" },
+                    { value: "series", label: "series" },
+                  ]}
                   filterOption={(input, option) =>
-                    (option?.children as unknown as string)
+                    (option?.label ?? "")
                       .toLowerCase()
                       .includes(input.toLowerCase())
                   }
-                >
-                  <Option value="movie">movie</Option>
-                  <Option value="series">series</Option>
-                </Select>
+                ></Select>
               </Form.Item>
 
               {/* Input total episode */}
@@ -456,7 +457,7 @@ export default function AnimeEdit({ slug }: { slug: string }) {
             </Upload>
           </Form.Item>
 
-          <Form.Item name="photos_anime" label="Upload Photo Anime">
+          <Form.Item label="Upload Photo Anime">
             <Upload
               {...uploadPropsList}
               listType="picture-card"

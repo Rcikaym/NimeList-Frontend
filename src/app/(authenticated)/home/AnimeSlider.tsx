@@ -123,7 +123,10 @@ export default function AnimeSlider({
                     {anime.title}
                   </h5>
                 </Link>
-                <p className="text-xs text-gray-500 mt-0.5">{anime.type}</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {{ movie: "Movie", series: "TV Series" }[anime.type] ??
+                    anime.type}
+                </p>
                 <p className="flex items-center gap-1 text-xs font-medium text-gray-300 mt-0.5">
                   <StarFilled className="text-yellow-400 text-[10px]" />
                   {anime[ratingKey] ?? "—"}

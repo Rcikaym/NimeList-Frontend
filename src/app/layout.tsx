@@ -2,6 +2,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { Metadata } from "next";
 import { Plus_Jakarta_Sans, IBM_Plex_Sans_Condensed } from "next/font/google";
+import '@ant-design/v5-patch-for-react-19';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],

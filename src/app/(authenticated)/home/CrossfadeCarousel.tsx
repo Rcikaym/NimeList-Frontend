@@ -1,15 +1,13 @@
 "use client";
-import { PlayIcon } from "@heroicons/react/24/outline";
+import { PlayIcon, ChevronLeftIcon, ChevronRightIcon, BookmarkIcon as RegBookmarkIcon } from "@heroicons/react/24/outline";
+import { BookmarkIcon as SolidBookmarkIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
-import { FaRegHeart, FaHeart } from "react-icons/fa6";
-import { TiChevronRight, TiChevronLeft } from "react-icons/ti";
 import { AnimeType } from "./types";
 import {
   Modal,
   ModalContent,
   ModalBody,
   Button,
-  Chip,
   useDisclosure,
 } from "@nextui-org/react";
 import { HeroVideoDialog } from "@/components/magicui/HeroVideoPlayer";
@@ -98,127 +96,125 @@ const CrossfadeCarousel: React.FC<CarouselProps> = ({ interval }) => {
   const currentAnime = animeData[currentIndex];
 
   return (
-    <div className="flex flex-col lg:flex-row items-stretch gap-0 w-full rounded-xl overflow-hidden">
+    <div className="relative w-full px-10 md:px-14 lg:px-16 py-4">
+      {/* ── Outer Chevrons ── */}
+      <button
+        aria-label="Previous"
+        className="absolute left-0 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors z-20"
+        onClick={handlePrev}
+      >
+        <ChevronLeftIcon className="w-8 h-8 md:w-10 md:h-10" />
+      </button>
+      <button
+        aria-label="Next"
+        className="absolute right-0 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors z-20"
+        onClick={handleNext}
+      >
+        <ChevronRightIcon className="w-8 h-8 md:w-10 md:h-10" />
+      </button>
 
-      {/* ── Image panel ── */}
-      <div className="relative w-full lg:w-[45%] h-[280px] sm:h-[360px] md:h-[420px] lg:h-[520px] shrink-0 overflow-hidden">
-        {animeData.map((data, index) => (
-          <img
-            key={index}
-            src={resolveImageUrl(api, data.photo_cover)}
-            alt={data.title}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{
-              opacity: index === currentIndex ? 1 : 0,
-              transform: index === currentIndex ? "scale(1.04)" : "scale(1)",
-              transition: "opacity 0.6s ease, transform 0.6s ease",
-            }}
-          />
-        ))}
-
-        {/* gradient overlay at bottom for mobile text bleed */}
-        <div
-          aria-hidden
-          className="absolute bottom-0 inset-x-0 h-24 lg:hidden"
-          style={{
-            background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
-          }}
-        />
-
-        {/* nav buttons */}
-        <button
-          aria-label="Previous"
-          className="absolute top-1/2 left-3 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 rounded-full p-1.5 z-10 transition"
-          onClick={handlePrev}
-        >
-          <TiChevronLeft className="w-5 h-5" />
-        </button>
-        <button
-          aria-label="Next"
-          className="absolute top-1/2 right-3 -translate-y-1/2 text-white bg-black/50 hover:bg-black/80 rounded-full p-1.5 z-10 transition"
-          onClick={handleNext}
-        >
-          <TiChevronRight className="w-5 h-5" />
-        </button>
-
-        {/* dot indicators */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-          {animeData.map((_, i) => (
-            <button
-              key={i}
-              aria-label={`Slide ${i + 1}`}
-              onClick={() => setCurrentIndex(i)}
-              className={`rounded-full transition-all duration-300 ${
-                i === currentIndex
-                  ? "w-5 h-2 bg-[#05E1C6]"
-                  : "w-2 h-2 bg-white/40"
-              }`}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12 lg:gap-16 max-w-7xl mx-auto">
+        {/* ── Image panel ── */}
+        <div className="relative w-full lg:w-[45%] h-[300px] sm:h-[380px] md:h-[440px] lg:h-[520px] shrink-0 overflow-hidden bg-black rounded-lg">
+          {animeData.map((data, index) => (
+            <img
+              key={index}
+              src={resolveImageUrl(api, data.backdrop)}
+              alt={data.title}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{
+                opacity: index === currentIndex ? 1 : 0,
+                transform: index === currentIndex ? "scale(1.04)" : "scale(1)",
+                transition: "opacity 0.6s ease, transform 0.6s ease",
+              }}
             />
           ))}
+
+          {/* Vignette overlays for smooth blending into black background */}
+          <div className="absolute inset-y-0 left-0 w-[20%] bg-gradient-to-r from-black to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 right-0 w-[25%] bg-gradient-to-l from-black to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-x-0 top-0 h-[15%] bg-gradient-to-b from-black to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-[15%] bg-gradient-to-t from-black to-transparent pointer-events-none z-10" />
+        </div>
+
+        {/* ── Info panel ── */}
+        <div className="flex flex-col justify-between w-full lg:w-[50%] min-h-[300px] sm:min-h-[380px] md:min-h-[440px] lg:min-h-[520px] py-4">
+          <div className="flex flex-col justify-center my-auto">
+            {/* Title */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-2 leading-tight font-serif tracking-normal">
+              {currentAnime.title}
+            </h1>
+
+            {/* Genres */}
+            <div className="text-gray-400 italic text-xs md:text-sm mb-4 font-sans select-none">
+              {currentAnime.genres.join(", ")}
+            </div>
+
+            {/* Synopsis */}
+            <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-6 font-sans line-clamp-5 max-w-xl">
+              {currentAnime.synopsis}
+            </p>
+
+            {/* Buttons */}
+            <div className="flex items-center gap-4">
+              <Button
+                onPress={onOpen}
+                className="bg-[#05E1C6] hover:bg-[#04C4B0] text-white font-bold px-6 py-2.5 rounded-md transition duration-200 tracking-wider text-xs uppercase"
+                startContent={<PlayIcon className="w-4 h-4 stroke-[3]" />}
+                size="md"
+              >
+                Watch the Trailer
+              </Button>
+
+              {isLogin ? (
+                animeFav.includes(currentAnime.id) ? (
+                  <button
+                    aria-label="Remove from favorites"
+                    onClick={() => handleDelFavorite(currentAnime.id)}
+                    className="p-2.5 rounded-md hover:bg-white/5 transition border border-gray-800"
+                  >
+                    <SolidBookmarkIcon className="w-5 h-5 text-[#05E1C6]" />
+                  </button>
+                ) : (
+                  <button
+                    aria-label="Add to favorites"
+                    onClick={() => handleAddFavorite(currentAnime.id)}
+                    className="p-2.5 rounded-md hover:bg-white/5 transition border border-gray-800"
+                  >
+                    <RegBookmarkIcon className="w-5 h-5 text-[#05E1C6] hover:text-white" />
+                  </button>
+                )
+              ) : (
+                <a
+                  href="/login"
+                  aria-label="Log in to favorite"
+                  className="p-2.5 rounded-md hover:bg-white/5 transition border border-gray-800 flex items-center justify-center"
+                >
+                  <RegBookmarkIcon className="w-5 h-5 text-[#05E1C6]" />
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Indicators */}
+          <div className="flex justify-end gap-1.5 mt-auto pt-6 pr-4">
+            {animeData.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Slide ${i + 1}`}
+                onClick={() => setCurrentIndex(i)}
+                className={`h-[3px] rounded-full transition-all duration-300 ${
+                  i === currentIndex
+                    ? "w-10 bg-[#05E1C6]"
+                    : "w-6 bg-[#004d40]"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── Info panel ── */}
-      <div className="flex flex-col justify-center w-full lg:w-[55%] px-5 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 select-none leading-tight">
-          {currentAnime.title}
-        </h1>
-
-        <div className="flex flex-wrap gap-2 mb-4">
-          {currentAnime.genres.map((genre) => (
-            <Chip
-              key={genre}
-              classNames={{ base: "bg-[#008576b7] text-white font-medium" }}
-              radius="sm"
-              variant="flat"
-              size="sm"
-            >
-              {genre}
-            </Chip>
-          ))}
-        </div>
-
-        <p className="text-gray-300 text-sm lg:text-base leading-relaxed line-clamp-4 mb-6">
-          {currentAnime.synopsis}
-        </p>
-
-        <div className="flex items-center gap-4">
-          <Button
-            onPress={onOpen}
-            className="bg-[#1ecab6] text-black font-semibold rounded-lg hover:bg-[#00BFA3] transition"
-            startContent={<PlayIcon className="w-4 h-4" />}
-            size="md"
-          >
-            Watch Trailer
-          </Button>
-
-          {isLogin ? (
-            animeFav.includes(currentAnime.id) ? (
-              <button
-                aria-label="Remove from favorites"
-                onClick={() => handleDelFavorite(currentAnime.id)}
-                className="p-2 rounded-full hover:bg-white/10 transition"
-              >
-                <FaHeart className="text-xl text-rose-500" />
-              </button>
-            ) : (
-              <button
-                aria-label="Add to favorites"
-                onClick={() => handleAddFavorite(currentAnime.id)}
-                className="p-2 rounded-full hover:bg-white/10 transition"
-              >
-                <FaRegHeart className="text-xl text-gray-400 hover:text-white transition" />
-              </button>
-            )
-          ) : (
-            <a href="/login" aria-label="Log in to favorite" className="p-2 rounded-full hover:bg-white/10 transition">
-              <FaRegHeart className="text-xl text-gray-400" />
-            </a>
-          )}
-        </div>
-      </div>
-
-      {/* ── Trailer modal ── */}
+      {/* Trailer modal */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
         <ModalContent>
           <ModalBody>

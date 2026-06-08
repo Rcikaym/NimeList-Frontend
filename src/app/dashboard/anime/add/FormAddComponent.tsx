@@ -418,7 +418,7 @@ export default function AddAnime() {
             </Upload>
           </Form.Item>
 
-          <Form.Item name="photos_anime" label="Upload Photo Anime">
+          <Form.Item label="Upload Photo Anime">
             <Upload
               {...uploadPropsList}
               listType="picture-card"
