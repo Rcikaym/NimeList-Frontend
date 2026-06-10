@@ -21,7 +21,7 @@ import { Option } from "antd/es/mentions";
 import { useRouter } from "next/navigation";
 import PageTitle from "@/components/TitlePage";
 import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 import { formats, modules } from "./TextAreaUtils";
 import apiUrl from "@/hooks/api";
 import Link from "next/link";
@@ -44,7 +44,7 @@ interface DataUser {
   username: string;
 }
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 const CreateTopic: React.FC = () => {
   const router = useRouter();

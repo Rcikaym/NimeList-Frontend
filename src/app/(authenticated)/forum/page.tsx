@@ -1,6 +1,5 @@
 "use client";
 
-import { checkAdminRole } from "@/utils/adminRole";
 import { checkPremium } from "@/utils/premiumStatus";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -97,7 +96,7 @@ export default function ForumPage() {
 
                 {/* Sidebar */}
                 <div className="bg-black">
-                  <Link href="/forum/add/testing">
+                  <Link href="/forum/add">
                     <button className="w-full bg-green-500 text-black px-4 py-2 rounded-lg font-medium hover:bg-green-600 transition mb-6">
                       Create New Topic
                     </button>

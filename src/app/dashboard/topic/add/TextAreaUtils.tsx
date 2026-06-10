@@ -1,6 +1,6 @@
 import apiUrl from "@/hooks/api";
 import React from "react";
-import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import "react-quill-new/dist/quill.snow.css"; // Import Quill styles
 
 const imageHandler = () => {
   return new Promise((resolve, reject) => {

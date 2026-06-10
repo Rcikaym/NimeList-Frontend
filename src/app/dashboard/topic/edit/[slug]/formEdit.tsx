@@ -19,14 +19,14 @@ import {
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { PhotosType, TopicType } from "./types";
-import "react-quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 import "@/styles/reactquill.css";
 import dynamic from "next/dynamic";
 import apiUrl from "@/hooks/api";
 import Link from "next/link";
 import { BiArrowBack } from "react-icons/bi";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 export default function TopicEdit({ slug }: { slug: string }) {
   const api = process.env.NEXT_PUBLIC_API_URL;

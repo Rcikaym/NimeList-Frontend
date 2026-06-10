@@ -1,11 +1,11 @@
 "use client";
 import { TopicType } from "./types";
+import Link from "next/link";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { BiLike, BiSolidLike, BiDislike, BiSolidDislike } from "react-icons/bi";
 import apiUrl from "@/hooks/api";
 import { Spinner } from "@nextui-org/react";
-import { label } from "framer-motion/client";
+// import { label } from "framer-motion/client";
 import renderDateTime from "@/utils/FormatDateTime";
 import timeToDay from "@/utils/TimeToDay";
 
@@ -142,11 +142,15 @@ const TopicComponents: React.FC = () => {
                 </span>
               ) : (
                 <span className="text-gray-400 text-sm ml-3">{`${timeToDay(
-                  topic.updated_at
+                  topic.updated_at,
                 )} (Edited)`}</span>
               )}
             </div>
-            <p className="text-gray-300 p-2 pl-3 ml-12 mb-0">{topic.title}</p>
+            <Link href={`/forum/topic/${topic.slug}`}>
+              <p className="text-gray-300 p-2 pl-3 ml-12 mb-0 hover:text-[#00ff88] transition-colors cursor-pointer">
+                {topic.title}
+              </p>
+            </Link>
             <div className="flex justify-between items-center mt-4 text-gray-400 text-sm">
               <div className="ml-14 flex items-center gap-4">
                 <button

@@ -6,6 +6,7 @@ export interface TopicType {
     updated_at: string;
     likes: number;
     dislikes: number;
+    slug: string;
     user_username: string;
     anime: string;
     user_badge: string;
