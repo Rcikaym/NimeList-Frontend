@@ -278,12 +278,61 @@ function routeMockRequest(
     return { message: "Topic deleted successfully!" };
   }
 
+  if (path.match(/\/topic\/get\//)) {
+    const parts = path.split("/topic/get/");
+    const slug = parts[1]?.split("?")[0];
+    const found = mockTopics.find((t: any) => t.slug === slug) || mockTopics[0];
+    return found;
+  }
+
+  // ---- Comment Endpoints ----
+  if (path.match(/\/comment\/get\/by-topic\//)) {
+    const commentsList = [
+      {
+        id: "c1",
+        username: "otaku_king",
+        name: "Luffy Fan",
+        comment: "This is an amazing topic! I totally agree with the points.",
+        created_at: "2024-06-11T12:00:00Z",
+        updated_at: "2024-06-11T12:00:00Z",
+        total_likes: 12,
+        user_photo: "images/boy.png",
+      },
+      {
+        id: "c2",
+        username: "admin",
+        name: "Admin User",
+        comment: "Thanks for starting this discussion. Let's keep it friendly!",
+        created_at: "2024-06-11T12:05:00Z",
+        updated_at: "2024-06-11T12:05:00Z",
+        total_likes: 3,
+        user_photo: "images/boy.png",
+      },
+    ];
+    return {
+      data: commentsList,
+      total: commentsList.length,
+    };
+  }
+
+  if (path.includes("/comment/post")) {
+    return { message: "Comment added successfully!" };
+  }
+
+  if (path.match(/\/comment\/delete\//)) {
+    return { message: "Comment deleted successfully!" };
+  }
+
   // ---- Like/Dislike Endpoints ----
   if (path.includes("/like-topic/")) {
     return {};
   }
 
   if (path.includes("/dislike-topic/")) {
+    return {};
+  }
+
+  if (path.includes("/like-comment/")) {
     return {};
   }
 

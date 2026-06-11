@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { TopicType } from "./types";
 import apiUrl from "@/hooks/api";
 import { Skeleton } from "@nextui-org/react";
+import Link from "next/link";
 
 const TrendingTopics: React.FC = () => {
-  const api = process.env.NEXT_PUBLIC_API_URL;
   const [topics, setTopics] = useState<TopicType[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,12 +45,14 @@ const TrendingTopics: React.FC = () => {
         : topics
             .sort((a, b) => b.likes - a.likes)
             .map((topic, index) => (
-              <li
-                key={topic.id}
-                className="text-green-500 list-decimal line-clamp-1"
-              >
-                {index + 1}. {topic.title}
-              </li>
+              <Link href={`/forum/topic/${topic.slug}`} key={topic.id}>
+                <li
+                  key={topic.id}
+                  className="text-green-500 list-decimal line-clamp-1"
+                >
+                  {index + 1}. {topic.title}
+                </li>
+              </Link>
             ))}
     </ul>
   );
